@@ -1,0 +1,386 @@
+---
+sidebar_position: 3.45
+id: "config"
+title: "Konfiguration"
+---
+
+import { Kbd } from "@site/src/components/kbd";
+import { PlatformProvider, PlatformSelectorButton } from "@site/src/components/platformcontext";
+import { VersionBadge, DeprecatedBadge } from "@site/src/components/versionbadge";
+
+<PlatformProvider>
+
+<PlatformSelectorButton />
+<div style={{ marginBottom: 20 }}></div>
+
+Waves Konfigurationsdateien befinden sich unter `~/.config/waveterm/`.
+
+Die Hauptkonfigurationsdatei ist `settings.json` (`~/.config/waveterm/settings.json`).
+
+Die Datei ist als weitgehend flaches JSON strukturiert. Statt Unterobjekten nutzen wir bevorzugt
+":" als Ebenentrenner.
+
+:::info
+
+Der einfachste Weg, deine Konfigurationsdateien zu bearbeiten, ist der Befehl wsh editconfig, der deine Wave-Konfigurationsdatei in unserem integrierten Vorschau-Editor öffnet.
+
+```
+wsh editconfig
+```
+
+:::
+
+## Konfigurationsschlüssel
+
+| Schlüsselname                             | Typ     | Funktion                                                                                                                                                                                                                                                      |
+| ------------------------------------ | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| app:globalhotkey                     | string   | Eine systemweite Tastenkombination, um dein zuletzt genutztes Wave-Fenster zu öffnen. Eine Reihe von Tastennamen, getrennt durch `:`. Weitere Infos unter [Anpassbare systemweite globale Tastenkombination](#anpassbare-systemweite-globale-tastenkombination)                                                 |
+| app:dismissarchitecturewarning       | bool     | Deaktiviert Warnungen beim App-Start, wenn du eine nicht-native Architektur für Wave nutzt. Weitere Infos unter [Warum warnt mich Wave beim Start vor der ARM64-Übersetzung?](./faq#why-does-wave-warn-me-about-arm64-translation-when-it-launches).              |
+| app:defaultnewblock                  | string   | Legt den standardmäßigen neuen Block fest (Cmd:n, Cmd:d). "term" für Terminal-Block, "launcher" für Launcher-Block (Standard = "term")                                                                                                                                        |
+| app:showoverlayblocknums             | bool     | Auf false setzen, um das Blocknummern-Overlay zu deaktivieren, das beim Halten von Strg+Umschalt erscheint (Standard true)                                                                                                                                           |
+| app:ctrlvpaste                       | bool     | Unter Windows/Linux nutzt der Wert null (Standard) Strg+V nur unter Windows. Auf true setzen, um Strg+V auf allen Nicht-macOS-Plattformen zu erzwingen, false, um das Tastenkürzel zu deaktivieren. macOS nutzt unabhängig von dieser Einstellung immer Cmd+V                                     |
+| app:confirmquit <VersionBadge version="v0.14" />                     | bool     | Auf false setzen, um den Bestätigungsdialog beim Beenden von Wave Terminal zu deaktivieren (Standard true, erfordert App-Neustart)                                                                                                                                      |
+| app:hideaibutton <VersionBadge version="v0.14" />                    | bool     | Auf true setzen, um den KI-Button in der Tableiste auszublenden (Standard false)                                                                                                                                                                                          |
+| app:disablectrlshiftarrows <VersionBadge version="v0.14" />          | bool     | Auf true setzen, um die Strg+Umschalt-Block-Navigations-Tastenkombinationen (`Arrow` und `h/j/k/l`) zu deaktivieren (Standard false)                                                                                                                                                    |
+| app:disablectrlshiftdisplay <VersionBadge version="v0.14" />         | bool     | Auf true setzen, um die visuelle Strg+Umschalt-Anzeige zu deaktivieren (Standard false)                                                                                                                                                                            |
+| app:focusfollowscursor <VersionBadge version="v0.14" />              | string   | Steuert, ob der Block-Fokus der Mausbewegung folgt: `"off"` (Standard), `"on"` (alle Blöcke) oder `"term"` (nur Terminal-Blöcke)                                                                                                                             |
+| app:tabbar <VersionBadge version="v0.14.4" />                        | string   | Steuert die Position der Tableiste: `"top"` (Standard) für eine horizontale Tableiste oben im Fenster, oder `"left"` für eine vertikale Tableiste links im Fenster                                                                                |
+| app:language <VersionBadge version="v0.14.5" />                      | string   | Legt die UI-Sprache fest: `"en"` (Standard) oder `"de"`                                                                                                                                                                                                              |
+| ai:preset                            | string   | die standardmäßig zu nutzende KI-Voreinstellung                                                                                                                                                                                                                                  |
+| ai:baseurl                           | string   | Legt die KI-Basis-URL fest (muss OpenAI-kompatibel sein)                                                                                                                                                                                                               |
+| ai:apitoken                          | string   | dein KI-API-Token                                                                                                                                                                                                                                             |
+| ai:apitype                           | string   | Standard ist "open_ai", kann aber auch auf "azure" (für spezielle Azure-AI-Behandlung), "anthropic" oder "perplexity" gesetzt werden                                                                                                                                               |
+| ai:name                              | string   | in der Wave-AI-Block-Kopfzeile angezeigter Text                                                                                                                                                                                                                 |
+| ai:model                             | string   | an die API zu übergebender Modellname                                                                                                                                                                                                                                     |
+| ai:apiversion                        | string   | nur für Azure AI (wenn apitype "azure" ist, ist der Standard "2023-05-15")                                                                                                                                                                                                |
+| ai:orgid                             | string   |                                                                                                                                                                                                                                                               |
+| ai:maxtokens                         | int      | maximale Tokenanzahl für die API                                                                                                                                                     |
+| ai:timeoutms                         | int      | Timeout (in Millisekunden) für KI-Aufrufe                                                                                                                                        |
+| ai:proxyurl                          | string   | HTTP-Proxy-URL für KI-API-Anfragen (gilt nicht für Wave Cloud AI)                                                                                                                          |
+| conn:askbeforewshinstall             | bool     | auf false setzen, um das Popup zu deaktivieren, das fragt, ob du wsh-Erweiterungen auf neuen Rechnern installieren möchtest                                                                                                                                                                    |
+| conn:localhostdisplayname <VersionBadge version="v0.14" />           | string   | überschreibt den Anzeigenamen für localhost in der UI (z. B. auf "Mein Laptop" oder "Lokal" setzen, oder auf einen leeren String setzen, um den Namen auszublenden)                                                                                                                                                                       |
+| term:fontsize                        | float    | die Schriftgröße für den Terminal-Block                                                                                                                                                                                                                           |
+| term:fontfamily                      | string   | für den Terminal-Block zu nutzende Schriftart                                                                                                                                                                                                                         |
+| term:disablewebgl                    | bool     | auf true setzen, um WebGL-Beschleunigung im Terminal zu deaktivieren (Standard false)                                                                                                                                                                                                        |
+| term:localshellpath                  | string   | zum Überschreiben des Standard-Shell-Pfads für lokale Terminals                                                                                                                                                                                                    |
+| term:localshellopts                  | string[] | zur Übergabe zusätzlicher Parameter an term:localshellpath (Beispiel: `["-NoLogo"]` entfernt für PowerShell den Copyright-Hinweis)                                                                                                                         |
+| term:copyonselect                    | bool     | auf false setzen, um Terminal-Copy-on-Select zu deaktivieren                                                                                                                                                                                                               |
+| term:scrollback                      | int      | Größe des Terminal-Scrollback-Puffers, max. 10000                                                                                                                                                                                                              |
+| term:theme                           | string   | Name der standardmäßig anzuwendenden Terminal-Theme-Voreinstellung (Standard ist "default-dark")                                                                                                                                                                                 |
+| term:transparency                    | float64  | legt die Hintergrundtransparenz des Terminal-Themes fest (Standard 0.5, 0 = nicht transparent, 1.0 = vollständig transparent)                                                                                                                                                 |
+| term:allowbracketedpaste             | bool     | Bracketed-Paste-Modus im Terminal erlauben (Standard false)                                                                                                                                                                                                        |
+| term:shiftenternewline               | bool     | wenn aktiviert, sendet Umschalt+Enter Escape-Sequenz + Zeilenumbruch (\n) statt Wagenrücklauf, nützlich für Claude Code und ähnliche KI-Coding-Tools (Standard false)                                                                                         |
+| term:macoptionismeta                 | bool     | unter macOS die Option-Taste für Terminal-Tastenkombinationen als Meta-Taste behandeln (Standard false)                                                                                                                                                                          |
+| term:cursor <VersionBadge version="v0.14" />                        | string   | Terminal-Cursor-Stil. Gültige Werte sind `block` (Standard), `underline` und `bar`                                                                                                                                                                            |
+| term:cursorblink <VersionBadge version="v0.14" />                   | bool     | wenn aktiviert, blinkt der Terminal-Cursor (Standard false)                                                                                                                                                                                                          |
+| term:bellsound <VersionBadge version="v0.14" />                      | bool     | wenn aktiviert, wird beim Empfang der Terminal-Glocke (BEL-Zeichen) der System-Signalton abgespielt (Standard false)                                                                                                                                                  |
+| term:bellindicator <VersionBadge version="v0.14" />                  | bool     | wenn aktiviert, wird beim Empfang der Terminal-Glocke ein visueller Indikator im Tab angezeigt (Standard false)                                                                                                                                                           |
+| term:osc52 <VersionBadge version="v0.14" />                          | string   | steuert das OSC-52-Zwischenablageverhalten: `always` (Standard, erlaubt OSC 52 jederzeit) oder `focus` (erfordert fokussiertes Fenster und fokussierten Block)                                                                                                                     |
+| term:durable <VersionBadge version="v0.14" />                        | bool     | macht Remote-Terminal-Sitzungen über Netzwerkabbrüche hinweg dauerhaft (Standard false)                                                                                                                                                                           |
+| term:showsplitbuttons <VersionBadge version="v0.15" />               | bool     | wenn aktiviert, werden horizontale und vertikale Split-Buttons in der Terminal-Block-Kopfzeile angezeigt (Standard false)                                                                                                                                                      |
+| editor:minimapenabled                | bool     | auf false setzen, um die Editor-Minimap zu deaktivieren                                                                                                                                                                                                                        |
+| editor:stickyscrollenabled           | bool     | aktiviert die stickyScroll-Funktion des Monaco-Editors (heftet Kopfzeilen des aktuellen Kontexts an, z. B. Klassennamen, Methodennamen usw.), Standard false                                                                                                                    |
+| editor:wordwrap                      | bool     | auf true setzen, um Zeilenumbruch im Editor zu aktivieren (Standard false)                                                                                                                                                                                         |
+| editor:fontsize                      | float64  | legt die Schriftgröße für den Editor fest (Standard 12px)                                                                                                                                                                                                           |
+| editor:inlinediff                    | bool     | auf true setzen, um Diffs inline statt nebeneinander anzuzeigen, false für nebeneinander (Standard ist undefined, wodurch Monacos responsives Verhalten genutzt wird)                                                                                                              |
+| preview:showhiddenfiles              | bool     | auf false setzen, um versteckte Dateien in der Verzeichnisvorschau auszublenden (Standard true)                                                                                                                                                                      |
+| preview:defaultsort <VersionBadge version="v0.14.2" />                 | string   | legt die Standard-Sortierspalte für die Verzeichnisvorschau fest. `"name"` (Standard) sortiert alphabetisch aufsteigend nach Namen; `"modtime"` sortiert nach letzter Änderungszeit absteigend (neueste zuerst)                                                                               |
+| markdown:fontsize                    | float64  | Schriftgröße für normalen Text beim Rendern von Markdown in der Vorschau. Überschriften werden davon ausgehend hochskaliert (Standard 14px)                                                                                                                                        |
+| markdown:fixedfontsize               | float64  | Schriftgröße für Codeblöcke beim Rendern von Markdown in der Vorschau (Standard 12px)                                                                                                                                                                            |
+| web:openlinksinternally              | bool     | auf false setzen, um Weblinks im externen Browser zu öffnen                                                                                                                                                                                                            |
+| web:defaulturl                       | string   | Standard-Webseite, die im Web-Widget geöffnet wird, wenn keine URL angegeben ist (Startseite)                                                                                                                                                                                 |
+| web:defaultsearch                    | string   | Vorlage für Websuchen. z. B. `https://www.google.com/search?q={query}`. "\{query}" wird durch den Suchbegriff ersetzt                                                                                                                                     |
+| autoupdate:enabled                   | bool     | Aktualisierungssuche aktivieren/deaktivieren (erfordert App-Neustart)                                                                                                                                                                                                    |
+| autoupdate:intervalms                | float64  | Wartezeit in Millisekunden zwischen Aktualisierungsprüfungen (erfordert App-Neustart)                                                                                                                                                                                     |
+| autoupdate:installonquit             | bool     | ob Updates beim Beenden automatisch installiert werden sollen (erfordert App-Neustart)                                                                                                                                                                                       |
+| autoupdate:channel                   | string   | der Auto-Update-Kanal "latest" (stabile Builds) oder "beta" (häufiger aktualisiert) (erfordert App-Neustart)                                                                                                                                                  |
+| tab:preset <DeprecatedBadge />       | string   | eine "bg@"-Voreinstellung, die automatisch auf neue Tabs angewendet wird. z. B. `bg@green`. sollte dem Voreinstellungsschlüssel entsprechen. Veraltet zugunsten von `tab:background`                                                                                                                     |
+| tab:background <VersionBadge version="v0.14.4" />  | string   | eine "bg@"-Voreinstellung, die automatisch auf neue Tabs angewendet wird. z. B. `bg@green`. sollte dem Voreinstellungsschlüssel entsprechen                                                                                                                                                               |
+| tab:confirmclose                     | bool     | wenn auf true gesetzt, wird vor dem Schließen eines Tabs ein Bestätigungsdialog angezeigt (Standard false)                                                                                                                                                                   |
+| widget:showhelp                      | bool     | ob Hilfe-/Tipp-Widgets in der rechten Seitenleiste angezeigt werden sollen                                                                                                                                                                                                            |
+| window:transparent                   | bool     | auf true setzen, um Fenstertransparenz zu aktivieren (kann nicht mit `window:blur` kombiniert werden) (nur macOS und Windows, erfordert App-Neustart, siehe [Hinweis zur Windows-Kompatibilität](https://www.electronjs.org/docs/latest/tutorial/custom-window-styles#limitations))       |
+| window:blur                          | bool     | aktiviert die Weichzeichnung des Fensterhintergrunds (kann nicht mit `window:transparent` kombiniert werden) (nur macOS und Windows, erfordert App-Neustart, siehe [Hinweis zur Windows-Kompatibilität](https://www.electronjs.org/docs/latest/tutorial/custom-window-styles#limitations)) |
+| window:opacity                       | float64  | 0-1, Fensterdeckkraft, wenn `window:transparent` oder `window:blur` gesetzt sind                                                                                                                                                                                        |
+| window:bgcolor                       | string   | legt die Fensterhintergrundfarbe fest (sollte Hex sein: #xxxxxx)                                                                                                                                                                                                      |
+| window:reducedmotion                 | bool     | auf true setzen, um die meisten Animationen zu deaktivieren                                                                                                                                                                                                        |
+| window:tilegapsize                   | int      | ändert den Standard-Abstand (in CSS-Pixeln) zwischen Blöcken                                                                                                                                                                                        |
+| window:magnifiedblockopacity         | float64  | ändert die Deckkraft eines vergrößerten Blocks (muss zwischen 0 und 1 liegen, Standard 0.6)                                                                                                                                                                            |
+| window:magnifiedblocksize            | float64  | ändert die Größe eines vergrößerten Blocks als Prozentsatz der Abmessungen seines übergeordneten Layouts (muss zwischen 0 und 1 liegen, Standard 0.9)                                                                                                                        |
+| window:magnifiedblockblurprimarypx   | int      | ändert die Weichzeichnung in CSS-Pixeln, die direkt hinter einem vergrößerten Block angewendet wird (siehe [backdrop-filter](https://developer.mozilla.org/en-US/docs/Web/CSS/backdrop-filter) für weitere Infos, wie das angewendet wird)                                              |
+| window:magnifiedblockblursecondarypx | int      | ändert die Weichzeichnung in CSS-Pixeln, die auf die sichtbaren Bereiche nicht vergrößerter Blöcke angewendet wird, wenn ein Block vergrößert ist (siehe [backdrop-filter](https://developer.mozilla.org/en-US/docs/Web/CSS/backdrop-filter) für weitere Infos, wie das angewendet wird)      |
+| window:maxtabcachesize               | int      | Anzahl der zwischengespeicherten Tabs. Bei zwischengespeicherten Tabs ist der Wechsel zwischen ihnen sehr schnell. (Standard 10)                                                                                                                                          |
+| window:showmenubar                   | bool     | zur Nutzung der nativen Betriebssystem-Menüleiste (nur Windows und Linux, erfordert App-Neustart)                                                                                                                                                                              |
+| window:nativetitlebar                | bool     | zur Nutzung der nativen Betriebssystem-Titelleiste statt des Overlays (nur Windows und Linux, erfordert App-Neustart)                                                                                                                                                    |
+| window:disablehardwareacceleration   | bool     | deaktiviert die Chromium-Hardwarebeschleunigung, um grafische Fehler zu beheben (erfordert App-Neustart)                                                                                                                                                                |
+| window:fullscreenonlaunch            | bool     | auf true setzen, um das Vordergrundfenster im Vollbildmodus zu starten (Standard false)                                                                                                                                                                            |
+| window:savelastwindow                | bool     | wenn `true`, bleibt das zuletzt geschlossene Fenster erhalten und wird beim nächsten App-Start wieder geöffnet (Standard `true`)                                                                                                                               |
+| window:confirmonclose                | bool     | wenn `true`, wird der Nutzer aufgefordert zu bestätigen, dass er ein Fenster schließen möchte, wenn es einen ungespeicherten Workspace mit mehr als einem Tab hat (Standard `true`)                                                                                                  |
+| window:dimensions                    | string   | legt die Standardabmessungen für neue Fenster im Format "BREITExHÖHE" fest (z. B. "1920x1080"). Beim Erstellen eines neuen Fensters werden diese Abmessungen automatisch angewendet. Breite und Höhe sollten in Pixeln angegeben werden.                       |
+| telemetry:enabled                    | bool     | zum Aktivieren/Deaktivieren von Telemetrie                                                                                                                                                                                                                               |
+
+Als Referenz, dies ist die aktuelle Standardkonfiguration (v0.14.0):
+
+```json
+{
+    "ai:preset": "ai@global",
+    "ai:model": "gpt-5-mini",
+    "ai:maxtokens": 4000,
+    "ai:timeoutms": 60000,
+    "app:defaultnewblock": "term",
+    "app:confirmquit": true,
+    "app:hideaibutton": false,
+    "app:disablectrlshiftarrows": false,
+    "app:disablectrlshiftdisplay": false,
+    "app:focusfollowscursor": "off",
+    "autoupdate:enabled": true,
+    "autoupdate:installonquit": true,
+    "autoupdate:intervalms": 3600000,
+    "conn:askbeforewshinstall": true,
+    "conn:wshenabled": true,
+    "editor:minimapenabled": true,
+    "web:defaulturl": "https://github.com/wavetermdev/waveterm",
+    "web:defaultsearch": "https://www.google.com/search?q={query}",
+    "window:tilegapsize": 3,
+    "window:maxtabcachesize": 10,
+    "window:nativetitlebar": true,
+    "window:magnifiedblockopacity": 0.6,
+    "window:magnifiedblocksize": 0.9,
+    "window:magnifiedblockblurprimarypx": 10,
+    "window:fullscreenonlaunch": false,
+    "window:magnifiedblockblursecondarypx": 2,
+    "window:confirmclose": true,
+    "window:savelastwindow": true,
+    "telemetry:enabled": true,
+    "term:bellsound": false,
+    "term:bellindicator": false,
+    "term:osc52": "always",
+    "term:cursor": "block",
+    "term:cursorblink": false,
+    "term:copyonselect": true,
+    "term:durable": false,
+    "waveai:showcloudmodes": true,
+    "waveai:defaultmode": "waveai@balanced",
+    "preview:defaultsort": "name"
+}
+```
+
+:::warning
+
+Wenn du Wave vor v0.9.0 installiert hast, befindet sich deine Konfigurationsdatei unter
+`~/.waveterm/config/settings.json`. Das gilt auch für alle anderen Konfigurationsdateien:
+`termthemes.json`, `presets.json` und `widgets.json`.
+
+:::
+
+## Auflösung von Umgebungsvariablen
+
+Um Secrets nicht direkt in Konfigurationsdateien zu speichern, unterstützt Wave die Auflösung von Umgebungsvariablen über die Syntax `$ENV:VARIABLE_NAME` oder `$ENV:VARIABLE_NAME:fallback`. Dies funktioniert für jeden String-Wert in jeder Konfigurationsdatei (settings.json, presets.json, ai.json usw.).
+
+```json
+{
+  "ai:apitoken": "$ENV:OPENAI_APIKEY",
+  "ai:baseurl": "$ENV:AI_BASEURL:https://api.openai.com/v1"
+}
+```
+
+## WebBookmarks-Konfiguration
+
+Mit WebBookmarks kannst du Weblinks mit anpassbaren Anzeigeeinstellungen speichern und verwalten. Die Lesezeichen werden in einer JSON-Datei (`bookmarks.json`) als Schlüssel-Wert-Map gespeichert, wobei der Schlüssel (`id`) ein beliebiger Bezeichner für das Lesezeichen ist. Üblicherweise sollten deine IDs mit "bookmark@" beginnen. Im Web-Widget kannst du deine Lesezeichen mit <Kbd k="Cmd:o"/> aufrufen.
+
+### Lesezeichen-Struktur
+
+Jedes Lesezeichen folgt dieser Struktur (nur `url` ist erforderlich):
+
+```json
+{
+  "url": "https://example.com",
+  "title": "Example Site",
+  "iconurl": "https://example.com/custom-icon.png",
+  "display:order": 1
+}
+```
+
+### Felder
+
+| Feld         | Typ    | Beschreibung                                                                                                       |
+| ------------- | ------- | ----------------------------------------------------------------------------------------------------------------- |
+| url           | string  | **Erforderlich.** Die URL des Lesezeichens.                                                                            |
+| title         | string  | **Optional.** Ein Anzeigetitel für das Lesezeichen.                                                                   |
+| icon          | string  | **Optional, selten genutzt.** Überschreibt das Standard-Favicon mit einem Icon-Namen.                                       |
+| iconcolor     | string  | **Optional, selten genutzt.** Legt eine benutzerdefinierte Farbe für das angegebene Icon fest.                                            |
+| iconurl       | string  | **Optional.** Gibt eine benutzerdefinierte Icon-URL an, nützlich, wenn das Favicon nicht korrekt ist (z. B. für Kompatibilität mit dem Dark Mode). |
+| display:order | float64 | **Optional.** Legt die Reihenfolge fest, in der Lesezeichen erscheinen.                                                        |
+
+### Beispiel `bookmarks.json`
+
+```json
+{
+  "bookmark@google": {
+    "url": "https://www.google.com",
+    "title": "Google"
+  },
+  "bookmark@claude": {
+    "url": "https://claude.ai",
+    "title": "Claude AI"
+  },
+  "bookmark@wave": {
+    "url": "https://waveterm.dev",
+    "title": "Wave Terminal",
+    "display:order": -1
+  },
+  "bookmark@wave-github": {
+    "url": "https://github.com/wavetermdev/waveterm",
+    "title": "Wave Github",
+    "iconurl": "https://github.githubassets.com/favicons/favicon-dark.png"
+  },
+  "bookmark@chatgpt": {
+    "url": "https://chatgpt.com",
+    "iconurl": "https://cdn.oaistatic.com/assets/favicon-miwirzcw.ico"
+  },
+  "bookmark@wave-pulls": {
+    "url": "https://github.com/wavetermdev/waveterm/pulls",
+    "title": "Wave Pull Requests",
+    "iconurl": "https://github.githubassets.com/favicons/favicon-dark.png"
+  }
+}
+```
+
+### Verhalten
+
+- Ist `iconurl` gesetzt, wird das Icon von der angegebenen URL statt vom Standard-Favicon der Seite geladen.
+- Lesezeichen werden nach `display:order` sortiert (falls angegeben), sonst nach ID.
+- `icon` und `iconcolor` werden selten benötigt, da standardmäßig das Favicon der Seite geladen wird.
+- Favicons werden alle 24 Stunden aktualisiert
+
+## Terminal-Theming
+
+Benutzerdefinierte Terminal-Themes befinden sich unter `~/.config/waveterm/termthemes.json`.
+
+Diese JSON-Datei ist als Objekt strukturiert, wobei jeder Unterschlüssel ein Theme definiert.
+Themes werden angewendet, indem du mit der rechten Maustaste auf die Kopfzeile des Terminals klickst und einen Eintrag aus dem Untermenü "Themes" auswählst. Alternativ können sie auf
+den Metadaten-Schlüssel `term:theme` des Blocks angewendet werden. Dabei wird der JSON-Schlüsselwert als Bezeichner genutzt. Beachte, dass für beste Konsistenz alle Farben im Format "#rrggbb" oder "#rrggbbaa" (aa = Alphakanal für Transparenz) angegeben werden sollten.
+
+```
+wsh setmeta this term:theme="default-dark"
+```
+
+Hier ist ein Beispiel für die Definition eines vollständigen Terminal-Themes. Alle integrierten Themes sind hier definiert: https://github.com/wavetermdev/waveterm/blob/main/pkg/wconfig/defaultconfig/termthemes.json (wenn du ein beliebtes Terminal-Theme hinzufügen möchtest, reiche bitte einen PR ein!)
+
+```json
+{
+  "default-dark": {
+    "display:name": "Default Dark",
+    "display:order": 1,
+    "black": "#757575",
+    "red": "#cc685c",
+    "green": "#76c266",
+    "yellow": "#cbca9b",
+    "blue": "#85aacb",
+    "magenta": "#cc72ca",
+    "cyan": "#74a7cb",
+    "white": "#c1c1c1",
+    "brightBlack": "#727272",
+    "brightRed": "#cc9d97",
+    "brightGreen": "#a3dd97",
+    "brightYellow": "#cbcaaa",
+    "brightBlue": "#9ab6cb",
+    "brightMagenta": "#cc8ecb",
+    "brightCyan": "#b7b8cb",
+    "brightWhite": "#f0f0f0",
+    "gray": "#8b918a",
+    "cmdtext": "#f0f0f0",
+    "foreground": "#c1c1c1",
+    "selectionBackground": "",
+    "background": "#00000077",
+    "cursorAccent": ""
+  }
+}
+```
+
+:::info
+
+Du kannst die Konfigurationsdatei termthemes.json einfach öffnen, indem du Folgendes ausführst:
+
+```
+wsh editconfig termthemes.json
+```
+
+:::
+
+| Schlüsselname            | Typ      | ANSI FG# | ANSI BG# | Funktion                                                                                                                                 |
+| ------------------- | --------- | -------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| display:name        | string    |          |          | der im UI-Kontextmenü angezeigte Name                                                                                                        |
+| display:order       | float     |          |          | Einträge im Kontextmenü werden nach display:order sortiert                                                                                  |
+| black               | CSS-Farbe | 30       | 40       | Farbe für Schwarz                                                                                                                          |
+| red                 | CSS-Farbe | 31       | 41       | Farbe für Rot                                                                                                                            |
+| green               | CSS-Farbe | 32       | 42       | Farbe für Grün                                                                                                                          |
+| yellow              | CSS-Farbe | 33       | 43       | Farbe für Gelb                                                                                                                         |
+| blue                | CSS-Farbe | 34       | 44       | Farbe für Blau                                                                                                                           |
+| magenta             | CSS-Farbe | 35       | 45       | Farbe für Magenta                                                                                                                        |
+| cyan                | CSS-Farbe | 36       | 46       | Farbe für Cyan                                                                                                                           |
+| white               | CSS-Farbe | 37       | 47       | Farbe für Weiß                                                                                                                          |
+| brightBlack         | CSS-Farbe | 90       | 100      | Farbe für helles Schwarz                                                                                                                   |
+| brightRed           | CSS-Farbe | 91       | 101      | Farbe für helles Rot                                                                                                                     |
+| brightGreen         | CSS-Farbe | 92       | 102      | Farbe für helles Grün                                                                                                                   |
+| brightYellow        | CSS-Farbe | 93       | 103      | Farbe für helles Gelb                                                                                                                  |
+| brightBlue          | CSS-Farbe | 94       | 104      | Farbe für helles Blau                                                                                                                    |
+| brightMagenta       | CSS-Farbe | 95       | 105      | Farbe für helles Magenta                                                                                                                 |
+| brightCyan          | CSS-Farbe | 96       | 106      | Farbe für helles Cyan                                                                                                                    |
+| brightWhite         | CSS-Farbe | 97       | 107      | Farbe für helles Weiß                                                                                                                   |
+| gray                | CSS-Farbe |          |          | aktuell ungenutzt                                                                                                                         |
+| cmdtext             | CSS-Farbe |          |          | aktuell ungenutzt                                                                                                                         |
+| foreground          | CSS-Farbe |          |          | Vordergrundfarbe (Standard, wenn kein Farbcode angewendet wird)                                                                                 |
+| background          | CSS-Farbe |          |          | Hintergrundfarbe (Standard, wenn kein Farbcode angewendet wird), muss einen Alphakanal (#rrggbbaa) haben, wenn das Terminal transparent sein soll |
+| cursorAccent        | CSS-Farbe |          |          | Farbe für den Cursor                                                                                                                         |
+| selectionBackground | CSS-Farbe |          |          | Hintergrundfarbe für ausgewählten Text                                                                                                       |
+
+## Anpassbare systemweite globale Tastenkombination
+
+Wave erlaubt es, eine benutzerdefinierte globale Tastenkombination festzulegen, um von überall auf deinem Computer dein zuletzt genutztes Fenster zu öffnen. Diese heißt `"app:globalhotkey"` in der `settings.json`-Datei und besteht aus einer Reihe von Tastennamen, getrennt durch das Zeichen `:`.
+
+### Beispiele
+
+Als praktisches Beispiel: Angenommen, du möchtest `F5` als globale Tastenkombination nutzen. Dann kannst du einfach den Wert von `"app:globalhotkey"` auf `"F5"` setzen und Wave neu starten, damit dies deine globale Tastenkombination wird.
+
+Als weniger praktisches Beispiel: Angenommen, du nutzt die Kombination der Tasten `Ctrl`, `Option` und `e`. Dann wäre der Wert für diese Tastenkombination `"Ctrl:Option:e"`.
+
+### Erlaubte Tastennamen
+
+Wir unterstützen folgende Tastennamen:
+
+- `Ctrl`
+- `Cmd`
+- `Shift`
+- `Alt`
+- `Option`
+- `Meta`
+- `Super`
+- Ziffern (nicht Numpad), dargestellt durch `c{Digit0}` bis `c{Digit9}`
+- Buchstaben `a` bis `z`
+- F-Tasten `F1` bis `F20`
+- Soft-Tasten `Soft1` bis `Soft4`. Diese sind im Wesentlichen identisch mit `F21` bis `F24`.
+- Leertaste, dargestellt als `Space` oder ein wörtliches Leerzeichen &nbsp;<code>&nbsp;</code>
+- `Enter` (auf dem Mac als "Return" beschriftet)
+- `Tab`
+- `CapsLock`
+- `NumLock`
+- `Backspace` (auf dem Mac als "Delete" beschriftet)
+- `Delete`
+- `Insert`
+- Die Pfeiltasten `ArrowUp`, `ArrowDown`, `ArrowLeft` und `ArrowRight`
+- `Home`
+- `End`
+- `PageUp`
+- `PageDown`
+- `Esc`
+- Lautstärkeregler `AudioVolumeUp`, `AudioVolumeDown`, `AudioVolumeMute`
+- Medien-Steuerung `MediaTrackNext`, `MediaTrackPrevious`, `MediaPlayPause` und `MediaStop`
+- `PrintScreen`
+- Numpad-Tasten, dargestellt durch `c{Numpad0}` bis `c{Numpad9}`
+- Das Numpad-Komma, dargestellt durch `Decimal`
+- Das Numpad-Plus/Addieren, dargestellt durch `Add`
+- Das Numpad-Minus/Subtrahieren, dargestellt durch `Subtract`
+- Der Numpad-Stern/Multiplizieren, dargestellt durch `Multiply`
+- Der Numpad-Schrägstrich/Dividieren, dargestellt durch `Divide`
+
+</PlatformProvider>
