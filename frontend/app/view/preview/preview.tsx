@@ -9,6 +9,7 @@ import { useWaveEnv } from "@/app/waveenv/waveenv";
 import { isBlank, makeConnRoute } from "@/util/util";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { memo, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { CSVView } from "./csvview";
 import { DirectoryPreview } from "./preview-directory";
 import { CodeEditPreview } from "./preview-edit";
@@ -106,6 +107,7 @@ function PreviewView({
     contentRef: React.RefObject<HTMLDivElement>;
     model: PreviewModel;
 }) {
+    const { t } = useTranslation();
     const env = useWaveEnv<PreviewEnv>();
     const connStatus = useAtomValue(model.connStatus);
     const [errorMsg, setErrorMsg] = useAtom(model.errorMsgAtom);
@@ -161,7 +163,7 @@ function PreviewView({
                 onSelect={handleSelect}
                 onTab={handleTab}
                 fetchSuggestions={fetchSuggestionsFn}
-                placeholderText="Open File..."
+                placeholderText={t("preview.openFile")}
             />
         </>
     );
