@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { makeIconClass } from "@/util/util";
+import i18n from "@/util/i18n/i18n";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import clsx from "clsx";
 import React, {
@@ -143,7 +144,7 @@ export function buildVisibleRows(
                 parentId: id,
                 depth: depth + 1,
                 kind: "loading",
-                label: "Loading…",
+                label: i18n.t("treeView.loading"),
             });
             return;
         }
@@ -153,7 +154,9 @@ export function buildVisibleRows(
                 parentId: id,
                 depth: depth + 1,
                 kind: "error",
-                label: node.staterror ? `Error: ${node.staterror}` : "Unable to load directory",
+                label: node.staterror
+                    ? i18n.t("treeView.errorPrefix", { error: node.staterror })
+                    : i18n.t("treeView.unableToLoadDirectory"),
             });
             return;
         }
@@ -167,7 +170,7 @@ export function buildVisibleRows(
                 parentId: id,
                 depth: depth + 1,
                 kind: "capped",
-                label: `Showing first ${capMax} entries`,
+                label: i18n.t("treeView.showingFirstEntries", { count: capMax }),
             });
         }
     };

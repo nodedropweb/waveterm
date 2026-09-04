@@ -15,6 +15,7 @@ import { useDimensionsWithExistingRef } from "@/app/hook/useDimensions";
 import { waveEventSubscribeSingle } from "@/app/store/wps";
 import { TabRpcClient } from "@/app/store/wshrpcutil";
 import type { MetaKeyAtomFnType, WaveEnv, WaveEnvSubset } from "@/app/waveenv/waveenv";
+import i18n from "@/util/i18n/i18n";
 import { OverlayScrollbarsComponent, OverlayScrollbarsComponentRef } from "overlayscrollbars-react";
 
 export type SysinfoEnv = WaveEnvSubset<{
@@ -58,6 +59,7 @@ function defaultMemMeta(name: string, maxY: string): TimeSeriesMeta {
     };
 }
 
+// Object keys are stable identifiers persisted in block metadata (sysinfo:type) -- do not translate them.
 const PlotTypes: object = {
     CPU: function (_dataItem: DataItem): Array<string> {
         return ["cpu"];
@@ -79,15 +81,33 @@ const PlotTypes: object = {
     },
 };
 
-const DefaultPlotMeta = {
-    cpu: defaultCpuMeta("CPU %"),
-    "mem:total": defaultMemMeta("Memory Total", "mem:total"),
-    "mem:used": defaultMemMeta("Memory Used", "mem:total"),
-    "mem:free": defaultMemMeta("Memory Free", "mem:total"),
-    "mem:available": defaultMemMeta("Memory Available", "mem:total"),
-};
-for (let i = 0; i < 32; i++) {
-    DefaultPlotMeta[`cpu:${i}`] = defaultCpuMeta(`Core ${i}`);
+function getPlotTypeDisplayName(plotType: string): string {
+    switch (plotType) {
+        case "CPU":
+            return i18n.t("sysinfo.plotTypeCpu");
+        case "Mem":
+            return i18n.t("sysinfo.plotTypeMem");
+        case "CPU + Mem":
+            return i18n.t("sysinfo.plotTypeCpuMem");
+        case "All CPU":
+            return i18n.t("sysinfo.plotTypeAllCpu");
+        default:
+            return plotType;
+    }
+}
+
+function getDefaultPlotMeta() {
+    const meta = {
+        cpu: defaultCpuMeta(i18n.t("sysinfo.metaCpuPercent")),
+        "mem:total": defaultMemMeta(i18n.t("sysinfo.metaMemTotal"), "mem:total"),
+        "mem:used": defaultMemMeta(i18n.t("sysinfo.metaMemUsed"), "mem:total"),
+        "mem:free": defaultMemMeta(i18n.t("sysinfo.metaMemFree"), "mem:total"),
+        "mem:available": defaultMemMeta(i18n.t("sysinfo.metaMemAvailable"), "mem:total"),
+    };
+    for (let i = 0; i < 32; i++) {
+        meta[`cpu:${i}`] = defaultCpuMeta(i18n.t("sysinfo.metaCore", { num: i }));
+    }
+    return meta;
 }
 
 function convertWaveEventToDataItem(event: Extract<WaveEvent, { event: "sysinfo" }>): DataItem {
@@ -186,7 +206,7 @@ class SysinfoViewModel implements ViewModel {
                 console.log("Error adding data to sysinfo", e);
             }
         });
-        this.plotMetaAtom = jotai.atom(new Map(Object.entries(DefaultPlotMeta)));
+        this.plotMetaAtom = jotai.atom(new Map(Object.entries(getDefaultPlotMeta())));
         this.manageConnection = jotai.atom(true);
         this.filterOutNowsh = jotai.atom(true);
         this.loadingAtom = jotai.atom(true);
@@ -221,7 +241,7 @@ class SysinfoViewModel implements ViewModel {
             return "chart-line"; // should not be hardcoded
         });
         this.viewName = jotai.atom((get) => {
-            return get(this.plotTypeSelectedAtom);
+            return getPlotTypeDisplayName(get(this.plotTypeSelectedAtom));
         });
         this.incrementCount = jotai.atom(null, async (get, _set) => {
             const count = get(this.env.getBlockMetaKeyAtom(blockId, "count")) ?? 0;
@@ -293,7 +313,7 @@ class SysinfoViewModel implements ViewModel {
                 const dataTypes = PlotTypes[plotType](plotData[plotData.length - 1]);
                 const currentlySelected = globalStore.get(this.plotTypeSelectedAtom);
                 const menuItem: ContextMenuItem = {
-                    label: plotType,
+                    label: getPlotTypeDisplayName(plotType),
                     type: "radio",
                     checked: currentlySelected == plotType,
                     click: async () => {
@@ -308,7 +328,7 @@ class SysinfoViewModel implements ViewModel {
         }
 
         fullMenu.push({
-            label: "Plot Type",
+            label: i18n.t("sysinfo.plotType"),
             submenu: submenu,
         });
         fullMenu.push({ type: "separator" });

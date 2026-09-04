@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { atoms } from "@/app/store/global";
+import i18n from "@/util/i18n/i18n";
 import { isBlank, makeIconClass } from "@/util/util";
 import { offset, useFloating } from "@floating-ui/react";
 import clsx from "clsx";
@@ -152,7 +153,7 @@ function BlockHeaderSuggestionControl(props: BlockHeaderSuggestionControlProps) 
 function SuggestionControlNoResults({ children }: { children?: React.ReactNode }) {
     return (
         <div className="flex items-center justify-center min-h-[120px] p-4">
-            {children ?? <span className="text-gray-500">No Suggestions</span>}
+            {children ?? <span className="text-gray-500">{i18n.t("suggestion.noSuggestions")}</span>}
         </div>
     );
 }
@@ -160,7 +161,7 @@ function SuggestionControlNoResults({ children }: { children?: React.ReactNode }
 function SuggestionControlNoData({ children }: { children?: React.ReactNode }) {
     return (
         <div className="flex items-center justify-center min-h-[120px] p-4">
-            {children ?? <span className="text-gray-500">No Suggestions</span>}
+            {children ?? <span className="text-gray-500">{i18n.t("suggestion.noSuggestions")}</span>}
         </div>
     );
 }

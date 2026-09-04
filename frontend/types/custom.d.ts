@@ -151,6 +151,7 @@ declare global {
     };
 
     type ContextMenuItem = {
+        id?: string; // stable, untranslated identifier for programmatic matching (label may be localized)
         label?: string;
         type?: "separator" | "normal" | "submenu" | "checkbox" | "radio" | "header";
         role?: string; // electron role (optional)
