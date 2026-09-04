@@ -1,0 +1,71 @@
+---
+sidebar_position: 100
+title: Telemetrie
+id: "telemetry"
+---
+
+## tl;dr
+
+Wave Terminal erfasst Telemetriedaten, um Feature-Nutzung nachzuvollziehen, künftige Produktentscheidungen zu steuern und aggregierte Kennzahlen zur Popularität und Nutzung von Wave zu erstellen. Wir erfassen KEINE personenbezogenen Daten (PII), Tastatureingaben, Dateiinhalte, KI-Prompts, IP-Adressen, Hostnamen oder Befehle. Wir verknüpfen alle Informationen mit einer anonymen, zufällig generierten _ClientId_ (UUID). Du kannst die Erfassung jederzeit deaktivieren.
+
+Hier eine kurze Zusammenfassung dessen, was erfasst wird:
+
+- Grundlegende App-/Systeminformationen - Betriebssystem, Architektur, App-Version, Update-Einstellungen
+- Nutzungskennzahlen - App-Start/-Beendigung, aktive Minuten, Vordergrundzeit, Tab-/Block-Anzahl/-Nutzung
+- Feature-Interaktionen - Wenn du Tabs erstellst, Befehle ausführst, Einstellungen änderst usw.
+- Anzeigeinformationen - Monitorauflösung, Anzahl der Displays
+- Verbindungsereignisse - SSH-/WSL-Verbindungsversuche (aber KEINE Hostnamen/IPs)
+- Wave-AI-Nutzung - Modell-/Anbieterauswahl, Token-Anzahl, Anfragemetriken, Latenz (aber KEINE Prompts oder Antworten)
+- Fehlerberichte - Absturz-/Panic-Ereignisse mit minimalen Debug-Informationen, aber keine Stack-Traces oder detaillierte Fehler
+
+Telemetrie kann jederzeit in den Einstellungen deaktiviert werden. Wenn sie nicht deaktiviert ist, wird sie beim Start, beim Beenden und alle 4 Stunden gesendet.
+
+## Telemetrie deaktivieren
+
+Telemetrie kann auf dem anfänglichen Willkommensbildschirm aktiviert oder deaktiviert werden, wenn Wave zum ersten Mal startet. Nach der Einrichtung kann Telemetrie deaktiviert werden, indem du den Schlüssel `telemetry:enabled` in Waves allgemeiner Konfigurationsdatei auf `false` setzt. Sie kann auch über den CLI-Befehl `wsh setconfig telemetry:enabled=false` deaktiviert werden.
+
+:::info
+
+Dieses Dokument beschreibt das aktuelle Telemetriesystem ab v0.11.1. Ab v0.12.5 sendet Wave Terminal keine Legacy-Telemetrie mehr. Die vorherige Telemetrie-Dokumentation findest du zu historischen Zwecken in unserer [Legacy-Telemetrie-Dokumentation](./telemetry-old.mdx).
+
+:::
+
+## Diagnose-Ping
+
+Wave sendet einen kleinen, anonymen Diagnose-Ping, nachdem die App kurze Zeit gelaufen ist, und danach höchstens einmal pro Tag. Damit schätzen wir aktive Installationen ab und verstehen, welche Versionen noch genutzt werden, um fundierte Entscheidungen über laufenden Support und Abkündigungen zu treffen.
+
+Der Ping enthält nur: deine Wave-Version, Betriebssystem/CPU-Architektur, lokales Datum (JJJJ-MM-TT, ohne Zeitzone oder Uhrzeit), deine zufällig generierte anonyme Client-ID und ob Nutzungstelemetrie aktiviert oder deaktiviert ist.
+
+Er enthält keine Nutzungsdaten, Befehle, Dateien oder sonstige Telemetrieereignisse.
+
+Dieser Ping ist bewusst von der Telemetrie getrennt, damit Wave aktive Installationen zählen kann. Wenn du ihn deaktivieren möchtest, setze die Umgebungsvariable WAVETERM_NOPING.
+
+## Telemetrie senden
+
+Sofern Telemetrie aktiviert ist, wird sie kurz nach dem ersten Start von Wave und danach alle 4 Stunden erneut gesendet. Sie kann auch in Reaktion auf einige unten aufgeführte Sonderfälle gesendet werden. Beim Senden von Telemetrie werden Ereignisse als gesendet markiert, um doppelte Übertragungen zu vermeiden.
+
+### Senden nach Aktivierung der Telemetrie
+
+Sobald Telemetrie aktiviert wird, wird ein Telemetrie-Update gesendet, unabhängig davon, wie lange der letzte Sendevorgang zurückliegt. Dies setzt den üblichen Timer für Telemetrie-Sendevorgänge nicht zurück.
+
+### Wenn Wave geschlossen wird
+
+Sofern Telemetrie aktiviert ist, wird sie gesendet, wenn Waveterm geschlossen wird.
+
+## Ereignistypen und Eigenschaften
+
+Wave erfasst die oben zusammengefassten Ereignistypen und Eigenschaften. Mit neuen Features können neue Ereignisse und Eigenschaften hinzukommen, um deren Nutzung zu verfolgen.
+
+Die vollständige, aktuelle Liste aller Telemetrieereignisse und -eigenschaften findest du im Quellcode: [telemetrydata.go](https://github.com/wavetermdev/waveterm/blob/main/pkg/telemetry/telemetrydata/telemetrydata.go)
+
+## DSGVO-Opt-out-Konformität
+
+Wenn Telemetrie deaktiviert wird, sendet Wave einen einzelnen, minimalen Opt-out-Datensatz, der mit der anonymen Client-ID verknüpft ist und festhält, dass und wann Telemetrie deaktiviert wurde. Dieser Datensatz wird zu Compliance-Zwecken aufbewahrt. Danach werden keine Telemetrie- oder Nutzungsdaten mehr gesendet.
+
+## Deine Daten löschen
+
+Wenn du möchtest, dass deine zuvor erfassten Telemetriedaten gelöscht werden, schreibe uns eine E-Mail an support (at) waveterm.dev mit deiner _ClientId_, und wir entfernen sie.
+
+## Datenschutzerklärung
+
+Eine Zusammenfassung des Obigen findest du in unserer [Datenschutzerklärung](https://www.waveterm.dev/privacy).

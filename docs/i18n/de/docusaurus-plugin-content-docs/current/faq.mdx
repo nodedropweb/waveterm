@@ -1,0 +1,70 @@
+---
+sidebar_position: 101
+id: "faq"
+title: "FAQ"
+---
+
+import { VersionBadge } from "@site/src/components/versionbadge";
+
+# FAQ
+
+### Wie kann ich die Blocknummern sehen?
+
+Die Blocknummern erscheinen, wenn du Strg-Umschalt (Ctrl-Shift) gedrückt hältst (und verschwinden wieder, sobald du die Tastenkombination loslässt).
+
+### Wie stelle ich eine Remote-Verbindung her?
+
+In der Kopfzeile gibt es einen Button. Klicke auf das Symbol <i className="fa-sharp fa-laptop"/> oder <i className="fa-sharp fa-arrow-right-arrow-left"/>
+und gib `[user]@[host]` ein, mit dem du dich verbinden möchtest.
+
+### Wie nutze ich unter Windows Git Bash als Standard-Shell?
+
+Wave erkennt Git-Bash-Installationen automatisch und fügt sie zum Verbindungs-Dropdown hinzu. Klicke einfach auf das Symbol <i className="fa-sharp fa-laptop"/> oder <i className="fa-sharp fa-arrow-right-arrow-left"/> in der Block-Kopfzeile und wähle "Git Bash" aus der Liste.
+
+Alternativ kannst du Git Bash manuell als Standard-Shell festlegen, indem du die Konfigurationsvariable `term:localshellpath` auf
+den Speicherort der Git-Bash-Datei "bash.exe" setzt. Standardmäßig befindet sie sich unter "C:\Program Files\Git\bin\bash.exe".
+Denk daran, dass in JSON Backslashes maskiert werden müssen. Füge dies also zu deiner [settings.json](./config)-Datei hinzu:
+
+```json
+"term:localshellpath": "C:\\Program Files\\Git\\bin\\bash.exe"
+```
+
+### Kann ich WSH außerhalb von Wave nutzen?
+
+`wsh` ist eine interne CLI, um die Kontrolle über Wave auf die Kommandozeile zu erweitern; mehr dazu erfährst du [hier](./wsh). Um Missbrauch durch andere Anwendungen zu verhindern, benötigt `wsh` ein von Wave bereitgestelltes Zugriffstoken und funktioniert außerhalb der App nicht.
+
+
+## Warum warnt mich Wave beim Start vor der ARM64-Übersetzung?
+
+macOS und Windows verfügen beide über Kompatibilitätsschichten, die es x64-Anwendungen erlauben, auf ARM-Rechnern zu laufen. Das hilft, dass mehr Apps auf diesen Systemen laufen, während Entwickler native ARM-Unterstützung für ihre Anwendungen ergänzen. Das geht jedoch mit spürbaren Leistungseinbußen einher.
+
+Für die beste Erfahrung mit Wave wird empfohlen, Wave zu deinstallieren und die Version neu zu installieren, die nativ für deinen Rechner kompiliert wurde. Die richtige Version findest du in unserer [Installationsanleitung](./gettingstarted#installation).
+
+Du kannst diese Warnung deaktivieren, indem du `app:dismissarchitecturewarning=true` in [deiner Konfiguration](./config) setzt.
+
+## Wie nehme ich an den Beta-Builds von Wave teil?
+
+Wave veröffentlicht in zwei Kanälen, `latest` und `beta`. Wenn du die App für macOS, Windows oder Linux über DEB oder RPM installiert hast, kannst du folgende Einstellungen in deiner `settings.json` setzen (siehe [Konfiguration](./config) für weitere Infos):
+
+```json
+"autoupdate:enabled": true,
+"autoupdate:channel": "beta"
+```
+
+Wenn du über Snap installiert hast, kannst du folgenden Befehl verwenden:
+
+```sh
+sudo snap install waveterm --classic --beta
+```
+
+## Kann ich Wave AI nutzen, ohne Telemetrie zu aktivieren?
+
+<VersionBadge version="v0.13.1" noLeftMargin={true}/>
+
+Ja! Wave AI ist normalerweise deaktiviert, wenn Telemetrie nicht aktiviert ist. Du kannst Wave-AI-Funktionen jedoch auch ohne Telemetrie aktivieren, indem du dein eigenes benutzerdefiniertes KI-Modell konfigurierst (entweder ein lokales Modell oder mit deinem eigenen API-Schlüssel).
+
+So aktivierst du Wave AI ohne Telemetrie:
+1. Konfiguriere einen benutzerdefinierten KI-Modus (siehe [Wave-AI-Dokumentation](./waveai-modes))
+2. Setze `waveai:defaultmode` auf den Schlüssel deines benutzerdefinierten Modus in deinen Wave-Einstellungen
+
+Sobald du beide Schritte abgeschlossen hast, ist Wave AI aktiviert und du kannst es vollständig privat ohne Telemetrie nutzen. So kannst du lokale Modelle wie Ollama oder deine eigenen API-Schlüssel mit Anbietern wie OpenAI, OpenRouter oder anderen verwenden.

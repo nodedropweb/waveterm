@@ -1,0 +1,72 @@
+---
+sidebar_position: 3
+id: "workspaces"
+title: "Workspaces"
+---
+
+# Workspaces
+
+Workspaces sind eine leistungsstarke Möglichkeit, deine Workflows in separate Umgebungen zu gliedern, die du anpassen und optimieren kannst.
+
+## Workspace-Umschalter
+
+![Workspace switcher screenshot](./img/workspace-switcher.png#right)
+
+Der primäre Weg, mit Workspaces zu interagieren, ist der Workspace-Umschalter links neben der Tableiste.
+
+Hier kannst du einen neuen Workspace erstellen, ändern, wie ein Workspace-Eintrag angezeigt wird, und einen Workspace löschen.
+
+Der Workspace-Umschalter-Button zeigt Icon und Farbe des aktiven Workspace an. Wenn der aktuelle Workspace nicht gespeichert ist, wird das Icon <i className="custom-icon-inline custom-icon-workspace"/> angezeigt. Ein Klick auf den Button öffnet den Workspace-Umschalter.
+
+Der Umschalter enthält eine Liste aller gespeicherten Workspaces deiner Installation, jeweils mit anpassbarem Icon, Icon-Farbe und Namen.
+
+Der aktive Workspace des aktuellen Fensters hat ein <i className="fa fa-sharp fa-check"/> daneben. Jeder Workspace, der aktuell in einem anderen Fenster geöffnet ist, hat das Icon <i className="fa fa-sharp fa-window"/> daneben.
+
+Wenn du mit der Maus über einen Workspace im Umschalter fährst, erscheint ein <i className="fa fa-sharp fa-pencil"/>-Icon. Ein Klick darauf öffnet einen Editor-Bereich, in dem du Name, Icon und Icon-Farbe des Workspace ändern kannst. Von dort aus kannst du einen Workspace auch löschen.
+
+## Einen neuen Workspace erstellen
+
+Jedes neue Fenster wird mit einem leeren Workspace initialisiert, der einen einzelnen Tab mit einem einzelnen Terminal-Block enthält. Es gibt drei Möglichkeiten, einen neuen Workspace zu erstellen:
+
+1. Erstelle ein neues Fenster, entweder über das `Datei`-App-Menü oder mit dem [Tastenkürzel](./keybindings.mdx#global-keybindings). Dadurch werden ein neues Fenster und darin ein neuer Workspace erstellt.
+2. Erstelle einen neuen Workspace über das `Workspace`-App-Menü. Dadurch wird ein neuer Workspace erstellt und das aktuelle Fenster wechselt zu diesem Workspace.
+3. Wenn du dich in einem gespeicherten Workspace befindest, kannst du unten im Workspace-Umschalter auf "Neuen Workspace erstellen" klicken. Dadurch wird ein neuer Workspace erstellt und das aktuelle Fenster wechselt zu diesem Workspace.
+
+## Einen Workspace speichern
+
+:::info
+
+Ein neuer Workspace ist flüchtig. Wenn ein Fenster geschlossen wird, werden sein Workspace und alle seine Tabs gelöscht, sofern der Workspace nicht gespeichert wurde.
+
+Die Ausnahme von dieser Regel ist, dass das zuletzt geöffnete Fenster beim Schließen erhalten bleibt und beim nächsten Öffnen der App wieder geöffnet wird, unabhängig davon, ob der Workspace gespeichert ist.
+
+:::
+
+Um einen neuen Workspace dauerhaft zu erhalten, musst du ihn speichern. Klicke dazu unten im Workspace-Umschalter auf "Workspace speichern".
+
+Wenn du stattdessen unten im Workspace-Umschalter "Neuen Workspace erstellen" siehst, befindest du dich bereits in einem gespeicherten Workspace. Das kannst du auch am Text oben im Workspace-Umschalter erkennen: Bei einem ungespeicherten Workspace siehst du "Workspace öffnen"; bei einem gespeicherten Workspace siehst du "Workspaces wechseln". Außerdem erkennst du es daran, dass das Icon des Workspace-Umschalter-Buttons <i className="custom-icon-inline custom-icon-workspace"/> ist.
+
+Sobald ein Workspace gespeichert ist, siehst du einen neuen Eintrag in der Workspace-Umschalter-Liste für deinen gespeicherten Workspace. Er wird `New Workspace (<Zufallszeichenfolge>)` genannt. Um deinen Workspace optimal zu nutzen, wird empfohlen, diesen Namen sowie Icon und Icon-Farbe in etwas Einprägsameres oder Aussagekräftigeres zu ändern.
+
+## Workspaces wechseln
+
+Es gibt zwei Möglichkeiten, Workspaces zu wechseln:
+
+1. Öffne in einem offenen Fenster den Workspace-Umschalter und klicke auf einen Workspace aus der Liste.
+2. Klicke im Workspace-App-Menü auf einen Workspace aus der Liste.
+
+Wenn der Workspace bereits in einem anderen Fenster geöffnet ist (er hat das <i className="fa fa-sharp fa-window"/>-Icon daneben, wenn du dich im Workspace-Umschalter befindest), erhält dieses Fenster den Fokus.
+
+Wenn der Workspace nicht geöffnet ist, wechselt dein aktuelles Fenster dorthin. Wenn dein aktueller Workspace ungespeichert ist, wirst du gefragt, ob du den neuen Workspace in einem neuen Fenster oder im aktuellen Fenster öffnen möchtest. **Wenn du Letzteres wählst, werden der aktuelle Workspace und sein Inhalt gelöscht.**
+
+Der Workspace-Umschalter-Button aktualisiert sich mit dem farbigen Icon deines neuen aktiven Workspace.
+
+## Einen Workspace bearbeiten
+
+:::info
+
+Tabs, Layouts sowie Terminal- und KI-Verlauf eines [gespeicherten Workspace](#einen-workspace-speichern) werden automatisch dauerhaft gespeichert. Ungespeicherte Dateiänderungen in einem Editor oder auf einer Webseite gehen jedoch beim Schließen des Fensters verloren.
+
+:::
+
+Um Name, Icon und Icon-Farbe eines Workspace zu ändern, fahre im Workspace-Umschalter mit der Maus über den Workspace und klicke auf den erscheinenden <i className="fa fa-sharp fa-pencil"/>-Button. Dadurch öffnet sich ein Editor-Bereich, in dem du deine Änderungen vornehmen kannst. Sie werden automatisch gespeichert und aktualisiert.
