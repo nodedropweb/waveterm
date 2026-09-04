@@ -12,6 +12,7 @@ import { fireAndForget } from "@/util/util";
 import clsx from "clsx";
 import { useAtomValue } from "jotai";
 import { forwardRef, memo, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { makeORef } from "../store/wos";
 import { TabBadges } from "./tabbadges";
 import "./tab.scss";
@@ -52,6 +53,7 @@ interface TabVProps {
 }
 
 const TabV = forwardRef<HTMLDivElement, TabVProps>((props, ref) => {
+    const { t } = useTranslation();
     const {
         tabId,
         tabName,
@@ -209,7 +211,7 @@ const TabV = forwardRef<HTMLDivElement, TabVProps>((props, ref) => {
                     className="ghost grey close"
                     onClick={onClose}
                     onMouseDown={handleMouseDownOnClose}
-                    title="Close Tab"
+                    title={t("tabBar.closeTab")}
                 >
                     <i className="fa fa-solid fa-xmark" />
                 </Button>
@@ -235,6 +237,7 @@ interface TabProps {
 
 const TabInner = forwardRef<HTMLDivElement, TabProps>((props, ref) => {
     const { id, active, showDivider, isDragging, tabWidth, isNew, onLoaded, onSelect, onClose, onDragStart } = props;
+    const { t } = useTranslation();
     const env = useWaveEnv<TabEnv>();
     const [tabData, _] = env.wos.useWaveObjectValue<Tab>(makeORef("tab", id));
     const badges = useAtomValue(getTabBadgeAtom(id, env));
@@ -278,10 +281,10 @@ const TabInner = forwardRef<HTMLDivElement, TabProps>((props, ref) => {
     const handleContextMenu = useCallback(
         (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
             e.preventDefault();
-            const menu = buildTabContextMenu(id, renameRef, onClose, env);
+            const menu = buildTabContextMenu(id, renameRef, onClose, env, t);
             env.showContextMenu(menu, e);
         },
-        [id, onClose, env]
+        [id, onClose, env, t]
     );
 
     const handleRename = useCallback(

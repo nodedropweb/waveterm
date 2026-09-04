@@ -12,6 +12,7 @@ import { validateCssColor } from "@/util/color-validator";
 import { cn, fireAndForget } from "@/util/util";
 import { useAtomValue } from "jotai";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { buildTabBarContextMenu, buildTabContextMenu } from "./tabcontextmenu";
 import { UpdateStatusBanner } from "./updatebanner";
 import { VTab, VTabItem } from "./vtab";
@@ -20,6 +21,7 @@ import { WorkspaceSwitcher } from "./workspaceswitcher";
 export type { VTabItem } from "./vtab";
 
 const VTabBarAIButton = memo(() => {
+    const { t } = useTranslation();
     const env = useWaveEnv<VTabBarEnv>();
     const aiPanelOpen = useAtomValue(WorkspaceLayoutModel.getInstance().panelVisibleAtom);
     const hideAiButton = useAtomValue(env.getSettingsKeyAtom("app:hideaibutton"));
@@ -35,7 +37,7 @@ const VTabBarAIButton = memo(() => {
 
     return (
         <Tooltip
-            content="Toggle Wave AI Panel"
+            content={t("tabBar.toggleWaveAiPanel")}
             placement="bottom"
             hideOnClick
             divClassName={`flex h-[22px] px-3.5 justify-end mb-1 items-center rounded-md mr-1 box-border cursor-pointer bg-hover hover:bg-hoverbg transition-colors text-[12px] ${aiPanelOpen ? "text-accent" : "text-secondary"}`}
@@ -49,6 +51,7 @@ const VTabBarAIButton = memo(() => {
 VTabBarAIButton.displayName = "VTabBarAIButton";
 
 const MacOSHeader = memo(() => {
+    const { t } = useTranslation();
     const env = useWaveEnv<VTabBarEnv>();
     const isFullScreen = useAtomValue(env.atoms.isFullScreen);
     return (
@@ -69,7 +72,12 @@ const MacOSHeader = memo(() => {
                 style={{ WebkitAppRegion: "no-drag" } as React.CSSProperties}
             >
                 <VTabBarAIButton />
-                <Tooltip content="Workspace Switcher" placement="bottom" hideOnClick divClassName="flex items-center">
+                <Tooltip
+                    content={t("tabBar.workspaceSwitcher")}
+                    placement="bottom"
+                    hideOnClick
+                    divClassName="flex items-center"
+                >
                     <WorkspaceSwitcher />
                 </Tooltip>
                 <UpdateStatusBanner />
@@ -118,6 +126,7 @@ function VTabWrapper({
     onDragEnd,
     onHoverChanged,
 }: VTabWrapperProps) {
+    const { t } = useTranslation();
     const env = useWaveEnv<VTabBarEnv>();
     const [tabData] = env.wos.useWaveObjectValue<Tab>(makeORef("tab", tabId));
     const badges = useAtomValue(getTabBadgeAtom(tabId, env));
@@ -156,10 +165,10 @@ function VTabWrapper({
         (e: React.MouseEvent<HTMLDivElement>) => {
             e.preventDefault();
             e.stopPropagation();
-            const menu = buildTabContextMenu(tabId, renameRef, () => onClose(), env);
+            const menu = buildTabContextMenu(tabId, renameRef, () => onClose(), env, t);
             env.showContextMenu(menu, e);
         },
-        [tabId, onClose, env]
+        [tabId, onClose, env, t]
     );
 
     return (
@@ -185,6 +194,7 @@ function VTabWrapper({
 }
 
 export function VTabBar({ workspace, className }: VTabBarProps) {
+    const { t } = useTranslation();
     const env = useWaveEnv<VTabBarEnv>();
     const activeTabId = useAtomValue(env.atoms.staticTabId);
     const reinitVersion = useAtomValue(env.atoms.reinitVersion);
@@ -318,10 +328,10 @@ export function VTabBar({ workspace, className }: VTabBarProps) {
     const handleTabBarContextMenu = useCallback(
         (e: React.MouseEvent<HTMLDivElement>) => {
             e.preventDefault();
-            const menu = buildTabBarContextMenu(env);
+            const menu = buildTabBarContextMenu(env, t);
             env.showContextMenu(menu, e);
         },
-        [env]
+        [env, t]
     );
 
     return (
@@ -425,11 +435,11 @@ export function VTabBar({ workspace, className }: VTabBarProps) {
                 onClick={() => env.electron.createTab()}
                 onMouseEnter={() => setIsNewTabHovered(true)}
                 onMouseLeave={() => setIsNewTabHovered(false)}
-                aria-label="New Tab"
+                aria-label={t("tabBar.newTab")}
             >
                 <div className="pointer-events-none absolute inset-x-1 inset-y-[4px] rounded-sm bg-transparent transition-colors group-hover:bg-hover" />
                 <i className="fa fa-solid fa-plus" style={{ fontSize: "10px" }} />
-                <span>New Tab</span>
+                <span>{t("tabBar.newTab")}</span>
             </button>
         </div>
     );
