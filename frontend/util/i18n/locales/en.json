@@ -1,0 +1,14 @@
+{
+    "about": {
+        "title": "Wave Terminal",
+        "tagline1": "Open-Source AI-Integrated Terminal",
+        "tagline2": "Built for Seamless Workflows",
+        "clientVersion": "Client Version {{version}}",
+        "updateChannel": "Update Channel: {{channel}}",
+        "github": "GitHub",
+        "website": "Website",
+        "openSource": "Open Source",
+        "sponsor": "Sponsor",
+        "copyright": "© {{year}} Command Line Inc."
+    }
+}
