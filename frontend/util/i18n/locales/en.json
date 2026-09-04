@@ -1094,6 +1094,7 @@
         "zoomIn": "Zoom In",
         "zoomOut": "Zoom Out",
         "launchOnFullScreen": "Launch On Full Screen",
+        "toggleFullScreen": "Toggle Full Screen",
         "toggleWidgetsBar": "Toggle Widgets Bar",
         "undo": "Undo",
         "redo": "Redo",

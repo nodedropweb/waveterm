@@ -326,6 +326,7 @@ function makeViewMenu(
         { type: "separator" },
         {
             role: "togglefullscreen",
+            label: t("appMenu.toggleFullScreen"),
         },
         { type: "separator" },
         {
