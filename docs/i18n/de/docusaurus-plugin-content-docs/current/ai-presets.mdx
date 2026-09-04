@@ -1,0 +1,253 @@
+---
+sidebar_position: 3.6
+id: "ai-presets"
+title: "KI-Voreinstellungen (veraltet)"
+---
+:::warning Hinweis zur Abkündigung
+Das KI-Widget und seine Voreinstellungen werden durch [Wave AI](./waveai.mdx) ersetzt. Die aktuellen KI-Funktionen und Konfigurationsoptionen findest du in der Wave-AI-Dokumentation.
+:::
+
+
+![AI Presets Menu](./img/ai-presets.png#right)
+
+Waves KI-Widget kann über Voreinstellungen (Presets) für verschiedene KI-Anbieter und -Modelle konfiguriert werden. Mit Presets kannst du mehrere KI-Konfigurationen definieren und über das Dropdown-Menü im KI-Widget einfach zwischen ihnen wechseln.
+
+## Wie KI-Voreinstellungen funktionieren
+
+KI-Voreinstellungen werden in `~/.config/waveterm/presets/ai.json` definiert. Du kannst diese Datei einfach bearbeiten mit:
+
+```bash
+wsh editconfig presets/ai.json
+```
+
+Jede Voreinstellung definiert einen vollständigen Satz an Konfigurationswerten für das KI-Widget. Wählst du eine Voreinstellung aus dem Dropdown-Menü, werden diese Konfigurationswerte auf das Widget angewendet. Ist keine Voreinstellung ausgewählt, nutzt das Widget die Standardwerte aus `settings.json`.
+
+Hier ein einfaches Beispiel mit Claude:
+
+```json
+{
+  "ai@claude-sonnet": {
+    "display:name": "Claude 3 Sonnet",
+    "display:order": 1,
+    "ai:*": true,
+    "ai:apitype": "anthropic",
+    "ai:model": "claude-3-5-sonnet-latest",
+    "ai:apitoken": "<dein Anthropic-API-Schlüssel>"
+  }
+}
+```
+
+Um eine Voreinstellung zu deinem Standard zu machen, füge diese eine Zeile zu deiner `settings.json` hinzu:
+
+```json
+{
+  "ai:preset": "ai@claude-sonnet"
+}
+```
+
+:::info
+Du kannst deine Standard-Voreinstellung schnell mit dem Befehl `setconfig` festlegen:
+
+```bash
+wsh setconfig ai:preset=ai@claude-sonnet
+```
+
+Das ist einfacher, als die settings.json direkt zu bearbeiten!
+:::
+
+## Anbieterspezifische Konfigurationen
+
+### Anthropic (Claude)
+
+Um Claude-Modelle zu nutzen, erstelle eine Voreinstellung wie diese:
+
+```json
+{
+  "ai@claude-sonnet": {
+    "display:name": "Claude 3 Sonnet",
+    "display:order": 1,
+    "ai:*": true,
+    "ai:apitype": "anthropic",
+    "ai:model": "claude-3-5-sonnet-latest",
+    "ai:apitoken": "<dein Anthropic-API-Schlüssel>"
+  }
+}
+```
+
+### OpenAI
+
+Um OpenAIs Modelle zu nutzen:
+
+```json
+{
+  "ai@openai-gpt41": {
+    "display:name": "GPT-4.1",
+    "display:order": 2,
+    "ai:*": true,
+    "ai:model": "gpt-4.1",
+    "ai:apitoken": "<dein OpenAI-API-Schlüssel>"
+  }
+}
+```
+
+### Lokale LLMs (Ollama)
+
+Um sich mit einer lokalen Ollama-Instanz zu verbinden:
+
+```json
+{
+  "ai@ollama-llama": {
+    "display:name": "Ollama - Llama2",
+    "display:order": 3,
+    "ai:*": true,
+    "ai:baseurl": "http://localhost:11434/v1",
+    "ai:name": "llama2",
+    "ai:model": "llama2",
+    "ai:apitoken": "ollama"
+  }
+}
+```
+
+Hinweis: `ai:apitoken` ist erforderlich, kann aber einen beliebigen Wert haben, da Ollama ihn ignoriert. Weitere Details in der [Ollama-OpenAI-Kompatibilitätsdokumentation](https://github.com/ollama/ollama/blob/main/docs/openai.md).
+
+### Azure OpenAI
+
+Um sich mit Azure-KI-Diensten zu verbinden:
+
+```json
+{
+  "ai@azure-gpt4": {
+    "display:name": "Azure GPT-4",
+    "display:order": 4,
+    "ai:*": true,
+    "ai:apitype": "azure",
+    "ai:baseurl": "<deine Azure-KI-Basis-URL>",
+    "ai:model": "<dein Modell-Deployment-Name>",
+    "ai:apitoken": "<dein Azure-API-Schlüssel>"
+  }
+}
+```
+
+Hinweis: Füge keine Query-Parameter oder `api-version` in `ai:baseurl` ein. `ai:model` sollte der Name deines Modell-Deployments in Azure sein.
+
+### Perplexity
+
+Um Perplexitys Modelle zu nutzen:
+
+```json
+{
+  "ai@perplexity-sonar": {
+    "display:name": "Perplexity Sonar",
+    "display:order": 5,
+    "ai:*": true,
+    "ai:apitype": "perplexity",
+    "ai:model": "llama-3.1-sonar-small-128k-online",
+    "ai:apitoken": "<dein Perplexity-API-Schlüssel>"
+  }
+}
+```
+
+### Google (Gemini)
+
+Um Googles Gemini-Modelle über [Google AI Studio](https://aistudio.google.com) zu nutzen:
+
+```json
+{
+  "ai@gemini-2.0": {
+    "display:name": "Gemini 2.0",
+    "display:order": 6,
+    "ai:*": true,
+    "ai:apitype": "google",
+    "ai:model": "gemini-2.0-flash-exp",
+    "ai:apitoken": "<dein Google-AI-API-Schlüssel>"
+  }
+}
+```
+
+### OpenRouter
+
+Um OpenRouters Modelle zu nutzen:
+
+```json
+{
+  "ai@openrouter": {
+    "display:name": "OpenRouter (Qwen)",
+    "display:order": 7,
+    "ai:*": true,
+    "ai:model": "qwen/qwen3-next-80b-a3b-thinking",
+    "ai:apitoken": "<openrouter-key>",
+    "ai:baseurl": "https://openrouter.ai/api/v1"
+  }
+}
+```
+
+## Beispiel mit mehreren Voreinstellungen
+
+Du kannst mehrere Voreinstellungen in deiner `ai.json`-Datei definieren:
+
+```json
+{
+  "ai@claude-sonnet": {
+    "display:name": "Claude 3 Sonnet",
+    "display:order": 1,
+    "ai:*": true,
+    "ai:apitype": "anthropic",
+    "ai:model": "claude-3-5-sonnet-latest",
+    "ai:apitoken": "<dein Anthropic-API-Schlüssel>"
+  },
+  "ai@openai-gpt41": {
+    "display:name": "GPT-4.1",
+    "display:order": 2,
+    "ai:*": true,
+    "ai:model": "gpt-4.1",
+    "ai:apitoken": "<dein OpenAI-API-Schlüssel>"
+  },
+  "ai@ollama-llama": {
+    "display:name": "Ollama - Llama2",
+    "display:order": 3,
+    "ai:*": true,
+    "ai:baseurl": "http://localhost:11434/v1",
+    "ai:name": "llama2",
+    "ai:model": "llama2",
+    "ai:apitoken": "ollama"
+  },
+  "ai@perplexity-sonar": {
+    "display:name": "Perplexity Sonar",
+    "display:order": 4,
+    "ai:*": true,
+    "ai:apitype": "perplexity",
+    "ai:model": "llama-3.1-sonar-small-128k-online",
+    "ai:apitoken": "<dein Perplexity-API-Schlüssel>"
+  }
+}
+```
+
+Der Wert `display:order` bestimmt die Reihenfolge, in der Voreinstellungen im Dropdown-Menü erscheinen.
+
+Denk daran, deine Standard-Voreinstellung in `settings.json` zu setzen:
+
+```json
+{
+  "ai:preset": "ai@claude-sonnet"
+}
+```
+
+## Einen Proxy nutzen
+
+Wenn du KI-Anfragen über einen HTTP-Proxy leiten musst, kannst du die Einstellung `ai:proxyurl` zu jeder Voreinstellung hinzufügen:
+
+```json
+{
+  "ai@claude-with-proxy": {
+    "display:name": "Claude 3 Sonnet (via Proxy)",
+    "display:order": 1,
+    "ai:*": true,
+    "ai:apitype": "anthropic",
+    "ai:model": "claude-3-5-sonnet-latest",
+    "ai:apitoken": "<dein Anthropic-API-Schlüssel>",
+    "ai:proxyurl": "http://proxy.example.com:8080"
+  }
+}
+```
+
+Die Proxy-URL sollte das Format `http://host:port` oder `https://host:port` haben. Diese Einstellung funktioniert mit allen KI-Anbietern außer Wave Cloud AI (dem Standard).

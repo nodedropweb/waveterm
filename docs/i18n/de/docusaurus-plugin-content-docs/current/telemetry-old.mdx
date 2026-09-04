@@ -1,0 +1,130 @@
+---
+id: "telemetry-old"
+title: "Legacy-Telemetrie"
+sidebar_class_name: hidden
+---
+
+Wave Terminal erfasst Telemetriedaten, um die Nutzung von Funktionen nachzuvollziehen, künftige Produktentscheidungen zu steuern und aggregierte Kennzahlen zur Popularität und Nutzung von Wave zu erstellen. Wir erfassen oder speichern keine personenbezogenen Daten (PII), und alle Kennzahlen werden ausschließlich mit deiner zufällig generierten _ClientId_ verknüpft und aggregiert. Du kannst die Erfassung jederzeit deaktivieren.
+
+Wenn du Telemetrie an- oder ausschalten möchtest, ist die erste Gelegenheit dazu ein Button auf der ersten Willkommensseite. Danach kann sie deaktiviert werden, indem du `"telemetry:enabled": false` zur Datei `config/settings.json` hinzufügst. Alternativ kann sie aktiviert werden, indem du `"telemetry:enabled": true` zur Datei `config/settings.json` hinzufügst.
+
+:::info
+
+Du kannst deine Telemetrie-Einstellung auch durch Ausführen des wsh-Befehls ändern:
+
+```
+wsh setconfig telemetry:enabled=true
+```
+
+:::
+
+---
+
+## Telemetrie senden
+
+Sofern Telemetrie aktiviert ist, wird sie 10 Sekunden nach dem ersten Start von Waveterm gesendet und danach alle 4 Stunden erneut. Sie kann auch in Reaktion auf einige unten aufgeführte Sonderfälle gesendet werden. Beim Senden von Telemetrie wird sie nach einzelnen Tagen gruppiert, bestimmt durch deine Zeitzone. Daten eines vorherigen Tages werden als `Uploaded` markiert, sodass sie nicht erneut gesendet werden müssen.
+
+### Senden nach Aktivierung der Telemetrie
+
+Sobald Telemetrie aktiviert wird, wird ein Telemetrie-Update gesendet, unabhängig davon, wie lange der letzte Sendevorgang zurückliegt. Dies setzt den üblichen Timer für Telemetrie-Sendevorgänge nicht zurück.
+
+### Benachrichtigung über deaktivierte Telemetrie
+
+Sobald Telemetrie deaktiviert wird, sendet Waveterm ein spezielles Update, das uns über diese Änderung informiert. Siehe [Wenn Telemetrie deaktiviert wird](#wenn-telemetrie-deaktiviert-wird) für weitere Infos. Der Timer läuft im Hintergrund weiter, aber es werden keine Daten gesendet.
+
+### Wenn Waveterm geschlossen wird
+
+Sofern Telemetrie aktiviert ist, wird sie gesendet, wenn Waveterm geschlossen wird.
+
+---
+
+## Telemetriedaten
+
+Bei aktiver Telemetrie erfassen wir folgende Daten. Sie werden im Typ `telemetry.TelemetryData` im Quellcode gespeichert.
+
+| Name          | Beschreibung                                                                                                                                                                     |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ActiveMinutes | Die Anzahl der Minuten, in denen der Nutzer Waveterm an einem bestimmten Tag aktiv genutzt hat. Dafür muss das Terminal-Fenster fokussiert sein, während der Nutzer aktiv damit interagiert. |
+| FgMinutes     | Die Anzahl der Minuten, in denen Waveterm an einem bestimmten Tag im Vordergrund war. Dafür muss das Terminal-Fenster fokussiert sein, unabhängig von der Nutzerinteraktion.                 |
+| OpenMinutes   | Die Anzahl der Minuten, in denen Waveterm an einem bestimmten Tag geöffnet war. Dafür muss das Terminal nur geöffnet sein, auch wenn das Fenster nicht fokussiert ist.                             |
+| NumBlocks     | Die Anzahl der an einem bestimmten Tag geöffneten Blöcke                                                                                                                               |
+| NumTabs       | Die Anzahl der an einem bestimmten Tag geöffneten Tabs.                                                                                                                                |
+| NewTab        | Die Anzahl der an einem bestimmten Tag neu erstellten Tabs                                                                                                                                   |
+| NumWindows    | Die Anzahl der an einem bestimmten Tag geöffneten Fenster.                                                                                                                             |
+| NumWS         | Die Anzahl der an einem bestimmten Tag bestehenden Workspaces.                                                                                                                               |
+| NumWSNamed    | Die Anzahl der an einem bestimmten Tag benannten Workspaces.                                                                                                                                   |
+| NewTab        | Die Anzahl der an einem bestimmten Tag geöffneten neuen Tabs.                                                                                                                                   |
+| NumStartup    | Die Anzahl der Starts von Waveterm an einem bestimmten Tag.                                                                                                                                   |
+| NumShutdown   | Die Anzahl der Beendigungen von Waveterm an einem bestimmten Tag.                                                                                                                                 |
+| SetTabTheme   | Die Anzahl, wie oft das Tab-Theme über das Kontextmenü geändert wird                                                                                                                              |
+| NumMagnify    | Die Anzahl, wie oft ein Block vergrößert wird                                                                                                                      |
+| NumPanics     | Die Anzahl der an diesem Tag abgefangenen Backend-(Golang-)Panics                                                                                                                 |
+| NumAIReqs     | Die Anzahl der an diesem Tag gestellten KI-Anfragen                                                                                                                               |
+| NumSSHConn    | Die Anzahl unterschiedlicher SSH-Verbindungen, die zu unterschiedlichen Hosts hergestellt wurden                                                                                                    |
+| NumWSLConns   | Die Anzahl unterschiedlicher WSL-Verbindungen, die zu unterschiedlichen Distributionen hergestellt wurden                                                                                                  |
+| Renderers     | Die Anzahl neuer Block-Ansichten jedes Typs, die an einem bestimmten Tag geöffnet sind.                                                                                                             |
+| WshCmds       | Die Anzahl der an einem bestimmten Tag ausgeführten wsh-Befehle jedes Typs                                                                                                                      |
+| Blocks        | Die Anzahl der Blöcke unterschiedlicher Ansichtstypen, die an einem bestimmten Tag geöffnet sind                                                                                                                |
+| Conn          | Die Anzahl der erfolgreichen Remote-Verbindungen (und Fehler), die an einem bestimmten Tag hergestellt wurden                                                                                                    |
+
+## Zugehörige Daten
+
+Zusätzlich zu den erfassten Telemetriedaten wird auch Folgendes gemeldet. Es wird im Typ `telemetry.ActivityType` im Quellcode gespeichert.
+
+| Name          | Beschreibung                                                                                                                                                                                                                                                                                      |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Day           | Das Datum, dem die Telemetrie zugeordnet ist. Es enthält keine Uhrzeit.                                                                                                                                                                                                                         |
+| Uploaded      | Ein Boolean, der angibt, ob die Telemetrie für diesen Tag abgeschlossen ist. Er ist während des zugehörigen Tages false, wird aber beim ersten Telemetrie-Upload danach auf true gesetzt. Ist er einmal true, werden die Daten dieses bestimmten Tages nicht mehr mit der Telemetrie mitgesendet. |
+| TzName        | Der Code für die vom Betriebssystem des Nutzers gemeldete Zeitzone (z. B. PST, GMT, JST)                                                                                                                                                                                                        |
+| TzOffset      | Der von Betriebssystem des Nutzers gemeldete Zeitzonen-Versatz (z. B. -08:00, +00:00, +09:00)                                                                                                                                                                                                             |
+| ClientVersion | Welche Version von Waveterm installiert ist.                                                                                                                                                                                                                                                          |
+| ClientArch    | Umfasst das Betriebssystem des Nutzers (z. B. linux oder darwin) und die Architektur (z. B. x86_64 oder arm64). Enthält aktuell keine Daten zu Verbindungen.                                                                                                                             |
+| BuildTime     | Dient als genauere Versionsnummer, die festhält, wann diese Version gebaut wurde. Hat keinen Bezug dazu, wann diese Version von dir installiert wurde.                                                                                                                                        |
+| OSRelease     | Listet die Version des vom Nutzer installierten Betriebssystems.                                                                                                                                                                                                                           |
+| Displays      | Bildschirmauflösungen (hinzugefügt in v0.9.3, um zu verstehen, für welche Bildschirmauflösungen optimiert werden soll)                                                                                                                                                                                              |
+
+## Telemetrie-Metadaten
+
+Zuletzt werden mit der Telemetrie einige Daten gesendet, die beschreiben, wie sie einzuordnen ist. Sie werden im Typ `wcloud.TelemetryInputType` im Quellcode gespeichert.
+
+| Name              | Beschreibung                                                                                                                 |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| UserId            | Aktuell ungenutzt. Dies ist eine anonyme UUID, die für zukünftige Funktionen vorgesehen ist.                                            |
+| ClientId          | Dies ist eine anonyme UUID, die beim ersten Start von Waveterm erstellt wird. Sie wird für Telemetrie und das Senden von Prompts an Open AI genutzt. |
+| AppType           | Wird genutzt, um die aktuelle Version von Waveterm von der Legacy-App zu unterscheiden.                                          |
+| AutoUpdateEnabled | Ob automatische Updates aktiviert sind.                                                                                                    |
+| AutoUpdateChannel | Die Art des genutzten automatischen Updates. Bezieht sich speziell darauf, ob ein latest- oder beta-Kanal ausgewählt ist.                   |
+| CurDay            | Der aktuelle Tag (in deiner Zeitzone), an dem die Telemetrie gesendet wird. Enthält keine Uhrzeit.                            |
+
+## Geo-Daten
+
+Wir speichern keine IP-Adressen in unserer Telemetrietabelle. CloudFlare übermittelt uns jedoch Geo-Location-Header. Wir speichern diese zwei Header-Werte:
+
+| Name         | Beschreibung                                                       |
+| ------------ | ----------------------------------------------------------------- |
+| CFCountry    | 2-stelliger Ländercode (z. B. "US", "FR" oder "JP")                  |
+| CFRegionCode | Regionscode (oft eine Provinz, Region oder ein Bundesstaat innerhalb eines Landes) |
+
+---
+
+## Wenn Telemetrie deaktiviert wird
+
+Wenn ein Nutzer die Telemetrie deaktiviert, sendet Waveterm eine Benachrichtigung, dass die Telemetrie für seine anonyme _ClientId_ deaktiviert wurde. Dies geschieht über den Typ `wcloud.NoTelemetryInputType` im Quellcode. Darüber hinaus werden keine weiteren Informationen gesendet, bis Telemetrie wieder aktiviert wird. Wird sie wieder aktiviert, werden die Telemetriedaten der letzten 30 Tage gesendet.
+
+---
+
+## Ein Hinweis zu IP-Adressen
+
+Telemetrie wird über HTTPS hochgeladen, wodurch deine IP-Adresse dem Telemetrieserver bekannt ist. Wir speichern deine IP-Adresse **nicht** in unserer Telemetrietabelle und verknüpfen sie **nicht** mit deiner _ClientId_.
+
+---
+
+## Zuvor erfasste Telemetriedaten
+
+Wir sind der Meinung, dass die von uns per Telemetrie erfassten Daten recht minimal sind, können diese Entscheidung aber nicht für jeden Nutzer treffen. Solltest du deine Meinung zu den zuvor erfassten Daten ändern, kannst du die Löschung deiner Daten beantragen, indem du uns eine E-Mail an [support@waveterm.dev](mailto:support@waveterm.dev) schreibst. In diesem Fall benötigen wir deine _ClientId_, um sie zu entfernen.
+
+---
+
+## Datenschutzerklärung
+
+Eine Zusammenfassung des Obigen findest du in unserer [Datenschutzerklärung](https://www.waveterm.dev/privacy).
