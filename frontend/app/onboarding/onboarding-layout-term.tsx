@@ -4,6 +4,7 @@
 import { MagnifyIcon } from "@/app/element/magnify";
 import { cn, makeIconClass } from "@/util/util";
 import { useCallback, useLayoutEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { CommandReveal } from "./onboarding-command";
 
 export type FakeTermBlockProps = {
@@ -88,6 +89,7 @@ const deployMessages = [
 type OverlayState = null | "disconnected" | "connected";
 
 const ConnectionOverlay = ({ state }: { state: OverlayState }) => {
+    const { t } = useTranslation();
     if (!state) return null;
 
     const isConnected = state === "connected";
@@ -103,7 +105,7 @@ const ConnectionOverlay = ({ state }: { state: OverlayState }) => {
                     )}
                 />
                 <div className="text-2xl font-semibold text-foreground">
-                    {isConnected ? "Connected" : "Disconnected"}
+                    {isConnected ? t("onboardingFeatures.connected") : t("onboardingFeatures.disconnected")}
                 </div>
             </div>
         </div>
