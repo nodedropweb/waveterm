@@ -1,0 +1,696 @@
+---
+id: "releasenotes"
+title: "Release Notes"
+sidebar_position: 200
+---
+
+# Release Notes
+
+### v0.14.5 &mdash; 16. Apr 2026
+
+Wave v0.14.5 führt ein neues Prozess-Viewer-Widget, den Quake-Modus für die globale Tastenkombination und mehrere Verbesserungen der Alltagstauglichkeit ein.
+
+- **Prozess-Viewer** - Neues Widget, das laufende Prozesse auf lokalen und entfernten Rechnern anzeigt, mit CPU- und Speichernutzung, sortierbaren Spalten und der Möglichkeit, Signale an Prozesse zu senden
+- **Quake-Modus** - Die globale Tastenkombination (`app:globalhotkey`) schaltet nun ein Wave-Fenster sichtbar/unsichtbar
+- **[Fehlerbehebung] Settings-Widget** - Ein Fehler wurde behoben, bei dem noch nicht existierende Konfigurationsdateien nicht über die Settings-Widget-Oberfläche erstellt oder bearbeitet werden konnten
+- **Dateien per Drag & Drop ins Terminal** - Ziehe Dateien aus dem Finder (macOS) oder deinem Dateimanager in einen Terminal-Block, um deren in Anführungszeichen gesetzten Pfad einzufügen ([#746](https://github.com/wavetermdev/waveterm/issues/746))
+- Neue Opt-in-Einstellung `app:showsplitbuttons` fügt Block-Kopfzeilen horizontale/vertikale Split-Buttons hinzu
+- Die Widget-Seitenleiste kann über das View-Menü umgeschaltet werden; die Sichtbarkeit bleibt pro Workspace erhalten
+- F2 zum Umbenennen des aktiven Tabs
+- Maustaste 3/4 (zurück/vorwärts) navigiert jetzt in Web-Widgets
+- Terminal-Sitzungen setzen jetzt `COLORTERM=truecolor` für bessere Farbunterstützung in CLI-Tools
+- [Fehlerbehebung] Nachgestellte Leerzeichen werden beim Kopieren aus dem Terminal in die Zwischenablage entfernt
+- Paket-Updates und Abhängigkeits-Upgrades
+
+### v0.14.4 &mdash; 26. Mär 2026
+
+Wave v0.14.4 führt vertikale Tabs ein, aktualisiert auf xterm.js v6 und enthält eine Reihe von Fehlerbehebungen und internen Verbesserungen.
+
+**Vertikale Tableiste:**
+
+- **Neue Option für vertikale Tableiste** - Tabs können jetzt vertikal an der Fensterseite angezeigt werden, was mehr horizontalen Platz und leichteren Zugriff auf Tabs bietet, wenn viele geöffnet sind. In den Einstellungen zwischen horizontalem und vertikalem Tab-Layout umschaltbar.
+
+**Terminal-Verbesserungen:**
+
+- **xterm.js-v6.0.0-Upgrade** - Upgrade auf das neueste xterm.js v6, was verbesserte Terminal-Kompatibilität und -Darstellung mit sich bringt. Das sollte diverse Darstellungsprobleme beheben, die z. B. bei Claude Code auftraten.
+
+**Weitere Änderungen:**
+
+- **`backgrounds.json`** - `presets/bg.json` wurde in `backgrounds.json` umbenannt, Hintergrundkonfiguration in den neuen Schlüssel `tab:background` verschoben (automatische Migration beim Start)
+- **Konfigurationsfehler verschoben** - Konfigurationsfehler wurden aus der Tableiste entfernt und in die Settings-/WaveConfig-Ansicht verschoben, um weniger Unordnung zu erzeugen
+- **Warnung bei ungespeicherten Änderungen** - Die WaveConfig-Ansicht warnt jetzt, bevor ungespeicherte Änderungen verworfen werden
+- **Stream-Performance** - Datei-Streaming auf eine neue, moderne Schnittstelle mit Flusskontrolle migriert, wodurch ein großer Time-to-First-Byte-Streaming-Fehler behoben wurde
+- **macOS Erster Klick** - Verbesserte Behandlung des ersten Klicks unter macOS (Klick wird abgebrochen, aber Block-/WaveAI-Fokus korrekt gesetzt)
+- Das veraltete Legacy-KI-Widget wurde entfernt
+- [Fehlerbehebung] Fokus-Fehler bei neu erstellten Blöcken behoben
+- [Fehlerbehebung] Problem beim Start einer neuen dauerhaften Sitzung durch Aufteilen einer alten behoben
+- Electron auf v41 aktualisiert
+- Paket-Updates und Abhängigkeits-Upgrades
+
+### v0.14.2 &mdash; 12. Mär 2026
+
+Wave v0.14.2 fügt Block-/Tab-Badges, Verbesserungen der Verzeichnisvorschau und diverse Fehlerbehebungen hinzu.
+
+**Block-/Tab-Badges:**
+
+- **Badges auf Blockebene, in Tabs zusammengefasst** - Blöcke können jetzt Icon-Badges (mit Farbe und Priorität) anzeigen, die zusammengefasst und in der Tableiste für einen Statusüberblick auf einen Blick sichtbar sind
+- **Glocken-Indikator standardmäßig aktiviert** - Das Terminal-Glocken-Badge ist jetzt standardmäßig aktiviert und leuchtet den Block und Tab auf, wenn dein Terminal die Glocke auslöst (gesteuert über `term:bellindicator`)
+- **`wsh badge`** - Neuer Befehl `wsh badge` zum Setzen oder Entfernen von Badges an Blöcken über die Kommandozeile. Unterstützt Icons, Farben, Prioritäten, Signalton und PID-gebundene Badges, die automatisch entfernt werden, wenn ein Prozess beendet wird. Ideal in Kombination mit Claude-Code-Hooks, um Benachrichtigungen in der Tableiste sichtbar zu machen ([Dokumentation](https://docs.waveterm.dev/wsh-reference#badge))
+
+**Weitere Änderungen:**
+
+- **Verbesserungen der Verzeichnisvorschau** - Verbesserte Formatierung der Änderungszeit, zebragestreifte Zeilen, bessere Standardsortierung, YAML-Dateiunterstützung und Verbesserungen am Kontextmenü
+- **Suchleiste** - Verbesserungen bei Zwischenablage und Fokus in der Suchleiste
+- [Fehlerbehebung] "New Window" hing sich unter GNOME-Desktops auf/funktionierte nicht - behoben
+- [Fehlerbehebung] "Save Session As..." behoben (Fehler bei der Verfolgung des fokussierten Fensters)
+- [Fehlerbehebung] Zoom-Änderungsbenachrichtigungen wurden nicht korrekt an alle Tabs gesendet (Layout-Inkonsistenzen)
+- Ein Release-Notes-Link im Einstellungsmenü hinzugefügt
+- Arbeit am anthropic-messages-Wave-AI-Backend (für native Claude-Integration)
+- Viel interne Arbeit an Test-/Mock-Infrastruktur, um schnellere asynchrone KI-Bearbeitungen zu ermöglichen
+- Dokumentations-Updates
+- Paket-Updates und Abhängigkeits-Upgrades
+
+### v0.14.1 &mdash; 3. Mär 2026
+
+Wave v0.14.1 behebt mehrere folgenreiche Terminal-Fehler (Claude-Code-Scrolling, IME-Eingabe) und fügt neue Konfigurationsoptionen hinzu: Fokus folgt dem Mauszeiger, Anpassung des Cursor-Stils, Workspace-gebundene Widgets und vim-artige Block-Navigation.
+
+**Terminal-Verbesserungen:**
+
+- **Claude-Code-Scroll-Fix** - Ein langjähriger Fehler behoben, durch den Terminal-Fenster unerwartet nach oben sprangen, was viele Claude-Code-Nutzer betraf
+- **IME-Fix** - Koreanische/CJK-Eingabe behoben, bei der Zeichen verloren gingen oder in der Komposition hängen blieben und erst bei Leertaste übernommen wurden
+- **Scroll-Position bei Größenänderung erhalten** - Das Terminal bleibt bei Größenänderungen jetzt am unteren Rand gescrollt, wenn es dort bereits war
+- **Bessere Link-Behandlung** - Terminal-URLs haben jetzt verbesserte Kontextmenüs und Tooltips für einfachere Navigation
+- **Terminal-Scrollback speichern** - Neuer Kontextmenü-Eintrag und `wsh`-Befehl, um den Terminal-Scrollback in eine Datei zu speichern
+
+**Neue Funktionen:**
+
+- **Fokus folgt Mauszeiger** - Neue Einstellung `app:focusfollowscursor` (off/on/term) für Hover-basierten Block-Fokus
+- **Terminal-Cursor-Stil & Blinken** - Neue Einstellungen für Cursor-Stil (block/bar/underline) und Blinken, pro Block konfigurierbar
+- **Tab-Schließen-Bestätigung** - Neue Einstellung `tab:confirmclose`, um vor dem Schließen eines Tabs nachzufragen
+- **Workspace-gebundene Widgets** - Neues optionales Feld `workspaces` in `widgets.json`, um Widgets pro Workspace ein-/auszublenden
+- **Vim-artige Block-Navigation** - Strg+Umschalt+H/J/K/L zum Navigieren zwischen Blöcken hinzugefügt
+- **Neue KI-Anbieter** - Groq und NanoGPT als integrierte KI-Anbieter-Voreinstellungen hinzugefügt
+
+**Weitere Änderungen:**
+
+- Zeitweise auftretende Fehler beim Verbindungswechsel in Terminal-Blöcken behoben
+- Verbesserungen am widgets.json-Schema für bessere Editor-Validierung
+- Paket-Updates und Abhängigkeits-Upgrades
+- Interne Code-Bereinigung und Refactoring
+
+### v0.14.0 &mdash; 10. Feb 2026
+
+**Dauerhafte SSH-Sitzungen und verbesserte Verbindungsüberwachung**
+
+Wave v0.14 führt dauerhafte Sitzungen für SSH-Verbindungen ein, sodass deine entfernten Terminal-Sitzungen Verbindungsunterbrechungen, Netzwerkwechsel und Wave-Neustarts überstehen. Dieses Release enthält außerdem größere Verbesserungen der Verbindungsüberwachung, der RPC-Infrastruktur mit Flusskontrolle und erweiterte Terminal-Funktionen.
+
+**Dauerhafte Sitzungen (nur entferntes SSH):**
+- **Unterbrechungen überstehen** - SSH-Terminal-Sitzungen bleiben über Netzwerkwechsel, Ruhezustand des Computers und Wave-Neustarts hinweg bestehen und verbinden sich automatisch neu, sobald die Verbindung wiederhergestellt ist
+- **Sitzungsschutz** - Shell-Status, laufende Programme und Terminal-Verlauf bleiben erhalten, selbst wenn Wave geschlossen oder getrennt ist
+- **Visuelle Statusanzeigen** - Schild-Symbole in Terminal-Kopfzeilen zeigen den Sitzungsstatus (Standard, dauerhaft verbunden, dauerhaft getrennt, dauerhaft wartend) mit detaillierten Flyover-Informationen
+- **Flexible Konfiguration** - Konfiguration auf globaler, Verbindungs- oder Blockebene mit einfachem Wechsel zwischen Standard- und dauerhaftem Modus
+- Siehe die neue [Dokumentation zu dauerhaften Sitzungen](https://docs.waveterm.dev/durable-sessions) für Einrichtung und Nutzung
+
+**Verbesserte Verbindungsüberwachung:**
+- **Verbindungs-Keepalives** - Aktive Überwachung von SSH-Verbindungen mit automatischen Keepalive-Prüfungen
+- **Erkennung hängender Verbindungen** - Ein neuer Verbindungsmonitor erkennt und zeigt "hängende" Verbindungszustände bei Netzwerkproblemen an und liefert klares visuelles Feedback
+- **Bessere Fehlerbehandlung** - Verbesserte Nachverfolgung des Verbindungsstatus und nutzerseitige Statusanzeigen
+
+**Terminal-Verbesserungen:**
+- **OSC-52-Zwischenablage-Unterstützung** - Terminal-Anwendungen können jetzt über OSC-52-Escape-Sequenzen direkt in deine Systemzwischenablage kopieren
+- **Erweitertes Kontextmenü** - Rechtsklick auf Terminals für schnellen Zugriff auf Splits, URL-Öffnen, Themes, Dateibrowser und mehr
+- **Vereinfachtes Kopfzeilenlayout** - Terminal-Kopfzeilen konzentrieren sich jetzt auf Verbindungsinformationen ohne redundante Ansichtstyp-Beschriftungen
+
+**Wave-AI-Updates:**
+- **Bild-/Vision-Unterstützung** - Bildunterstützung für die OpenAI-Chat-Completions-API hinzugefügt, was Vision-Fähigkeiten mit kompatiblen Modellen ermöglicht
+- **Generierung stoppen** - Neue Möglichkeit, KI-Antworten mitten in der Generierung zu stoppen, für OpenAI- und Gemini-Backends
+- **KI-Panel-Scroll-Verriegelung** - Verbessertes automatisches Scroll-Verhalten im Wave-AI-Panel
+- **Konfigurierbare Ausführlichkeit** - Steuerung der Ausführlichkeitsstufen für die OpenAI-Responses-API
+- Veralteter alter KI-Widget-Proxy-Endpunkt abgekündigt
+
+**RPC und Performance:**
+- **RPC-Streaming mit Flusskontrolle** - Neue Streaming-Primitive mit integrierter Flusskontrolle für bessere Performance und Zuverlässigkeit
+- **WSH-Router-Refactor** - Größere Verbesserungen der Routing-Architektur, um Hänger bei Verbindungsunterbrechungen zu verhindern
+- **RPC-Client-/Server-Bereinigung** - Verbesserte RPC-Implementierung und Fehlerbehandlung
+
+**Konfigurations-Updates:**
+- **KI-Button ausblenden** - Neue Einstellung `app:hideaibutton`, um den KI-Button aus der UI auszublenden
+- **Strg+Umschalt-Pfeile deaktivieren** - Neue Einstellung `app:disablectrlshiftarrows` für Konflikte mit Tastenkombinationen
+- **Strg+Umschalt-Anzeige deaktivieren** - Neue Einstellung `app:disablectrlshiftdisplay`, um die Blocknummern-Overlay-Anzeige zu deaktivieren
+
+**Breaking Changes:**
+- **Angeheftete Tabs entfernt** - Die Funktion für angeheftete Tabs wurde aus der UI entfernt
+- **S3 und WaveFile entfernt** - S3-Dateisystem- und Wavefile-Implementierungen entfernt, um Probleme mit großen/rekursiven Dateiübertragungen zu vermeiden und die Codebasis zu vereinfachen
+
+**Weitere Änderungen:**
+- **Bestätigung beim Beenden** - Bestätigungsdialog beim Schließen von Wave mit aktiven Sitzungen hinzugefügt
+- Monaco-Editor-Upgrade, das die Abhängigkeiten `monaco-editor/loader` und `monaco-editor/react` für bessere Performance und Stabilität entfernt
+- Neues Tab-Modell mit React-Provider für verbessertes State-Management
+- Veraltete OSC-23198- und OSC-9283-Legacy-Handler entfernt
+- Contribution-Guidelines aktualisiert
+- Go-Toolchain auf 1.25.6 aktualisiert
+- Erweiterte Dokumentation für OpenAI-kompatible API-Anbieter
+- [Fehlerbehebung] Behandlung leerer Daten in der Sysinfo-Ansicht behoben
+- [Fehlerbehebung] Einstellung `app:ctrlvpaste` unter Windows behoben (kann jetzt deaktiviert werden)
+- [Fehlerbehebung] Doppelter Wave-AI-Systemprompt bei manchen Anbietern behoben
+- [Fehlerbehebung] Hängenbleiben bei Trennung behoben - Trennungen erfolgen jetzt sofort
+- [Fehlerbehebung] Lebenszyklus der Tool-Genehmigung an das Timing der SSE-Verbindung angepasst
+- [Fehlerbehebung] WSL-Verbindungs-Timeout erhöht, um langsamen anfänglichen WSL-Start zu berücksichtigen
+- [Fehlerbehebung] Terminal-Beendigung mit SIGHUP verbessert für einen sauberen Shell-Exit
+- Paket-Updates und Abhängigkeits-Upgrades
+
+### v0.13.1 &mdash; 16. Dez 2025
+
+**Windows-Verbesserungen und Wave-AI-Erweiterungen**
+
+Dieses Release konzentriert sich auf deutliche Verbesserungen der Windows-Plattform, visuelle Wave-AI-Updates und mehr Flexibilität bei der lokalen KI-Nutzung.
+
+**Windows-Plattform-Erweiterungen:**
+- **Integriertes Fensterlayout** - Separate Titel- und Menüleiste unter Windows entfernt, Steuerelemente direkt in die Tableisten-Kopfzeile integriert für eine übersichtlichere, einheitlichere Oberfläche
+- **Automatische Git-Bash-Erkennung** - Wave erkennt jetzt automatisch Git-Bash-Installationen und fügt sie zum Verbindungs-Dropdown für einfachen Zugriff hinzu
+- **SSH-Agent-Fallback** - Verbesserte SSH-Agent-Unterstützung mit automatischem Fallback auf `\\.\pipe\openssh-ssh-agent` unter Windows
+- **Aktualisierte Fokus-Tastenkombination** - Die WaveAI-Fokus-Taste wurde unter Windows für bessere Konsistenz auf Alt:0 geändert
+- **Konfigurationsschemas** - Verbesserte Konfigurationsvalidierung und Schema-Unterstützung
+- Strg-V funktioniert unter Windows im Terminal jetzt als Standard-Einfügen
+
+**Wave-AI-Updates:**
+- **Aufgefrischtes visuelles Design** - Vollständige UI-Auffrischung, blaue Akzente entfernt, Transparenzunterstützung für bessere Integration mit benutzerdefinierten Hintergründen hinzugefügt
+- **BYOK ohne Telemetrie** - Wave AI funktioniert jetzt mit Bring-your-own-Key und lokalen Modellen, ohne dass Telemetrie aktiviert sein muss
+- [Fehlerbehebung] Kompatibilität des Tool-Typs "function" mit Anbietern wie Mistral behoben
+
+**Terminal-Verbesserungen:**
+- **Neue Scroll-Tastenkombinationen** - Umschalt+Pos1, Umschalt+Ende, Umschalt+Bild-hoch und Umschalt+Bild-runter für bessere Terminal-Navigation hinzugefügt
+
+**Weitere Änderungen:**
+- Paket-Updates und Abhängigkeits-Upgrades
+
+### v0.13.0 &mdash; 8. Dez 2025
+
+**Wave v0.13 bringt lokale KI-Unterstützung, BYOK und einheitliche Konfiguration**
+
+Wave v0.13 ist ein größeres Release, das Wave AI für lokale Modelle, Drittanbieter und Bring-your-own-Key-(BYOK)-Konfigurationen öffnet. Dieses Release enthält außerdem ein komplett neu gestaltetes Konfigurationssystem und mehrere Terminal-Verbesserungen.
+
+**Lokale KI & BYOK-Unterstützung:**
+- **OpenAI-kompatible API** - Wave unterstützt jetzt jeden Anbieter oder lokalen Server, der den Endpunkt `/v1/chat/completions` nutzt, was die Nutzung von Ollama, LM Studio, vLLM, OpenRouter und unzähligen anderen lokalen und gehosteten Modellen ermöglicht
+- **Google-Gemini-Integration** - Native Unterstützung für Googles Gemini-Modelle mit dediziertem API-Adapter
+- **Anbieter-Voreinstellungen** - Vereinfachte Konfiguration mit integrierten Voreinstellungen für OpenAI, OpenRouter, Google, Azure und benutzerdefinierte Endpunkte
+- **Mehrere KI-Modi** - Einfacher Wechsel zwischen verschiedenen Modellen und Anbietern über eine einheitliche Oberfläche
+- Siehe die neue [Dokumentation zu Wave-AI-Modi](https://docs.waveterm.dev/waveai-modes) für Konfigurationsbeispiele und Einrichtungsanleitungen
+
+**Einheitliches Konfigurations-Widget:**
+- **Neue Konfigurationsoberfläche** - Den einfachen JSON-Editor durch ein dediziertes, über die Seitenleiste zugängliches Konfigurations-Widget ersetzt
+- **Bessere Organisation** - Verschiedene Konfigurationstypen (allgemeine Einstellungen, KI-Modi, Secrets) mit verbesserter Validierung und Fehlerbehandlung durchsuchen und bearbeiten
+- **Integrierte Secrets-Verwaltung** - Direkter Zugriff auf Waves Secret-Speicher aus dem Konfigurations-Widget für sichere Zugangsdatenverwaltung
+
+**Terminal-Verbesserungen:**
+- **Bracketed-Paste-Modus** - Jetzt standardmäßig aktiviert, um das Einfügen mehrzeiliger Inhalte und die Kompatibilität mit Tools wie Claude Code zu verbessern
+- **Windows-Einfüge-Fix** - Strg+V funktioniert unter Windows jetzt als Standard-Einfüge-Tastenkombination
+- **SSH-Passwortverwaltung** - SSH-Verbindungspasswörter in Waves Secret-Speicher speichern, um wiederholtes Eintippen von Zugangsdaten zu vermeiden
+
+**Weitere Änderungen:**
+- Paket-Updates und Abhängigkeits-Upgrades
+- Verschiedene Fehlerbehebungen und Stabilitätsverbesserungen
+
+### v0.12.5 &mdash; 24. Nov 2025
+
+Schnelles Patch-Release, um das Einfügeverhalten unter Linux zu beheben (verhindert, dass rohes HTML ins Terminal eingefügt wird).
+
+### v0.12.4 &mdash; 21. Nov 2025
+
+Schnelles Patch-Release mit Fehlerbehebungen und kleineren Verbesserungen.
+
+- Neue Einstellung `term:macoptionismeta` für macOS, um die Option-Taste im Terminal als Meta-Taste zu behandeln
+- Verzeichnisverfolgung für zsh-Shells behoben
+- Editor-Kopieroperationen behoben
+- Kleinere Wave-AI-Verbesserungen (Bildbehandlung, Scrollen, Fokus)
+- Paket-Updates und Abhängigkeits-Upgrades
+- WIP: WaveApps-Builder-Framework (noch nicht veröffentlicht)
+
+### v0.12.3 &mdash; 17. Nov 2025
+
+Patch-Release mit Wave-AI-Modell-Upgrade, neuen Secret-Verwaltungsfunktionen und verbesserter Terminal-Eingabebehandlung.
+
+**Wave-AI-Updates:**
+- **GPT-5.1-Modell** - Upgrade auf OpenAIs GPT-5.1-Modell für verbesserte Antworten
+- **Umschalter für Denkmodus** - Neues Dropdown zur Auswahl zwischen den Denkmodi Quick, Balanced und Deep für optimale Balance zwischen Antwortqualität und Geschwindigkeit
+- [Fehlerbehebung] Pfad-Abgleichsproblem bei der Wiederherstellung von KI-Datei-Schreibsicherungen behoben
+
+**Neue Funktionen:**
+- **Secret-Speicher** - Neues Secret-Verwaltungs-Widget zum Speichern und Verwalten sensibler Zugangsdaten. Zugriff auf Secrets über die CLI mit den Befehlen `wsh secret list/get/set`
+
+**Terminal-Verbesserungen:**
+- **Erweiterte Eingabebehandlung** - Bessere Unterstützung für interaktive CLI-Tools wie Claude Code. Umschalt+Enter fügt jetzt standardmäßig Zeilenumbrüche für mehrzeilige Befehle ein
+- **Bild-Einfüge-Unterstützung** - Bilder direkt ins Terminal einfügen (werden in temporären Dateien gespeichert, Pfad wird eingefügt). Funktioniert hervorragend mit Claude Code!
+- **IME-Fix** - Problem mit doppeltem Text beim Wechseln der Eingabemethode während chinesischer/japanischer/koreanischer Komposition behoben
+
+**Weitere Änderungen:**
+- Verbesserte Backend-Panic-Nachverfolgung für besseres Debugging
+- Speicherleck rund um sysinfo-Ereignisse behoben
+- WIP: Neues WaveApps-Builder-Framework (noch nicht veröffentlicht)
+- Paket-Updates und Abhängigkeitsanhebungen
+
+### v0.12.2 &mdash; 4. Nov 2025
+
+Wave v0.12.2 fügt Wave AI die Fähigkeit hinzu, Dateien zu bearbeiten. Vor dem Genehmigen einer Dateibearbeitung kannst du leicht einen Diff einsehen (dargestellt im Monaco-Editor-Diff-Viewer), und nach dem Genehmigen einer Bearbeitung kannst du die Änderung mit einem "Revert File"-Button leicht rückgängig machen.
+
+**Wave-AI-Updates:**
+- **Datei-Schreib-Tool** - Wave AI kann jetzt mit deiner Genehmigung Dateien erstellen und ändern
+- **Visuelle Diff-Vorschau** - Sieh genau, was sich ändert, bevor du Bearbeitungen genehmigst, dargestellt im Monaco Editor
+- **Einfaches Rückgängigmachen** - Dateiänderungen mit einem einfachen "Revert File"-Button rückgängig machen
+- **Dateien per Drag & Drop** - Dateien direkt aus dem Vorschau-Viewer zu Wave AI ziehen
+- **Verzeichnislisten** - `wsh ai` kann jetzt Verzeichnislisten an Chats anhängen
+- **Anpassbare Einstellungen** - Denk-Level und maximale Ausgabe-Tokens pro Chat steuern
+
+**Fehlerbehebungen & Verbesserungen:**
+- Ein erhebliches Speicherleck im RPC-System behoben
+- Schema-Validierung für Konfigurationsdateien funktioniert wieder
+- Verbesserte Tool-Beschreibungen und Eingabevalidierungen (laufen vor Tool-Genehmigungen)
+- Problem mit vorzeitigen Tool-Timeouts behoben
+- Regression mit PowerShell 5.x behoben
+- Problem mit Prompt-Caching beim Anhängen von Dateien behoben
+
+### v0.12.1 &mdash; 20. Okt 2025
+
+Patch-Release mit Fokus auf Verbesserungen der Shell-Integration und Wave-AI-Erweiterungen. Dieses Release behebt Syntax-Highlighting im Code-Editor und fügt umfangreiche Shell-Kontext-Verfolgung hinzu.
+
+**Shell-Integration & Kontext:**
+- **OSC-7-Unterstützung** - OSC-7-Unterstützung (aktuelles Arbeitsverzeichnis) für bash, zsh, fish und pwsh hinzugefügt. Wave verfolgt und stellt jetzt automatisch dein aktuelles Verzeichnis über Neustarts hinweg wieder her, sowohl für lokale als auch entfernte Terminals.
+- **Shell-Kontext-Verfolgung** - Shell-Integration für bash-, zsh- und fish-Shells implementiert. Wave verfolgt jetzt, wann deine Shell bereit ist, Befehle zu empfangen, den zuletzt ausgeführten Befehl und Exit-Codes. Dieser erweiterte Kontext ermöglicht besseres Terminal-Management und legt den Grundstein dafür, dass Wave AI Befehle intelligent schreiben und ausführen kann.
+
+**Wave-AI-Verbesserungen:**
+- Zusammenfassungen des Denkprozesses in der UI anzeigen, während auf KI-Antworten gewartet wird
+- Erweiterten Terminal-Kontext hinzugefügt - Wave AI hat jetzt Zugriff auf Shell-Status einschließlich aktuellem Verzeichnis, Befehlsverlauf und Exit-Codes
+- Feedback-Buttons (Daumen hoch/runter) für KI-Antworten hinzugefügt, um die Erfahrung zu verbessern
+- Kopieren-Button hinzugefügt, um KI-Antworten einfach in die Zwischenablage zu kopieren
+
+**Weitere Änderungen:**
+- Unterstützung für mobile User-Agent-Emulation für Web-Widgets [#2442](https://github.com/wavetermdev/waveterm/issues/2442)
+- [Fehlerbehebung] Abstand für Kopfzeilen-Buttons im Code-Editor behoben (Tailwind-Regression)
+- [Fehlerbehebung] Syntax-Highlighting in Code-Editor-Vorschau-Blöcken wiederhergestellt [#2427](https://github.com/wavetermdev/waveterm/issues/2427)
+- Paket-Updates und Abhängigkeitsanhebungen
+
+### v0.12.0 &mdash; 16. Okt 2025
+
+**Wave v0.12 ist da, mit Wave AI (Beta)!**
+
+Wave Terminal v0.12.0 führt eine komplett neu gestaltete KI-Erfahrung ein, angetrieben von OpenAI GPT-5. Das ist ein bedeutendes Upgrade und eine Modernisierung gegenüber Waves bisheriger KI-Integration, mit Multimodalitäts-Unterstützung, fortschrittlicher Tool-Integration und einer intuitiven neuen Oberfläche. Allein der Haupt-KI-PR umfasste 128 Commits und fügte über 13.000 Zeilen Code hinzu.
+
+**Wave-AI-Funktionen:**
+- **Neues ausklappbares Chat-Panel** - Zugriff auf Wave AI über Tastenkombinationen (Cmd-Shift-A oder Strg-Umschalt-0) von der linken Bildschirmseite
+- **Multimodale Eingabe** - Unterstützung für Bild-, PDF- und Textdatei-Anhänge
+- **Dateien per Drag & Drop** - Dateien einfach in den Chat ziehen, um sie anzuhängen
+- **Kommandozeilen-Integration** - Dateien und Befehlsausgaben direkt mit `wsh ai` an Wave AI senden
+- **Intelligenter Kontextwechsel** - Wave AI ermöglichen, in deine Widgets und dein Dateisystem zu sehen
+- **Integrierte Tools:**
+  - Websuche-Fähigkeiten
+  - Lokale Datei- und Verzeichnisoperationen
+  - Widget-Screenshots
+  - Zugriff auf Terminal-Scrollback
+  - Web-Navigation
+
+Wave AI befindet sich in einer aktiven Beta-Phase mit enthaltenem KI-Guthaben, während wir die Erfahrung weiter verfeinern. BYOK (Bring Your Own Key) wird verfügbar sein, sobald wir die Kernfunktionen stabilisiert und Feedback dazu gesammelt haben, was am besten funktioniert. Teile dein Feedback in unserem [Discord](https://discord.gg/XfvZ334gwU).
+
+Weitere Informationen und kommende Funktionen findest du in unserer [Wave-AI-Dokumentation](https://docs.waveterm.dev/waveai).
+
+**Weitere Verbesserungen:**
+- Neuer Onboarding-Ablauf, der Block-Vergrößerung, Wave AI und wsh view/edit-Fähigkeiten vorstellt
+- Neuer Befehl `wsh blocks list` zum Auflisten und Filtern von Blöcken nach Workspace, Tab oder Ansichtstyp
+- Fortgesetzte Migration von SCSS zu Tailwind v4
+- Paket-Upgrades und Abhängigkeits-Updates
+- Interne Code-Bereinigung und Refactoring
+
+### v0.11.6 &mdash; 22. Sep 2025
+
+Patch-Release zur Behebung eines Editor-Fehlers, wenn zwei Dateien in separaten Bearbeitungs-Widgets geöffnet werden. Fügt außerdem Mermaid-Unterstützung für Markdown-Blöcke hinzu.
+
+* WIP: Große KI-Überarbeitung kommt (Multimodalitäts-Unterstützung, Premium-Modelle und Tool-Unterstützung)
+* WIP: Integration des neuen Tsunami-Widget-Frameworks, um das Schreiben und Ausführen von Wave-Widgets zu vereinfachen
+* Viele Paket-Updates
+* Viel interne Bereinigung (Vorschau-Widget)
+* Weitere Migration zu Tailwind-v4-CSS
+* Build-Updates, Wechsel von yarn zu npm
+
+### v0.11.5 &mdash; 28. Aug 2025
+
+Ein weiteres Aufräum-Release, um Wave zu modernisieren und aktueller zu machen.
+
+* Der Wave-AI-Cloud-Proxy nutzt jetzt gpt-5-mini (Upgrade von gpt-4o-mini)
+* JWT-Problem beim Ausführen von "Wave Apps" aus Widgets behoben
+* Eine "$ENV:envvar:fallback"-Syntax zu den Konfigurationsdateien hinzugefügt, damit Waves Konfiguration Werte aus der Umgebung übernehmen kann (hauptsächlich, um Secrets aus den Konfigurationsdateien herauszuhalten)
+* Neue Einstellung, um die Anzeige von Overlay-Blocknummern beim Halten von Strg:Umschalt zu deaktivieren (`app:showoverlayblocknums`)
+* Neue Einstellung, damit Umschalt-Enter mit Tools wie Claude Code funktioniert (`term:shiftenternewline`)
+* Frontend auf React 19 aktualisiert
+* Weitere Teile des Frontends zu Tailwind v4 migriert (in Arbeit)
+* Universellen MacOS-Build entfernt. 90% der Mac-Nutzer sind mittlerweile auf Apple Silicon, sodass der universelle Build weniger wichtig ist (größere Dateigröße, komplizierterer Build-Prozess)
+* [Fehlerbehebung] Build-IDs im RPM-Build entfernt, um Konflikte mit Slack zu beheben
+* Einige Wave-v7-bewusste Upgrades und alte Codepfade entfernt
+* Interne Bereinigung, TypeScript-Fehler, Linting-Fixes usw.
+* Weitere diverse Go-/npm-Paket-Anhebungen
+
+### v0.11.4 &mdash; 19. Aug 2025
+
+Schnelles Patch-Release zur Aktualisierung von Paketen, Behebung einiger Sicherheitsprobleme (bei abhängigen Paketen) und einiger kleiner Fehlerbehebungen.
+
+* KI-Bibliotheken aktualisiert, GPT-5 wird jetzt in WaveAI unterstützt
+* Einstellung `ai:proxyurl` hinzugefügt, um Proxy-Zugriff (z. B. SOCKS) für KI-Zugriff zu ermöglichen
+
+### v0.11.3 &mdash; 2. Mai 2025
+
+Schnelles Patch-Release zur Aktualisierung von Paketen, Behebung einiger Sicherheitsprobleme (bei abhängigen Paketen) und einiger kleiner Fehlerbehebungen.
+
+### v0.11.2 &mdash; 8. März 2025
+
+Schnelles Patch-Release zur Behebung eines Backend-Panics und Rückgängigmachen einer Änderung, die WSL-Verbindungen zum Hängen brachte.
+
+### v0.11.1 &mdash; 28. Feb 2025
+
+Wave Terminal v0.11.1 fügt gegenüber v0.11.0 eine Menge neuer Funktionen hinzu (es hätte fast v0.12 werden können)!
+
+Die Hauptfunktion ist, dass unser Datei-/Vorschau-Widget jetzt das Durchsuchen von S3-Buckets unterstützt. Wir lesen Zugangsdaten direkt aus deiner ~/.aws/config, und du kannst jetzt einfach eines deiner AWS-Profile in unserem Verbindungs-Dropdown auswählen, um S3-Dateien anzusehen. Wir unterstützen sogar das Bearbeiten von S3-Textdateien mit unserem integrierten Editor.
+
+Außerdem viele weitere Funktionen und Fehlerbehebungen:
+
+- **S3-Bucket**-Verzeichnisansicht und Dateivorschau
+- **Dateien und Verzeichnisse per Drag & Drop** zwischen Wave-Verzeichnisansichten verschieben. Das funktioniert über Rechner hinweg und zwischen entfernten Rechnern und S3-Verbindungen.
+- JSON-Schema-Unterstützung für einige unserer Konfigurationsdateien hinzugefügt. Du erhältst jetzt Autovervollständigungs-Popups für Felder in unseren Dateien settings.json, widgets.json, ai.json und connections.json.
+- Neue Unterstützung für das Teilen von Blöcken -- Nutze Cmd-D und Cmd-Umschalt-D, um horizontal und vertikal zu teilen. Für mehr Kontrolle kannst du Strg-Umschalt-S und dann Hoch/Runter/Links/Rechts nutzen, um in die gewünschte Richtung zu teilen.
+- Block löschen (ohne ihn aus dem Layout zu entfernen). Mit Strg-Umschalt-D kannst du einen Block entfernen, während er im Layout bleibt. Du kannst dann an seiner Stelle ein neues Widget starten.
+- `wsh file` unterstützt jetzt das Kopieren von Dateien zwischen deinem lokalen Rechner, entfernten Rechnern und zu/von S3
+- Neues Analytics-Framework (ereignisbasiert statt zählerbasiert). Siehe die Telemetrie-Dokumentation für weitere Informationen.
+- Web-Lesezeichen! In deiner bookmarks.json-Datei bearbeiten, im Web-Widget mit Cmd+O öffnen
+- Änderungen an deiner ai.json-Voreinstellungsdatei wirken sich jetzt _sofort_ in KI-Widgets aus
+- Deutlich bessere Fehlerbehandlung und -meldungen bei Fehlern im Vorschau- oder Editor-Widget
+- `wsh ssh --new` hinzugefügt, um die neue SSH-Verbindung in einem neuen Widget zu öffnen
+- Neuer Befehl `wsh launch`, um ein beliebiges, in widget.json definiertes benutzerdefiniertes Widget zu öffnen
+- Bei Nutzung der Terminal-Mehrfacheingabe (Strg-Umschalt-I) wird eingefügter Text jetzt an alle Terminals gesendet
+- [Fehlerbehebung] Einige hängende Goroutinen behoben, wenn Befehle fehlschlugen oder ein Timeout hatten
+- [Fehlerbehebung] Einige Dateiendungs-MIME-Types behoben, um den Editor für mehr Dateitypen zu aktivieren
+- [Fehlerbehebung] Drücken von "Tab" ließ manchmal ein Widget aus dem Bildschirm scrollen und dadurch unbenutzbar werden - behoben
+- [Fehlerbehebung] XDG-Variablen gelangen nicht mehr in Terminal-Widgets
+- Tailwind-CSS- und shadcn-Unterstützung hinzugefügt, um neue Widgets schneller bauen zu können
+- Bessere interne Widget-Abstraktionen
+
+### v0.11.0 &mdash; 24. Jan 2025
+
+Wave Terminal v0.11.0 enthält eine grundlegende Überarbeitung unserer Verbindungsinfrastruktur, mit Änderungen sowohl an unserem Backend als auch an den Remote-Dateiprotokollsystemen, zusätzlich zu zahlreichen Funktionen, Fehlerbehebungen und Stabilitätsverbesserungen.
+
+Eine zentrale Neuerung in diesem Release ist das neue Shell-Initialisierungssystem, das die Anpassung deiner Shell-Umgebung über lokale und entfernte Verbindungen hinweg ermöglicht. Du kannst jetzt Umgebungsvariablen und shell-spezifische Init-Skripte sowohl pro Block als auch pro Verbindung konfigurieren.
+
+Für den täglichen Gebrauch haben wir Suchfunktionen sowohl für Terminal- als auch für Web-Blöcke hinzugefügt, zusammen mit einer Terminal-Mehrfacheingabefunktion für gleichzeitige Eingabe an alle Terminals innerhalb eines Tabs. Wir haben außerdem Unterstützung für Google Gemini in Wave AI hinzugefügt, was unsere Suite an KI-Integrationen erweitert.
+
+Hinter den Kulissen haben wir unser Remote-Dateiprotokoll neu gestaltet und damit den Grundstein für die kommende S3-Unterstützung (und S3-kompatible Systeme) in unserem Vorschau-Widget gelegt. Diese architektonische Änderung ebnet den Weg, um in Zukunft weitere Datei-Backends hinzuzufügen.
+
+- **Anpassung der Shell-Umgebung** -- Konfiguriere deine Shell-Umgebung mit Umgebungsvariablen und Init-Skripten, mit Unterstützung für lokale und entfernte Verbindungen
+- **Verbesserungen am Verbindungs-Backend** -- Große Überarbeitung mit verbesserter Shell-Erkennung, besserem Fehler-Logging und weniger 2FA-Abfragen bei Nutzung von ForceCommand
+- **Multi-Shell-Unterstützung** -- Erweiterte Unterstützung für bash-, zsh-, pwsh- und fish-Shells mit shell-spezifischen Initialisierungsfähigkeiten
+- **Terminal-Suche** -- nutze Cmd-F, um Text in Terminal-Widgets zu suchen
+- **Web-Suche** -- nutze Cmd-F, um Text in Web-Ansichten zu suchen
+- **Terminal-Mehrfacheingabe** -- Nutze Strg-Umschalt-I, um Mehrfacheingabe an alle Terminals im selben Tab zu ermöglichen
+- **Wave AI unterstützt jetzt Google Gemini**
+- Verbesserte WSL-Unterstützung mit wsh-freien Verbindungsoptionen
+- Inline-Debugging-Informationen für Verbindungen hinzugefügt
+- Probleme mit der Dateiberechtigungsbehandlung unter Windows-Systemen behoben
+- Verbindungsbezogene Popups werden jetzt nur an das auslösende Fenster ausgeliefert
+- Verbesserte Timeout-Behandlung für SSH-Verbindungen, die 2FA-Abfragen erfordern
+- Behandlung der Escape-Taste in globalen Ereignis-Handlern behoben (Schließen von Modals)
+- Die Verzeichnisvorschau füllt jetzt die gesamte Blockbreite
+- Benutzerdefinierte Widgets können jetzt im vergrößerten Modus gestartet werden
+- Verschiedene Verbesserungen der Workspace-UX rund um Schließen/Löschen
+- file:///-URLs funktionieren jetzt im Web-Widget
+- Maximale Dateigröße für `wsh ai` auf 50k erhöht
+- Maximal zulässiges term:scrollback auf 50k Zeilen erhöht
+- Verbindungen können jetzt vollständig in connections.json definiert werden, ohne auf ~/.ssh/config angewiesen zu sein
+- Option hinzugefügt, um Dateien für die lokale Verbindung im externen Dateibetrachter anzuzeigen
+- Neue Option "New Window" beim Rechtsklick auf das MacOS-Dock-Icon hinzugefügt
+- [Build] Zu kostenlosen Ubuntu-ARM-Runnern für bessere ARM64-Build-Unterstützung gewechselt
+- [Build] Windows-Builds nutzen jetzt zig, was das Windows-Entwicklungssetup vereinfacht
+- [Fehlerbehebung] Das Verbindungs-Dropdown wird jetzt auch befüllt, wenn die ssh-Konfiguration fehlt oder ungültig ist
+- [Fehlerbehebung] Bracketed-Paste-Modus standardmäßig deaktiviert (Konfigurationsoption, um ihn wieder zu aktivieren)
+- [Fehlerbehebung] Timeout für `wsh ssh` auf 60s erhöht
+- [Fehlerbehebung] Fix für das Sysinfo-Widget bei der Anzeige einer sehr großen Anzahl von CPU-Diagrammen
+- [Fehlerbehebung] XDG-Variablen für Snap-Installationen behoben
+- [Fehlerbehebung] SSH-Flag IdentitiesOnly wird jetzt beachtet (nützlich, wenn viele Schlüssel im ssh-agent geladen sind)
+- [Fehlerbehebung] Bessere Einrichtung der Shell-Umgebungsvariablen beim Ausführen lokaler Shells
+- [Fehlerbehebung] Vorschau für große Textdateien behoben
+- [Fehlerbehebung] URLs im Terminal behoben (wieder anklickbar)
+- [Fehlerbehebung] Windows-URLs funktionieren jetzt korrekt für Wave-Hintergrundbilder
+- [Fehlerbehebung] Verbindungen starten ohne wsh, wenn der Unix-Domain-Socket nicht geöffnet werden kann
+- [Fehlerbehebung] Die Verbindungsstatusliste leuchtet jetzt korrekt für aktuell verbundene Verbindungen
+- [Fehlerbehebung] en_US.UTF-8 wird genutzt, wenn die angeforderte LANG in deinem Terminal nicht verfügbar ist
+- Weitere Fehlerbehebungen, Performance-Verbesserungen und Abhängigkeits-Updates
+
+### v0.10.4 &mdash; 20. Dez 2024
+
+Schnelles Update mit Fehlerbehebungen und neuen Konfigurationsoptionen
+
+- Konfigurationsoptionen "window:confirmclose" und "window:savelastwindow" hinzugefügt
+- [Fehlerbehebung] Defekte Scrollleiste im KI-Widget behoben
+- [Fehlerbehebung] Standardpfad für die wsh-Shell-Erkennung behoben (genutzt bei Remote-Verbindungen)
+- Abhängigkeits-Updates
+
+### v0.10.3 &mdash; 19. Dez 2024
+
+Schnelles Update zu v0.10 mit neuen Funktionen und Fehlerbehebungen.
+
+- Unterstützung für globale Tastenkombination [Dokumentation](https://docs.waveterm.dev/config#customizable-systemwide-global-hotkey)
+- Konfiguration hinzugefügt, um die Schriftgröße für Markdown, KI-Chat und den Vorschau-Editor zu überschreiben [Dokumentation](https://docs.waveterm.dev/config)
+- Möglichkeit hinzugefügt, eine unabhängige Zoomstufe für die Web-Ansicht festzulegen (Rechtsklick auf die Block-Kopfzeile)
+- Neuer Befehl `wsh wavepath`, um das Konfigurationsverzeichnis, das Datenverzeichnis und die Log-Datei zu öffnen
+- [Fehlerbehebung] Absturz behoben, wenn /etc/sshd_config eine nicht unterstützte Match-Direktive enthielt (am häufigsten bei Fedora)
+- [Fehlerbehebung] Workspaces sind jetzt konsistenter über Fenster hinweg, schließt das zugehörige Fenster, wenn Workspaces gelöscht werden
+- [Fehlerbehebung] zsh unter WSL behoben
+- [Fehlerbehebung] Langjährigen Fehler behoben, bei dem manchmal Steuersequenzen in der Terminal-Ausgabe erschienen, wenn zwischen Tabs gewechselt wurde
+- Viele neue Beispiele in der Dokumentation für Shell-Überschreibungen, Voreinstellungen, Widgets und Verbindungen
+- Weitere Fehlerbehebungen und UI-Updates
+
+(Hinweis: Die Release Notes von v0.10.2 und v0.10.3 wurden zusammengeführt)
+
+### v0.10.1 &mdash; 12. Dez 2024
+
+Schnelles Update zur Behebung der Workspace-App-Menü-Aktionen. Behebt außerdem den Workspace-Wechsel, sodass immer ein neues Fenster geöffnet wird, wenn er von einem Nicht-Workspace-Fenster aus aufgerufen wird. Das verringert die Gefahr, versehentlich die Tabs eines Nicht-Workspace-Fensters zu verlieren.
+
+### v0.10.0 &mdash; 11. Dez 2024
+
+Wave Terminal v0.10.0 führt Workspaces ein, wodurch die Verwaltung mehrerer Arbeitsumgebungen einfacher wird. Wir haben leistungsstarke neue Befehlsausführungsfähigkeiten mit `wsh run` hinzugefügt, mit denen du Befehle in dedizierten Blöcken starten und steuern kannst. Dieses Release bringt außerdem deutliche Verbesserungen bei SSH mit einem neuen Konfigurationssystem für Verbindungen zur Verwaltung deiner entfernten Umgebungen.
+
+- **Workspaces**: Organisiere deine Arbeit in separate Umgebungen, jede mit eigenen Tabs, Layouts und Einstellungen
+- **Command Blocks**: Neuer Befehl `wsh run` zum Starten von Terminal-Befehlen in dedizierten Blöcken, mit Unterstützung für Vergrößerung, automatisches Schließen und Ausführungssteuerung ([Dokumentation](https://docs.waveterm.dev/wsh-reference#run))
+- **Verbindungen**: Neues Konfigurationssystem zur Verwaltung von SSH-Verbindungen, mit Unterstützung für wsh-freien Betrieb, Themes pro Verbindung und mehr ([Dokumentation](https://docs.waveterm.dev/connections))
+- Verbessertes Tab-Management mit besserem Wechselverhalten und Kontextmenüs (viele Fehlerbehebungen)
+- Neue Tab-Funktionen einschließlich angehefteter Tabs und Verbesserungen beim Drag & Drop
+- Dateien/Verzeichnisse direkt in der Verzeichnisvorschau erstellen, umbenennen und löschen
+- Versucht eine wsh-freie Verbindung als Fallback, wenn die wsh-Installation oder -Ausführung fehlschlägt
+- Neues Flag `-i`, um Identitätsdateien mit dem Befehl `wsh ssh` hinzuzufügen
+- Perplexity-API-Integration hinzugefügt ([Dokumentation](https://docs.waveterm.dev/faq#perplexity))
+- Befehl `wsh setbg` für die Hintergrundverwaltung ([Dokumentation](https://docs.waveterm.dev/wsh-reference#setbg))
+- Von Less zu SCSS für das Styling gewechselt
+- [Fehlerbehebung] Tab-Flackern beim Tab-Wechsel behoben
+- [Fehlerbehebung] Größenänderungsverhalten des WaveAI-Textbereichs korrigiert
+- [Fehlerbehebung] Probleme mit gleichzeitigem Start von Block-Controllern behoben
+- [Fehlerbehebung] Vorschau-Blöcke für nicht initialisierte Verbindungen behoben
+- [Fehlerbehebung] Nicht reagierende Kontextmenüs behoben
+- [Fehlerbehebung] Verbindungsfehler im Hilfe-Block behoben
+- Go-Toolchain auf 1.23.4 aktualisiert
+- Viel neue Dokumentation, darunter neue Seiten für [Erste Schritte](https://docs.waveterm.dev/gettingstarted), [KI-Voreinstellungen](https://docs.waveterm.dev/ai-presets) und den [wsh-Überblick](https://docs.waveterm.dev/wsh)
+- Weitere Fehlerbehebungen, Performance-Verbesserungen und Abhängigkeits-Updates
+
+### v0.9.3 &mdash; 20. Nov 2024
+
+Neues Minor-Release, das Waves verbundene Computing-Erweiterungen einführt. Wir haben neue `wsh`-Befehle eingeführt, mit denen du Variablen und Dateien speichern und über Terminal-Sitzungen hinweg (sowohl auf lokalen als auch entfernten Rechnern) darauf zugreifen kannst.
+
+- `wsh setvar/getvar` zum Abrufen und Setzen von Variablen -- [Dokumentation](https://docs.waveterm.dev/wsh-reference#getvarsetvar)
+- `wsh file`-Operationen (cat, write, append, rm, info, cp und ls) -- [Dokumentation](https://docs.waveterm.dev/wsh-reference#file)
+- Verbesserte Golang-Panic-Behandlung, um Backend-Abstürze zu verhindern
+- Verbessertes SSH-Konfigurations-Logging und Behebung eines Fehlers bei wiederverwendeten Verbindungen
+- Telemetrie aktualisiert, um zusätzliche Zähler zu verfolgen
+- Neue Konfigurationseinstellungen (unter "window:magnifiedblock") zur Steuerung von Rändern und Anzeige vergrößerter Blöcke
+- Neue Block-/Zonen-Aliase (client, global, block, workspace, temp)
+- `wsh ai`-Dateianhänge werden jetzt mit spezieller Behandlung im KI-Block dargestellt
+- Neuer flüchtiger Blocktyp zum Erstellen von modalen Widgets, die das darunterliegende Layout nicht stören
+- Das Bearbeiten der KI-Voreinstellungsdatei aus dem Wave-AI-Block öffnet jetzt einen flüchtigen Editor
+- Ein Klick außerhalb eines vergrößerten Blocks verkleinert ihn jetzt wieder
+- Neuer Button zum Leeren des KI-Chats (auch an Cmd-L gebunden)
+- Neuer Button zum Zurücksetzen von Terminal-Befehlen in benutzerdefinierten cmd-Widgets
+- [Fehlerbehebung] Das Voreinstellungsverzeichnis wurde unter Windows nicht korrekt geladen
+- [Fehlerbehebung] Vergrößerte Blöcke wurden beim Start nicht korrekt angezeigt
+- [Fehlerbehebung] Fensterdeckkraft und Hintergrundfarbe wurden nicht in allen Fällen korrekt angewendet
+- [Fehlerbehebung] Terminal-Theming beim Anwenden globaler Standardwerte behoben [#1287](https://github.com/wavetermdev/waveterm/issues/1287)
+- MacOS 10.15 (Catalina) wird nicht mehr unterstützt
+- Weitere Fehlerbehebungen, Dokumentationsverbesserungen und Abhängigkeitsanhebungen
+
+### v0.9.2 &mdash; 11. Nov 2024
+
+Neues Minor-Release mit Fehlerbehebungen und neuen Funktionen! Der Fehler beim Vollbildmodus von Wave wurde behoben (betraf auch bestimmte Fenstermanager wie Hyprland). Wir haben außerdem viel Arbeit in die Dokumentations-Website (https://docs.waveterm.dev) gesteckt, einschließlich der Dokumentation, wie [Widgets](./widgets) und Voreinstellungen funktionieren!
+
+- Dokumentation aktualisiert
+- Wave AI unterstützt jetzt die Anthropic-API! Schau in die [FAQ](./faq), wie du die Claude-Modelle mit Wave AI nutzt.
+- defaultwidgets.json entfernt und in widgets.json vereinheitlicht. Macht es einfacher, die Standard-Widgets zu überschreiben.
+- Neue Resolver für den `-b`-Parameter in `wsh`. "tab:N" für den Zugriff auf den n-ten Tab, "[view]" und "[view]:N" für den Zugriff auf Blöcke eines bestimmten Ansichtstyps.
+- Neuer Befehl `wsh ai`, um KI-Chats (und Dateien) direkt an einen neuen oder bestehenden KI-Block zu senden
+- Verbesserungen an wsh setmeta/getmeta. setmeta kann jetzt eine JSON-Datei entgegennehmen (auch von stdin lesen), außerdem bessere Ausgabeformate für getmeta (kompatibel mit setmeta)
+- [Fehlerbehebung] Maximale Completion-Tokens in der OpenAI-API gesetzt, sodass wir jetzt mit o1-Modellen arbeiten können (auch Fallback auf Nicht-Streaming-Modus)
+- [Fehlerbehebung] Inhaltsgrößenänderung beim Wechsel in den "Vollbild"-Modus behoben. Dieser Fehler betraf auch bestimmte Fenstermanager (wie Hyprland)
+- Viele weitere kleine Fehlerbehebungen, Dokumentations-Updates und Abhängigkeitsanhebungen
+
+### v0.9.1 &mdash; 1. Nov 2024
+
+Kleines Bugfix-Release als Nachfolger zum v0.9.0-Build. Viele Probleme behoben (besonders für Windows).
+
+- CLI-Anwendungen, die Mikrofon-, Kamera- oder Standortzugriff benötigen, funktionieren jetzt unter MacOS. Du siehst ein Sicherheits-Popup in Wave zum Erlauben/Ablehnen [#1086](https://github.com/wavetermdev/waveterm/issues/1086)
+- `wsh version -v` kann jetzt genutzt werden, um die neuen Daten-/Konfigurationsverzeichnisse auszugeben
+- Stellt die alte T1-, T2-, T3-, ...-Tab-Benennungslogik wieder her
+- Vorübergehend zurück zur "Titelleiste" unter Windows, um einen Fehler zu umgehen, bei dem die Fenstersteuerelemente unsere Tabs überlagerten (an einer echten Lösung für das nächste Release wird gearbeitet)
+- Es gibt eine neue Einstellung im Editor, um Zeilenumbruch zu aktivieren/deaktivieren [#1038](https://github.com/wavetermdev/waveterm/issues/1038)
+- Strg-S speichert jetzt Dateien in codeedit [#1081](https://github.com/wavetermdev/waveterm/issues/1081)
+- [#1020](https://github.com/wavetermdev/waveterm/issues/1020) es gibt jetzt eine Voreinstellungs-Konfigurationsoption, um die Farbe des aktiven Rahmens in Tab-Themes zu ändern
+- [Fehlerbehebung] Mehrere Fixes für [#1167](https://github.com/wavetermdev/waveterm/issues/1167), um Tab-Verlust bei Updates zu beheben
+- [Fehlerbehebung] Die Windows-App stürzte beim Öffnen des View-Menüs wegen eines fehlerhaften Accelerator-Keys ab
+- [Fehlerbehebung] Die Auto-Updater-Meldungen in der Tableiste sind jetzt beim Tab-Wechsel konsistenter, und Fehler werden nicht mehr angezeigt, wenn das Netzwerk getrennt ist
+- [Fehlerbehebung] Der Vollbildmodus zeigt jetzt tatsächlich Tabs im Vollbild an
+- [Fehlerbehebung] [#1175](https://github.com/wavetermdev/waveterm/issues/1175) .awk-Dateien können jetzt bearbeitet werden
+- [Fehlerbehebung] [#1066](https://github.com/wavetermdev/waveterm/issues/1066) Das Anwenden eines Standard-Themes aktualisiert den Hintergrund jetzt korrekt ohne Aktualisierung
+
+### v0.9.0 &mdash; 28. Okt 2024
+
+Neues größeres Wave-Terminal-Release! Wave-Tabs werden jetzt zwischengespeichert. Der Tab-Wechsel ist
+jetzt deutlich schneller, und Webview-Status, Editor-Status und Scroll-Positionen bleiben jetzt
+über Tab-Wechsel hinweg erhalten. Wir haben außerdem native WSL2-Unterstützung. Du kannst native Wave-Verbindungen
+zu deinen Windows-WSL2-Distributionen über den Verbindungs-Button erstellen.
+
+Wir haben außerdem den Grundstein für einige große Funktionen gelegt, die in den
+kommenden Wochen veröffentlicht werden, darunter Workspaces, KI-Verbesserungen und benutzerdefinierte Widgets.
+
+Viele weitere kleinere Änderungen und Fehlerbehebungen. Die vollständige Liste der PRs findest du unter https://github.com/wavetermdev/waveterm/releases/tag/v0.9.0
+
+### v0.8.13 &mdash; 24. Okt 2024
+
+- Wave ist jetzt als Snap für Linux-Nutzer verfügbar! Du findest es [im Snap Store](https://snapcraft.io/waveterm).
+- Wave ist jetzt über den Windows Package Manager verfügbar! Installation über `winget install CommandLine.Wave`
+- "term:fontsize" kann jetzt genutzt werden, um die Schriftgröße eines einzelnen Terminal-Blocks zu überschreiben (auch im Kontextmenü)
+- Wir erlauben jetzt gemischte Groß-/Kleinschreibung bei Hostnamen für Verbindungen, um mit der ssh-Konfiguration kompatibel zu sein
+- Das Linux-App-Icon wurde aktualisiert, um dem Windows-Icon zu entsprechen
+- [Fehlerbehebung] Fehler behoben, der manchmal dazu führte, dass beim Wechseln zwischen Tabs Escape-Sequenzen angezeigt wurden
+- [Fehlerbehebung] Problem behoben, bei dem der Vorschau-Block temporäre Dateien nicht bereinigte (nur Windows)
+- [Fehlerbehebung] Chrome-Sandbox-Berechtigungsfehler unter Linux behoben
+- [Fehlerbehebung] Beendigungslogik unter MacOS/Linux behoben, die manchmal verwaiste Prozesse überleben ließ
+
+### v0.8.12 &mdash; 18. Okt 2024
+
+- Unterstützung für mehrere KI-Konfigurationen hinzugefügt! Du kannst jetzt Open AI parallel zu Ollama-Modellen betreiben. KI-Voreinstellungen können in presets.json erstellt werden, und du kannst mit einem neuen Dropdown im KI-Widget einfach zwischen ihnen wechseln
+- WebSocket-Wiederverbindungsfehler behoben. Dies führte manchmal dazu, dass sich das Terminal beim Aufwachen aus dem Ruhezustand aufhängte
+- Speicher-Diagramme und Pro-CPU-Diagramme zum sysinfo-Widget hinzugefügt (und von cpuplot umbenannt)
+- Einen neuen großen roten "Config Error"-Button hinzugefügt, wenn Parse-Fehler in der Konfigurations-JSON-Datei auftreten
+- Das Vorschau-/CodeEdit-Widget zeigt jetzt Fehler (geschlängelte Linien) an, wenn JSON- oder YAML-Dateien nicht geparst werden können
+- Neues App-Icon für Windows, das besser den Fluent-UI-Standards entspricht
+- Kopieren-bei-Auswahl für das Terminal hinzugefügt (standardmäßig aktiviert, kann mit "term:copyonselect" deaktiviert werden)
+- Button zum Stummschalten von Audio in Webviews hinzugefügt
+- Rechtsklick-Option "Open Clipboard URL" hinzugefügt, um einfach eine in der Systemzwischenablage gespeicherte URL in einer Webview zu öffnen
+- [Fehlerbehebung] Leere "Help"-Seiten beim Aufwachen aus dem Ruhezustand oder Neustart der App behoben
+
+### v0.8.11 &mdash; 10. Okt 2024
+
+Hotfix-Release zur Behebung einiger in v0.8.10 eingeführter Fehler
+
+- Behebt eine Regression in v0.8.10, die dazu führte, dass neue Tabs manchmal leer und defekt erschienen
+- Layout-Fixes für die Abstände im KI-Widget
+- Die Terminal-Scrollleiste ist jetzt halbtransparent und überlagert die letzte Spalte
+- Behebt die anfängliche Fenstergröße (beim ersten Start) sowohl für kleinere als auch größere Bildschirme
+- Eine "Nicht erneut fragen"-Checkbox für die Installation von `wsh` auf entfernten Rechnern hinzugefügt (setzt ein neues Konfigurations-Flag)
+- Verhindert, dass die App herabgestuft wird, wenn du einen Beta-Build installierst. Die Installation eines Beta-Builds wechselt dich jetzt in den Beta-Update-Kanal.
+
+### v0.8.10 &mdash; 9. Okt 2024
+
+Kleines Bugfix-Release (aber mit einigen neuen Funktionen).
+
+- Unterstützung für Azure AI hinzugefügt [siehe FAQ](https://docs.waveterm.dev/faq#how-can-i-connect-to-azure-ai)
+- KI-Fehler erscheinen jetzt im Chat
+- Unter MacOS öffnet das Drücken von "Leertaste" in der Verzeichnisvorschau die ausgewählte Datei in Quick Look
+- [Fehlerbehebung] Transparenz-Einstellungen behoben
+- [Fehlerbehebung] Problem mit nicht standardmäßigen Portnummern im Verbindungs-Dropdown behoben
+- [Fehlerbehebung] Problem mit eingebetteter Docsite behoben (lieferte 404 nach Aktualisierung)
+
+### v0.8.9 &mdash; 8. Okt 2024
+
+Viele Fehlerbehebungen und neue Funktionen!
+
+- Neue "Help"-Ansicht -- nutzt eine eingebettete Version unserer Dokumentations-Website -- https://docs.waveterm.dev
+- [Breaking] wsh getmeta, wsh setmeta und wsh deleteblock nehmen jetzt eine blockid über einen `-b`-Parameter statt als Positionsparameter entgegen
+- Erlaubt Metadaten, Block-Icon, -Kopfzeile und -Text zu überschreiben (frame:title, frame:icon und frame:text)
+- Home-Button im Web-Widget, um zur Startseite zurückzukehren, Option, eine Standard-Startseite für die gesamte App oder nur für den angegebenen Block festzulegen
+- Checkpointing des Terminals seltener durchgeführt, um die Häufigkeit des Ausgabefehlers zu reduzieren (an einer vollständigen Lösung wird noch gearbeitet)
+- Neue Terminal-Themes -- Warm Yellow und One Dark Pro
+- Wir unterstützen jetzt GitHub-Flavored-Markdown-Hinweise
+- Befehl `wsh notify`, um eine Desktop-Benachrichtigung zu senden
+- `wsh createblock`, um über die CLI einen beliebigen Block zu erstellen
+- Rechtsklick zum "Bild speichern" in der Webview
+- `wsh edit` erlaubt jetzt das Öffnen neuer Dateien (solange das übergeordnete Verzeichnis existiert)
+- 8 neue lustige Tab-Hintergrund-Voreinstellungen hinzugefügt (Rechtsklick auf einen beliebigen Tab und "Backgrounds" auswählen, um sie auszuprobieren)
+- [Konfiguration] neuer Konfigurationsschlüssel "term:scrollback", um die Anzahl der Scrollback-Zeilen für Terminals festzulegen. Nutze "-1", um 0 zu setzen, Maximum ist 10000.
+- [Konfiguration] neuer Konfigurationsschlüssel "term:theme", um das Standard-Terminal-Theme für alle neuen Terminals festzulegen
+- [Konfiguration] neuer Konfigurationsschlüssel "preview:showhiddenfiles", um die Standardeinstellung "versteckte Dateien anzeigen" für die Vorschau festzulegen
+- [Fehlerbehebung] Formatierungsproblem mit `wsh getmeta` behoben
+- [Fehlerbehebung] Startproblem unter Linux behoben, wenn das Home-Verzeichnis ein NFS-Mount ist
+- [Fehlerbehebung] Cursorfarbe in Terminal-Themes funktioniert jetzt korrekt
+- [Fehlerbehebung] Einige doppelte Scrollleisten bei der Anzeige von Markdown-Inhalten behoben
+- [Fehlerbehebung] Beendigungsablauf verbessert, um wavesrv-Logs besser zu erfassen
+- [Fehlerbehebung] Alt+G-Tastenkombination für Linux/Windows behoben
+- Weitere diverse Fehlerbehebungen, Bereinigungen und Sicherheitsfixes
+
+### v0.8.8 &mdash; 1. Okt 2024
+
+Schnelles Patch-Release zur Behebung der "Alt"-Tastenkombinationen unter Windows/Linux. Bringt außerdem eine enorme Performance-Verbesserung bei der KI-Streaming-Geschwindigkeit.
+
+### v0.8.7 &mdash; 30. Sep 2024
+
+Schnelles Patch-Release zur Fehlerbehebung:
+
+- Behebt Windows-SSH-Verbindungen (ungültiger Pfad beim Versuch, wsh-Tools zu installieren)
+- Behebt ein Problem bei der Auflösung von `~` in Windows-Pfaden, `~\` funktioniert jetzt statt nur `~/`
+- Versucht, die Hintergrundfarbe für Webseiten zu beheben. Ruft das Meta-Tag für color-scheme ab und setzt bei erkanntem Dark-Modus einen schwarzen Hintergrund (behebt ein Darstellungsproblem bei rohen githubusercontent-Dateien)
+- Unseren useDimensions-Hook so behoben, dass er korrekt auslöst. Behebt einige Größenprobleme, einschließlich der konsistenten Anzeige von Fehlermeldungen bei fehlgeschlagenen SSH-Verbindungen
+- "data:"-URLs in benutzerdefinierten Tab-Hintergründen erlaubt
+- Der Alias "tab" für die UUID des aktuellen Tabs bei Nutzung von wsh
+- [BUILD] Generierte Dateien werden nur bedingt geschrieben, wenn sie aktualisiert wurden
+
+### v0.8.6 &mdash; 26. Sep 2024
+
+Ein weiteres schnelles Hotfix-Update. Behebt ein Problem, bei dem das Fenster beim nächsten Start komplett leer wiederhergestellt wurde, wenn alle Tabs in einem Fenster gelöscht worden waren.
+
+Außerdem, als Bonus, haben wir Unterstützung für die fish-Shell hinzugefügt!
+
+### v0.8.5 &mdash; 25. Sep 2024
+
+Hotfix, Downgrade der `jotai`-Bibliothek. Das Upgrade verursachte eine erhebliche Regression in codeedit, durch die
+Nutzer keine Dateien mehr bearbeiten konnten.
+
+### v0.8.4 &mdash; 25. Sep 2024
+
+- Eine Einstellung `window:disablehardwareacceleration` hinzugefügt, um native Hardwarebeschleunigung zu deaktivieren
+- Neues Startmodell für Legacy-Nutzer, das ihnen die Option gibt, WaveLegacy herunterzuladen
+- WAVETERM_HOME konsistent für das Home-Verzeichnis genutzt
+
+### v0.8.3 &mdash; 25. Sep 2024
+
+Weitere Hotfixes für Linux-Nutzer. Wir binden jetzt gegen eine ältere Version von glibc und nutzen
+den zig-Compiler unter Linux (die neuere Version verhinderte die Ausführung auf älteren Distributionen).
+Behebt außerdem ein Berechtigungsproblem bei der Installation über .deb. Es gibt außerdem einen neuen Konfigurationswert
+`window:nativetitlebar`, der die native Titelleiste unter Windows/Linux wiederherstellt.
+
+### v0.8.2 &mdash; 24. Sep 2024
+
+Hotfix, behebt einen üblen Absturz beim Start für Linux-Nutzer (dynamisches Linking, aber mit der netcgo-DNS-Bibliothek)
+
+### v0.8.1 &mdash; 23. Sep 2024
+
+Kleines Aufräum-Release.
+
+- Zahlenverarbeitung für bestimmte Konfigurationsdateiwerte behoben
+- Link zur Dokumentations-Website hinzugefügt
+- Neuer Zurück-Button für die Verzeichnisansicht hinzugefügt
+- Telemetrie-Fixes
+
+### v0.8.0 &mdash; 20. Sep 2024
+
+**Großes neues Release von Wave Terminal**
+
+Der neue Build ist ein Neuanfang und ein klarer Bruch mit der aktuellen Version. Daher werden dein Verlauf, deine Einstellungen und deine Konfiguration nicht übernommen. Wenn du weiterhin die Legacy-Version nutzen möchtest, musst du sie separat herunterladen.
