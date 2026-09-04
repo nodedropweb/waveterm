@@ -117,6 +117,11 @@
         "workspaceSwitcher": "Workspace Switcher"
     },
     "widgets": {
+        "terminal": "terminal",
+        "files": "files",
+        "web": "web",
+        "sysinfo": "sysinfo",
+        "processes": "processes",
         "settingsAndHelp": "Settings & Help",
         "configErrors": "Config Errors",
         "noLocalAppsFound": "No local apps found",

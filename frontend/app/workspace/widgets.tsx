@@ -17,6 +17,7 @@ import {
     useInteractions,
 } from "@floating-ui/react";
 import clsx from "clsx";
+import type { TFunction } from "i18next";
 import { useAtomValue } from "jotai";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -61,22 +62,48 @@ async function handleWidgetSelect(widget: WidgetConfigType, env: WidgetsEnv) {
     env.createBlock(blockDef, widget.magnified);
 }
 
+// Wave's built-in default widgets (pkg/wconfig/defaultconfig/widgets.json) carry
+// plain-English labels as data, not i18n resources. Translate them only while a
+// user hasn't overridden the default label, so customized widgets.json entries
+// are left alone.
+function getTranslatedWidgetLabel(widget: WidgetConfigType, t: TFunction): string {
+    const view = widget.blockdef?.meta?.view;
+    if (view === "term" && widget.label === "terminal") {
+        return t("widgets.terminal");
+    }
+    if (view === "preview" && widget.blockdef?.meta?.file === "~" && widget.label === "files") {
+        return t("widgets.files");
+    }
+    if (view === "web" && widget.label === "web") {
+        return t("widgets.web");
+    }
+    if (view === "sysinfo" && widget.label === "sysinfo") {
+        return t("widgets.sysinfo");
+    }
+    if (view === "processviewer" && widget.label === "processes") {
+        return t("widgets.processes");
+    }
+    return widget.label;
+}
+
 const Widget = memo(({ widget, mode, env }: WidgetPropsType) => {
+    const { t } = useTranslation();
     const [isTruncated, setIsTruncated] = useState(false);
     const labelRef = useRef<HTMLDivElement>(null);
+    const label = getTranslatedWidgetLabel(widget, t);
 
     useEffect(() => {
         if (mode === "normal" && labelRef.current) {
             const element = labelRef.current;
             setIsTruncated(element.scrollWidth > element.clientWidth);
         }
-    }, [mode, widget.label]);
+    }, [mode, label]);
 
     const shouldDisableTooltip = mode !== "normal" ? false : !isTruncated;
 
     return (
         <Tooltip
-            content={widget.description || widget.label}
+            content={widget.description || label}
             placement="left"
             disable={shouldDisableTooltip}
             divClassName={clsx(
@@ -89,12 +116,12 @@ const Widget = memo(({ widget, mode, env }: WidgetPropsType) => {
             <div style={{ color: widget.color }}>
                 <i className={makeIconClass(widget.icon, true, { defaultIcon: "browser" })}></i>
             </div>
-            {mode === "normal" && !isBlank(widget.label) ? (
+            {mode === "normal" && !isBlank(label) ? (
                 <div
                     ref={labelRef}
                     className="text-xxs mt-0.5 w-full px-0.5 text-center whitespace-nowrap overflow-hidden text-ellipsis"
                 >
-                    {widget.label}
+                    {label}
                 </div>
             ) : null}
         </Tooltip>
