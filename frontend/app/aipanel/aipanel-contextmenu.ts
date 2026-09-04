@@ -7,6 +7,7 @@ import { isDev } from "@/app/store/global";
 import { globalStore } from "@/app/store/jotaiStore";
 import { RpcApi } from "@/app/store/wshclientapi";
 import { TabRpcClient } from "@/app/store/wshrpcutil";
+import i18n from "@/util/i18n/i18n";
 import { WaveAIModel } from "./waveai-model";
 
 export async function handleWaveAIContextMenu(e: React.MouseEvent, showCopy: boolean): Promise<void> {
@@ -27,7 +28,7 @@ export async function handleWaveAIContextMenu(e: React.MouseEvent, showCopy: boo
     }
 
     menu.push({
-        label: "New Chat",
+        label: i18n.t("aiMode.newChat"),
         click: () => {
             model.clearChat();
         },
@@ -47,7 +48,7 @@ export async function handleWaveAIContextMenu(e: React.MouseEvent, showCopy: boo
     if (model.inBuilder) {
         maxTokensSubmenu.push(
             {
-                label: "24k",
+                label: i18n.t("aiMode.tokens24k"),
                 type: "checkbox",
                 checked: currentMaxTokens === 24576,
                 click: () => {
@@ -58,7 +59,7 @@ export async function handleWaveAIContextMenu(e: React.MouseEvent, showCopy: boo
                 },
             },
             {
-                label: "64k (Pro)",
+                label: i18n.t("aiMode.tokens64kPro"),
                 type: "checkbox",
                 checked: currentMaxTokens === 65536,
                 click: () => {
@@ -72,7 +73,7 @@ export async function handleWaveAIContextMenu(e: React.MouseEvent, showCopy: boo
     } else {
         if (isDev()) {
             maxTokensSubmenu.push({
-                label: "1k (Dev Testing)",
+                label: i18n.t("aiMode.tokens1kDevTesting"),
                 type: "checkbox",
                 checked: currentMaxTokens === 1024,
                 click: () => {
@@ -85,7 +86,7 @@ export async function handleWaveAIContextMenu(e: React.MouseEvent, showCopy: boo
         }
         maxTokensSubmenu.push(
             {
-                label: "4k",
+                label: i18n.t("aiMode.tokens4k"),
                 type: "checkbox",
                 checked: currentMaxTokens === 4096,
                 click: () => {
@@ -96,7 +97,7 @@ export async function handleWaveAIContextMenu(e: React.MouseEvent, showCopy: boo
                 },
             },
             {
-                label: "16k (Pro)",
+                label: i18n.t("aiMode.tokens16kPro"),
                 type: "checkbox",
                 checked: currentMaxTokens === 16384,
                 click: () => {
@@ -107,7 +108,7 @@ export async function handleWaveAIContextMenu(e: React.MouseEvent, showCopy: boo
                 },
             },
             {
-                label: "64k (Pro)",
+                label: i18n.t("aiMode.tokens64kPro"),
                 type: "checkbox",
                 checked: currentMaxTokens === 65536,
                 click: () => {
@@ -121,14 +122,14 @@ export async function handleWaveAIContextMenu(e: React.MouseEvent, showCopy: boo
     }
 
     menu.push({
-        label: "Max Output Tokens",
+        label: i18n.t("aiMode.maxOutputTokens"),
         submenu: maxTokensSubmenu,
     });
 
     menu.push({ type: "separator" });
 
     menu.push({
-        label: "Configure Modes",
+        label: i18n.t("aiMode.configureModes"),
         click: () => {
             RpcApi.RecordTEventCommand(
                 TabRpcClient,
@@ -148,7 +149,7 @@ export async function handleWaveAIContextMenu(e: React.MouseEvent, showCopy: boo
         menu.push({ type: "separator" });
 
         menu.push({
-            label: "Hide Wave AI",
+            label: i18n.t("aiMode.hideWaveAi"),
             click: () => {
                 model.closeWaveAIPanel();
             },
