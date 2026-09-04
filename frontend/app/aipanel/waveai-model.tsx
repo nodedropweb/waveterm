@@ -17,6 +17,7 @@ import { TabRpcClient } from "@/app/store/wshrpcutil";
 import { WorkspaceLayoutModel } from "@/app/workspace/workspace-layout-model";
 import { BuilderFocusManager } from "@/builder/store/builder-focusmanager";
 import { getWebServerEndpoint } from "@/util/endpoints";
+import i18n from "@/util/i18n/i18n";
 import { base64ToArrayBuffer } from "@/util/util";
 import { ChatStatus } from "ai";
 import * as jotai from "jotai";
@@ -41,26 +42,28 @@ export interface DroppedFile {
     previewUrl?: string;
 }
 
-const BuilderAIModeConfigs: Record<string, AIModeConfigType> = {
-    "waveaibuilder@default": {
-        "display:name": "Builder Default",
-        "display:order": -2,
-        "display:icon": "sparkles",
-        "display:description": "Good mix of speed and accuracy\n(gpt-5.4 with minimal thinking)",
-        "ai:provider": "wave",
-        "ai:switchcompat": ["wavecloud"],
-        "waveai:premium": true,
-    },
-    "waveaibuilder@deep": {
-        "display:name": "Builder Deep",
-        "display:order": -1,
-        "display:icon": "lightbulb",
-        "display:description": "Slower but most capable\n(gpt-5.4 with full reasoning)",
-        "ai:provider": "wave",
-        "ai:switchcompat": ["wavecloud"],
-        "waveai:premium": true,
-    },
-};
+function getBuilderAIModeConfigs(): Record<string, AIModeConfigType> {
+    return {
+        "waveaibuilder@default": {
+            "display:name": i18n.t("aiPanel.builderDefaultModeName"),
+            "display:order": -2,
+            "display:icon": "sparkles",
+            "display:description": i18n.t("aiPanel.builderDefaultModeDescription"),
+            "ai:provider": "wave",
+            "ai:switchcompat": ["wavecloud"],
+            "waveai:premium": true,
+        },
+        "waveaibuilder@deep": {
+            "display:name": i18n.t("aiPanel.builderDeepModeName"),
+            "display:order": -1,
+            "display:icon": "lightbulb",
+            "display:description": i18n.t("aiPanel.builderDeepModeDescription"),
+            "ai:provider": "wave",
+            "ai:switchcompat": ["wavecloud"],
+            "waveai:premium": true,
+        },
+    };
+}
 
 export class WaveAIModel {
     private static instance: WaveAIModel | null = null;
@@ -102,7 +105,7 @@ export class WaveAIModel {
         this.inBuilder = inBuilder;
         this.chatId = jotai.atom(null) as jotai.PrimitiveAtom<string>;
         if (inBuilder) {
-            this.aiModeConfigs = jotai.atom(BuilderAIModeConfigs) as jotai.Atom<Record<string, AIModeConfigType>>;
+            this.aiModeConfigs = jotai.atom(getBuilderAIModeConfigs()) as jotai.Atom<Record<string, AIModeConfigType>>;
         } else {
             this.aiModeConfigs = atoms.waveaiModeConfigAtom;
         }
@@ -226,18 +229,18 @@ export class WaveAIModel {
 
     async addFileFromRemoteUri(draggedFile: DraggedFile): Promise<void> {
         if (draggedFile.isDir) {
-            this.setError("Cannot add directories to Wave AI. Please select a file.");
+            this.setError(i18n.t("aiPanel.cannotAddDirectories"));
             return;
         }
 
         try {
             const fileInfo = await RpcApi.FileInfoCommand(TabRpcClient, { info: { path: draggedFile.uri } }, null);
             if (fileInfo.notfound) {
-                this.setError(`File not found: ${draggedFile.relName}`);
+                this.setError(i18n.t("aiPanel.fileNotFound", { name: draggedFile.relName }));
                 return;
             }
             if (fileInfo.isdir) {
-                this.setError("Cannot add directories to Wave AI. Please select a file.");
+                this.setError(i18n.t("aiPanel.cannotAddDirectories"));
                 return;
             }
 
@@ -251,16 +254,14 @@ export class WaveAIModel {
 
             const fileData = await RpcApi.FileReadCommand(TabRpcClient, { info: { path: draggedFile.uri } }, null);
             if (!fileData.data64) {
-                this.setError(`Failed to read file: ${draggedFile.relName}`);
+                this.setError(i18n.t("aiPanel.failedToReadFile", { name: draggedFile.relName }));
                 return;
             }
 
             const buffer = base64ToArrayBuffer(fileData.data64);
             const file = new File([buffer], draggedFile.relName, { type: mimeType });
             if (!isAcceptableFile(file)) {
-                this.setError(
-                    `File type not supported: ${draggedFile.relName}. Supported: images, PDFs, and text/code files.`
-                );
+                this.setError(i18n.t("aiPanel.fileTypeNotSupported", { name: draggedFile.relName }));
                 return;
             }
 
@@ -268,7 +269,7 @@ export class WaveAIModel {
         } catch (error) {
             console.error("Error handling FILE_ITEM drop:", error);
             const errorMsg = error instanceof Error ? error.message : String(error);
-            this.setError(`Failed to add file: ${errorMsg}`);
+            this.setError(i18n.t("aiPanel.failedToAddFile", { error: errorMsg }));
         }
     }
 
@@ -498,7 +499,7 @@ export class WaveAIModel {
             return await this.reloadChatFromBackend(chatIdValue);
         } catch (error) {
             console.error("Failed to load chat:", error);
-            this.setError("Failed to load chat. Starting new chat...");
+            this.setError(i18n.t("aiPanel.failedToLoadChat"));
 
             this.clearChat();
             return [];
@@ -641,7 +642,7 @@ export class WaveAIModel {
         const chatId = this.getChatId();
 
         if (!chatId || !fileName) {
-            console.error("Missing chatId or fileName for opening diff", chatId, fileName);
+            console.error(i18n.t("aiPanel.missingChatIdOrFileName"), chatId, fileName);
             return;
         }
 

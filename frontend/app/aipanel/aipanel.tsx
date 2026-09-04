@@ -18,6 +18,7 @@ import { DefaultChatTransport } from "ai";
 import * as jotai from "jotai";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { useDrop } from "react-dnd";
+import { useTranslation } from "react-i18next";
 import { formatFileSizeError, isAcceptableFile, validateFileSize } from "./ai-utils";
 import { AIDroppedFiles } from "./aidroppedfiles";
 import { AIModeDropdown } from "./aimode";
@@ -55,6 +56,7 @@ const AIBlockMask = memo(() => {
 AIBlockMask.displayName = "AIBlockMask";
 
 const AIDragOverlay = memo(() => {
+    const { t } = useTranslation();
     return (
         <div
             key="drag-overlay"
@@ -62,8 +64,8 @@ const AIDragOverlay = memo(() => {
         >
             <div className="text-accent text-center">
                 <i className="fa fa-upload text-3xl mb-2"></i>
-                <div className="text-lg font-semibold">Drop files here</div>
-                <div className="text-sm">Images, PDFs, and text/code files supported</div>
+                <div className="text-lg font-semibold">{t("aiPanel.dropFilesHere")}</div>
+                <div className="text-sm">{t("aiPanel.dropFilesSupported")}</div>
             </div>
         </div>
     );
@@ -87,6 +89,7 @@ const KeyCap = memo(({ children, className }: { children: React.ReactNode; class
 KeyCap.displayName = "KeyCap";
 
 const AIWelcomeMessage = memo(() => {
+    const { t } = useTranslation();
     const modKey = isMacOS() ? "⌘" : "Alt";
     const aiModeConfigs = jotai.useAtomValue(atoms.waveaiModeConfigAtom);
     const hasCustomModes = Object.keys(aiModeConfigs).some((key) => !key.startsWith("waveai@"));
@@ -94,31 +97,28 @@ const AIWelcomeMessage = memo(() => {
         <div className="text-secondary py-8">
             <div className="text-center">
                 <i className="fa fa-sparkles text-4xl text-accent mb-2 block"></i>
-                <p className="text-lg font-bold text-primary">Welcome to Wave AI</p>
+                <p className="text-lg font-bold text-primary">{t("aiPanel.welcomeTitle")}</p>
             </div>
             <div className="mt-4 text-left max-w-md mx-auto">
-                <p className="text-sm mb-6">
-                    Wave AI is your terminal assistant with context. I can read your terminal output, analyze widgets,
-                    access files, and help you solve problems faster.
-                </p>
+                <p className="text-sm mb-6">{t("aiPanel.welcomeIntro")}</p>
                 <div className="bg-accent/10 border border-accent/30 rounded-lg p-4">
-                    <div className="text-sm font-semibold mb-3 text-accent">Getting Started:</div>
+                    <div className="text-sm font-semibold mb-3 text-accent">{t("aiPanel.gettingStarted")}</div>
                     <div className="space-y-3 text-sm">
                         <div className="flex items-start gap-3">
                             <div className="w-4 text-center flex-shrink-0">
                                 <i className="fa-solid fa-plug text-accent"></i>
                             </div>
                             <div>
-                                <span className="font-bold">Widget Context</span>
-                                <div className="">When ON, I can read your terminal and analyze widgets.</div>
-                                <div className="">When OFF, I'm sandboxed with no system access.</div>
+                                <span className="font-bold">{t("aiPanel.widgetContext")}</span>
+                                <div className="">{t("aiPanel.widgetContextOn")}</div>
+                                <div className="">{t("aiPanel.widgetContextOff")}</div>
                             </div>
                         </div>
                         <div className="flex items-start gap-3">
                             <div className="w-4 text-center flex-shrink-0">
                                 <i className="fa-solid fa-file-import text-accent"></i>
                             </div>
-                            <div>Drag & drop files or images for analysis</div>
+                            <div>{t("aiPanel.dragDropForAnalysis")}</div>
                         </div>
                         <div className="flex items-start gap-3">
                             <div className="w-4 text-center flex-shrink-0">
@@ -128,27 +128,27 @@ const AIWelcomeMessage = memo(() => {
                                 <div>
                                     <KeyCap>{modKey}</KeyCap>
                                     <KeyCap className="ml-1">K</KeyCap>
-                                    <span className="ml-1.5">to start a new chat</span>
+                                    <span className="ml-1.5">{t("aiPanel.toStartNewChat")}</span>
                                 </div>
                                 <div>
                                     <KeyCap>{modKey}</KeyCap>
                                     <KeyCap className="ml-1">Shift</KeyCap>
                                     <KeyCap className="ml-1">A</KeyCap>
-                                    <span className="ml-1.5">to toggle panel</span>
+                                    <span className="ml-1.5">{t("aiPanel.toTogglePanel")}</span>
                                 </div>
                                 <div>
                                     {isWindows() ? (
                                         <>
                                             <KeyCap>Alt</KeyCap>
                                             <KeyCap className="ml-1">0</KeyCap>
-                                            <span className="ml-1.5">to focus</span>
+                                            <span className="ml-1.5">{t("aiPanel.toFocus")}</span>
                                         </>
                                     ) : (
                                         <>
                                             <KeyCap>Ctrl</KeyCap>
                                             <KeyCap className="ml-1">Shift</KeyCap>
                                             <KeyCap className="ml-1">0</KeyCap>
-                                            <span className="ml-1.5">to focus</span>
+                                            <span className="ml-1.5">{t("aiPanel.toFocus")}</span>
                                         </>
                                     )}
                                 </div>
@@ -159,23 +159,21 @@ const AIWelcomeMessage = memo(() => {
                                 <i className="fa-brands fa-discord text-accent"></i>
                             </div>
                             <div>
-                                Questions or feedback?{" "}
+                                {t("aiPanel.questionsOrFeedback")}{" "}
                                 <a
                                     target="_blank"
                                     href="https://discord.gg/XfvZ334gwU"
                                     rel="noopener"
                                     className="text-accent hover:underline cursor-pointer"
                                 >
-                                    Join our Discord
+                                    {t("aiPanel.joinDiscord")}
                                 </a>
                             </div>
                         </div>
                     </div>
                 </div>
                 {!hasCustomModes && <BYOKAnnouncement />}
-                <div className="mt-4 text-center text-[12px] text-muted">
-                    BETA: Free to use. Daily limits keep our costs in check.
-                </div>
+                <div className="mt-4 text-center text-[12px] text-muted">{t("aiPanel.betaNotice")}</div>
             </div>
         </div>
     );
@@ -184,16 +182,15 @@ const AIWelcomeMessage = memo(() => {
 AIWelcomeMessage.displayName = "AIWelcomeMessage";
 
 const AIBuilderWelcomeMessage = memo(() => {
+    const { t } = useTranslation();
     return (
         <div className="text-secondary py-8">
             <div className="text-center">
                 <i className="fa fa-sparkles text-4xl text-accent mb-4 block"></i>
-                <p className="text-lg font-bold text-primary">WaveApp Builder</p>
+                <p className="text-lg font-bold text-primary">{t("aiPanel.builderWelcomeTitle")}</p>
             </div>
             <div className="mt-4 text-left max-w-md mx-auto">
-                <p className="text-sm mb-6">
-                    The WaveApp builder helps create wave widgets that integrate seamlessly into Wave Terminal.
-                </p>
+                <p className="text-sm mb-6">{t("aiPanel.builderWelcomeIntro")}</p>
             </div>
         </div>
     );
@@ -202,6 +199,7 @@ const AIBuilderWelcomeMessage = memo(() => {
 AIBuilderWelcomeMessage.displayName = "AIBuilderWelcomeMessage";
 
 const AIErrorMessage = memo(() => {
+    const { t } = useTranslation();
     const model = WaveAIModel.getInstance();
     const errorMessage = jotai.useAtomValue(model.errorMessage);
 
@@ -214,7 +212,7 @@ const AIErrorMessage = memo(() => {
             <button
                 onClick={() => model.clearError()}
                 className="absolute top-2 right-2 text-red-400 hover:text-red-300 cursor-pointer z-10"
-                aria-label="Close error"
+                aria-label={t("aiPanel.closeError")}
             >
                 <i className="fa fa-times text-sm"></i>
             </button>
@@ -224,7 +222,7 @@ const AIErrorMessage = memo(() => {
                     onClick={() => model.clearChat()}
                     className="ml-2 text-xs text-red-300 hover:text-red-200 cursor-pointer underline"
                 >
-                    New Chat
+                    {t("aiPanel.newChat")}
                 </button>
             </div>
         </div>
@@ -252,6 +250,7 @@ type AIPanelComponentInnerProps = {
 };
 
 const AIPanelComponentInner = memo(({ roundTopLeft }: AIPanelComponentInnerProps) => {
+    const { t } = useTranslation();
     const [isDragOver, setIsDragOver] = useState(false);
     const [isReactDndDragOver, setIsReactDndDragOver] = useState(false);
     const [initialLoadDone, setInitialLoadDone] = useState(false);
@@ -295,7 +294,7 @@ const AIPanelComponentInner = memo(({ roundTopLeft }: AIPanelComponentInnerProps
         }),
         onError: (error) => {
             console.error("AI Chat error:", error);
-            model.setError(error.message || "An error occurred");
+            model.setError(error.message || t("aiPanel.errorOccurred"));
         },
     });
 
@@ -466,9 +465,7 @@ const AIPanelComponentInner = memo(({ roundTopLeft }: AIPanelComponentInnerProps
             const rejectedCount = files.length - acceptableFiles.length;
             const rejectedFiles = files.filter((f) => !isAcceptableFile(f));
             const fileNames = rejectedFiles.map((f) => f.name).join(", ");
-            model.setError(
-                `${rejectedCount} file${rejectedCount > 1 ? "s" : ""} rejected (unsupported type): ${fileNames}. Supported: images, PDFs, and text/code files.`
-            );
+            model.setError(t("aiPanel.filesRejected", { count: rejectedCount, fileNames }));
         }
     };
 

@@ -3,6 +3,7 @@
 
 import { cn, makeIconClass } from "@/util/util";
 import { memo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { WaveAIModel } from "./waveai-model";
 
 interface AIFeedbackButtonsProps {
@@ -10,6 +11,7 @@ interface AIFeedbackButtonsProps {
 }
 
 export const AIFeedbackButtons = memo(({ messageText }: AIFeedbackButtonsProps) => {
+    const { t } = useTranslation();
     const [thumbsUpClicked, setThumbsUpClicked] = useState(false);
     const [thumbsDownClicked, setThumbsDownClicked] = useState(false);
     const [copied, setCopied] = useState(false);
@@ -50,7 +52,7 @@ export const AIFeedbackButtons = memo(({ messageText }: AIFeedbackButtonsProps) 
                         ? "text-accent"
                         : "text-secondary hover:bg-zinc-700 hover:text-primary"
                 )}
-                title="Good Response"
+                title={t("aiPanel.goodResponse")}
             >
                 <i className={makeIconClass(thumbsUpClicked ? "solid@thumbs-up" : "regular@thumbs-up", false)} />
             </button>
@@ -62,7 +64,7 @@ export const AIFeedbackButtons = memo(({ messageText }: AIFeedbackButtonsProps) 
                         ? "text-accent"
                         : "text-secondary hover:bg-zinc-700 hover:text-primary"
                 )}
-                title="Bad Response"
+                title={t("aiPanel.badResponse")}
             >
                 <i className={makeIconClass(thumbsDownClicked ? "solid@thumbs-down" : "regular@thumbs-down", false)} />
             </button>
@@ -75,7 +77,7 @@ export const AIFeedbackButtons = memo(({ messageText }: AIFeedbackButtonsProps) 
                             ? "text-success"
                             : "text-secondary hover:bg-zinc-700 hover:text-primary"
                     )}
-                    title="Copy Message"
+                    title={t("aiPanel.copyMessage")}
                 >
                     <i className={makeIconClass(copied ? "solid@check" : "regular@copy", false)} />
                 </button>
