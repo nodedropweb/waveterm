@@ -21,6 +21,7 @@ import { isBlank, useAtomValueSafe } from "@/util/util";
 import clsx from "clsx";
 import { useAtomValue } from "jotai";
 import { memo, Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import "./block.scss";
 import { BlockEnv } from "./blockenv";
 import { BlockFrame } from "./blockframe";
@@ -31,13 +32,14 @@ function getViewElem(
     blockRef: React.RefObject<HTMLDivElement>,
     contentRef: React.RefObject<HTMLDivElement>,
     blockView: string,
-    viewModel: ViewModel
+    viewModel: ViewModel,
+    t: (key: string) => string
 ): React.ReactElement {
     if (isBlank(blockView)) {
-        return <CenteredDiv>No View</CenteredDiv>;
+        return <CenteredDiv>{t("block.noView")}</CenteredDiv>;
     }
     if (viewModel.viewComponent == null) {
-        return <CenteredDiv>No View Component</CenteredDiv>;
+        return <CenteredDiv>{t("block.noViewComponent")}</CenteredDiv>;
     }
     const VC = viewModel.viewComponent;
     return <VC key={blockId} blockId={blockId} blockRef={blockRef} contentRef={contentRef} model={viewModel} />;
@@ -61,14 +63,15 @@ const BlockPreview = memo(({ nodeModel, viewModel }: FullBlockProps) => {
 });
 
 const BlockSubBlock = memo(({ nodeModel, viewModel }: FullSubBlockProps) => {
+    const { t } = useTranslation();
     const waveEnv = useWaveEnv<BlockEnv>();
     const blockIsNull = useAtomValue(waveEnv.wos.isWaveObjectNullAtom(makeORef("block", nodeModel.blockId)));
     const blockView = useAtomValue(waveEnv.getBlockMetaKeyAtom(nodeModel.blockId, "view")) ?? "";
     const blockRef = useRef<HTMLDivElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);
     const viewElem = useMemo(
-        () => getViewElem(nodeModel.blockId, blockRef, contentRef, blockView, viewModel),
-        [nodeModel.blockId, blockView, viewModel]
+        () => getViewElem(nodeModel.blockId, blockRef, contentRef, blockView, viewModel, t),
+        [nodeModel.blockId, blockView, viewModel, t]
     );
     const noPadding = useAtomValueSafe(viewModel.noPadding);
     if (blockIsNull) {
@@ -77,7 +80,7 @@ const BlockSubBlock = memo(({ nodeModel, viewModel }: FullSubBlockProps) => {
     return (
         <div key="content" className={clsx("block-content", { "block-no-padding": noPadding })} ref={contentRef}>
             <ErrorBoundary>
-                <Suspense fallback={<CenteredDiv>Loading...</CenteredDiv>}>{viewElem}</Suspense>
+                <Suspense fallback={<CenteredDiv>{t("block.loading")}</CenteredDiv>}>{viewElem}</Suspense>
             </ErrorBoundary>
         </div>
     );
@@ -85,6 +88,7 @@ const BlockSubBlock = memo(({ nodeModel, viewModel }: FullSubBlockProps) => {
 
 const BlockFull = memo(({ nodeModel, viewModel }: FullBlockProps) => {
     counterInc("render-BlockFull");
+    const { t } = useTranslation();
     const waveEnv = useWaveEnv<BlockEnv>();
     const focusElemRef = useRef<HTMLInputElement>(null);
     const blockRef = useRef<HTMLDivElement>(null);
@@ -159,8 +163,8 @@ const BlockFull = memo(({ nodeModel, viewModel }: FullBlockProps) => {
     }, [innerRect, disablePointerEvents, blockContentOffset]);
 
     const viewElem = useMemo(
-        () => getViewElem(nodeModel.blockId, blockRef, contentRef, blockView, viewModel),
-        [nodeModel.blockId, blockView, viewModel]
+        () => getViewElem(nodeModel.blockId, blockRef, contentRef, blockView, viewModel, t),
+        [nodeModel.blockId, blockView, viewModel, t]
     );
 
     const handleChildFocus = useCallback(
@@ -259,7 +263,7 @@ const BlockFull = memo(({ nodeModel, viewModel }: FullBlockProps) => {
                 style={blockContentStyle}
             >
                 <ErrorBoundary>
-                    <Suspense fallback={<CenteredDiv>Loading...</CenteredDiv>}>{viewElem}</Suspense>
+                    <Suspense fallback={<CenteredDiv>{t("block.loading")}</CenteredDiv>}>{viewElem}</Suspense>
                 </ErrorBoundary>
             </div>
         </BlockFrame>

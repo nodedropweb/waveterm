@@ -26,8 +26,10 @@ import { IconButton } from "@/element/iconbutton";
 import { NodeModel } from "@/layout/index";
 import * as util from "@/util/util";
 import { cn, makeIconClass } from "@/util/util";
+import type { TFunction } from "i18next";
 import * as jotai from "jotai";
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 import { BlockEnv } from "./blockenv";
 import { BlockFrameProps } from "./blocktypes";
 
@@ -36,21 +38,22 @@ function handleHeaderContextMenu(
     blockId: string,
     viewModel: ViewModel,
     nodeModel: NodeModel,
-    blockEnv: BlockEnv
+    blockEnv: BlockEnv,
+    t: TFunction
 ) {
     e.preventDefault();
     e.stopPropagation();
     const magnified = globalStore.get(nodeModel.isMagnified);
     const menu: ContextMenuItem[] = [
         {
-            label: magnified ? "Un-Magnify Block" : "Magnify Block",
+            label: magnified ? t("blockFrame.unMagnifyBlock") : t("blockFrame.magnifyBlock"),
             click: () => {
                 nodeModel.toggleMagnify();
             },
         },
         { type: "separator" },
         {
-            label: "Copy BlockId",
+            label: t("blockFrame.copyBlockId"),
             click: () => {
                 navigator.clipboard.writeText(blockId);
             },
@@ -61,7 +64,7 @@ function handleHeaderContextMenu(
     menu.push(
         { type: "separator" },
         {
-            label: "Close Block",
+            label: t("blockFrame.closeBlock"),
             click: () => uxCloseBlock(blockId),
         }
     );
@@ -76,6 +79,7 @@ type HeaderTextElemsProps = {
 };
 
 const HeaderTextElems = React.memo(({ viewModel, blockId, preview, error }: HeaderTextElemsProps) => {
+    const { t } = useTranslation();
     const waveEnv = useWaveEnv<BlockEnv>();
     const frameTextAtom = waveEnv.getBlockMetaKeyAtom(blockId, "frame:text");
     const frameText = jotai.useAtomValue(frameTextAtom);
@@ -102,7 +106,7 @@ const HeaderTextElems = React.memo(({ viewModel, blockId, preview, error }: Head
             <div className="iconbutton disabled" key="controller-status" onClick={copyHeaderErr}>
                 <i
                     className="fa-sharp fa-solid fa-triangle-exclamation"
-                    title={"Error Rendering View Header: " + error.message}
+                    title={`${t("blockFrame.errorRenderingHeader")} ${error.message}`}
                 />
             </div>
         );
@@ -119,6 +123,7 @@ type HeaderEndIconsProps = {
 };
 
 const HeaderEndIcons = React.memo(({ viewModel, nodeModel, blockId }: HeaderEndIconsProps) => {
+    const { t } = useTranslation();
     const blockEnv = useWaveEnv<BlockEnv>();
     const endIconButtons = util.useAtomValueSafe(viewModel?.endIconButtons);
     const magnified = jotai.useAtomValue(nodeModel.isMagnified);
@@ -136,7 +141,7 @@ const HeaderEndIcons = React.memo(({ viewModel, nodeModel, blockId }: HeaderEndI
         const splitHorizontalDecl: IconButtonDecl = {
             elemtype: "iconbutton",
             icon: "columns",
-            title: "Split Horizontally",
+            title: t("blockFrame.splitHorizontally"),
             click: (e) => {
                 e.stopPropagation();
                 const blockAtom = WOS.getWaveObjectAtom<Block>(WOS.makeORef("block", blockId));
@@ -150,7 +155,7 @@ const HeaderEndIcons = React.memo(({ viewModel, nodeModel, blockId }: HeaderEndI
         const splitVerticalDecl: IconButtonDecl = {
             elemtype: "iconbutton",
             icon: "grip-lines",
-            title: "Split Vertically",
+            title: t("blockFrame.splitVertically"),
             click: (e) => {
                 e.stopPropagation();
                 const blockAtom = WOS.getWaveObjectAtom<Block>(WOS.makeORef("block", blockId));
@@ -167,15 +172,15 @@ const HeaderEndIcons = React.memo(({ viewModel, nodeModel, blockId }: HeaderEndI
     const settingsDecl: IconButtonDecl = {
         elemtype: "iconbutton",
         icon: "cog",
-        title: "Settings",
-        click: (e) => handleHeaderContextMenu(e, blockId, viewModel, nodeModel, blockEnv),
+        title: t("blockFrame.settings"),
+        click: (e) => handleHeaderContextMenu(e, blockId, viewModel, nodeModel, blockEnv, t),
     };
     endIconsElem.push(<IconButton key="settings" decl={settingsDecl} className="block-frame-settings" />);
     if (ephemeral) {
         const addToLayoutDecl: IconButtonDecl = {
             elemtype: "iconbutton",
             icon: "circle-plus",
-            title: "Add to Layout",
+            title: t("blockFrame.addToLayout"),
             click: () => {
                 nodeModel.addEphemeralNodeToLayout();
             },
@@ -198,7 +203,7 @@ const HeaderEndIcons = React.memo(({ viewModel, nodeModel, blockId }: HeaderEndI
     const closeDecl: IconButtonDecl = {
         elemtype: "iconbutton",
         icon: "xmark-large",
-        title: "Close",
+        title: t("blockFrame.close"),
         click: () => uxCloseBlock(nodeModel.blockId),
     };
     endIconsElem.push(<IconButton key="close" decl={closeDecl} className="block-frame-default-close" />);
@@ -215,12 +220,13 @@ const BlockFrame_Header = ({
     changeConnModalAtom,
     error,
 }: BlockFrameProps & { changeConnModalAtom: jotai.PrimitiveAtom<boolean>; error?: Error }) => {
+    const { t } = useTranslation();
     const waveEnv = useWaveEnv<BlockEnv>();
     const metaView = jotai.useAtomValue(waveEnv.getBlockMetaKeyAtom(nodeModel.blockId, "view"));
     const metaFrameTitle = jotai.useAtomValue(waveEnv.getBlockMetaKeyAtom(nodeModel.blockId, "frame:title"));
     const metaFrameIcon = jotai.useAtomValue(waveEnv.getBlockMetaKeyAtom(nodeModel.blockId, "frame:icon"));
     const metaConnection = jotai.useAtomValue(waveEnv.getBlockMetaKeyAtom(nodeModel.blockId, "connection"));
-    let viewName = util.useAtomValueSafe(viewModel?.viewName) ?? blockViewToName(metaView);
+    let viewName = util.useAtomValueSafe(viewModel?.viewName) ?? blockViewToName(metaView, t);
     let viewIconUnion = util.useAtomValueSafe(viewModel?.viewIcon) ?? blockViewToIcon(metaView);
     const preIconButton = util.useAtomValueSafe(viewModel?.preIconButton);
     const useTermHeader = util.useAtomValueSafe(viewModel?.useTermHeader);
@@ -251,7 +257,7 @@ const BlockFrame_Header = ({
             className={cn("block-frame-default-header", useTermHeader && "!pl-[2px]")}
             data-role="block-header"
             ref={dragHandleRef}
-            onContextMenu={(e) => handleHeaderContextMenu(e, nodeModel.blockId, viewModel, nodeModel, waveEnv)}
+            onContextMenu={(e) => handleHeaderContextMenu(e, nodeModel.blockId, viewModel, nodeModel, waveEnv, t)}
         >
             {!useTermHeader && (
                 <>
