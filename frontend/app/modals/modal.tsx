@@ -6,6 +6,7 @@ import { cn } from "@/util/util";
 import clsx from "clsx";
 import { forwardRef } from "react";
 import ReactDOM from "react-dom";
+import { useTranslation } from "react-i18next";
 
 import "./modal.scss";
 
@@ -38,6 +39,7 @@ const Modal = forwardRef<HTMLDivElement, ModalProps>(
         }: ModalProps,
         ref
     ) => {
+        const { t } = useTranslation();
         const renderBackdrop = (onClick) => <div className="modal-backdrop" onClick={onClick}></div>;
 
         const renderFooter = () => {
@@ -48,7 +50,7 @@ const Modal = forwardRef<HTMLDivElement, ModalProps>(
             <div className="modal-wrapper">
                 {renderBackdrop(onClickBackdrop)}
                 <div ref={ref} className={clsx(`modal`, className)}>
-                    <Button className="grey ghost modal-close-btn" onClick={onClose} title="Close (ESC)">
+                    <Button className="grey ghost modal-close-btn" onClick={onClose} title={t("modal.closeEsc")}>
                         <i className="fa-sharp fa-solid fa-xmark"></i>
                     </Button>
                     <div className="content-wrapper">
@@ -89,24 +91,18 @@ interface ModalFooterProps {
     cancelDisabled?: boolean;
 }
 
-const ModalFooter = ({
-    onCancel,
-    onOk,
-    cancelLabel = "Cancel",
-    okLabel = "Ok",
-    okDisabled,
-    cancelDisabled,
-}: ModalFooterProps) => {
+const ModalFooter = ({ onCancel, onOk, cancelLabel, okLabel, okDisabled, cancelDisabled }: ModalFooterProps) => {
+    const { t } = useTranslation();
     return (
         <footer className="modal-footer">
             {onCancel && (
                 <Button className="grey ghost" onClick={onCancel} disabled={cancelDisabled}>
-                    {cancelLabel}
+                    {cancelLabel ?? t("modal.cancel")}
                 </Button>
             )}
             {onOk && (
                 <Button onClick={onOk} disabled={okDisabled}>
-                    {okLabel}
+                    {okLabel ?? t("modal.ok")}
                 </Button>
             )}
         </footer>

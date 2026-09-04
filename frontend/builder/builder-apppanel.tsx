@@ -19,6 +19,7 @@ import { atoms } from "@/store/global";
 import { cn } from "@/util/util";
 import { useAtomValue } from "jotai";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const StatusDot = memo(() => {
     const model = BuilderAppPanelModel.getInstance();
@@ -81,6 +82,7 @@ TabButton.displayName = "TabButton";
 const ErrorStrip = memo(() => {
     const model = BuilderAppPanelModel.getInstance();
     const errorMsg = useAtomValue(model.errorAtom);
+    const { t } = useTranslation();
 
     if (!errorMsg) return null;
     return (
@@ -92,7 +94,7 @@ const ErrorStrip = memo(() => {
             <button
                 onClick={() => model.clearError()}
                 className="shrink-0 text-error hover:text-error/80 transition-colors cursor-pointer"
-                aria-label="Close error"
+                aria-label={t("builderApp.closeError")}
             >
                 <i className="fa fa-xmark-large text-sm" />
             </button>
@@ -103,6 +105,7 @@ const ErrorStrip = memo(() => {
 ErrorStrip.displayName = "ErrorStrip";
 
 const PublishAppModal = memo(({ appName }: { appName: string }) => {
+    const { t } = useTranslation();
     const builderAppId = useAtomValue(atoms.builderAppId);
     const [state, setState] = useState<"confirm" | "success" | "error">("confirm");
     const [errorMessage, setErrorMessage] = useState<string>("");
@@ -110,7 +113,7 @@ const PublishAppModal = memo(({ appName }: { appName: string }) => {
 
     const handlePublish = async () => {
         if (!builderAppId) {
-            setErrorMessage("No builder app ID found");
+            setErrorMessage(t("builderApp.noBuilderAppId"));
             setState("error");
             return;
         }
@@ -131,15 +134,15 @@ const PublishAppModal = memo(({ appName }: { appName: string }) => {
 
     if (state === "success") {
         return (
-            <Modal className="p-4" onOk={handleClose} onClose={handleClose} okLabel="OK" cancelLabel="">
+            <Modal className="p-4" onOk={handleClose} onClose={handleClose} okLabel={t("modal.ok")} cancelLabel="">
                 <div className="flex flex-col gap-4 mb-4">
                     <h2 className="text-xl font-semibold flex items-center gap-2">
                         <i className="fa fa-check-circle text-success" />
-                        App Published Successfully
+                        {t("builderApp.publishSuccessTitle")}
                     </h2>
                     <div className="flex flex-col gap-3">
                         <p className="text-primary">
-                            Your app has been published to <span className="font-mono">{publishedAppId}</span>
+                            {t("builderApp.publishSuccessBody")} <span className="font-mono">{publishedAppId}</span>
                         </p>
                     </div>
                 </div>
@@ -149,11 +152,11 @@ const PublishAppModal = memo(({ appName }: { appName: string }) => {
 
     if (state === "error") {
         return (
-            <Modal className="p-4" onOk={handleClose} onClose={handleClose} okLabel="OK" cancelLabel="">
+            <Modal className="p-4" onOk={handleClose} onClose={handleClose} okLabel={t("modal.ok")} cancelLabel="">
                 <div className="flex flex-col gap-4 mb-4">
                     <h2 className="text-xl font-semibold flex items-center gap-2">
                         <i className="fa fa-triangle-exclamation text-error" />
-                        Publish Failed
+                        {t("builderApp.publishFailedTitle")}
                     </h2>
                     <div className="flex flex-col gap-3">
                         <p className="text-error">{errorMessage}</p>
@@ -169,18 +172,18 @@ const PublishAppModal = memo(({ appName }: { appName: string }) => {
             onOk={handlePublish}
             onCancel={handleClose}
             onClose={handleClose}
-            okLabel="Publish"
-            cancelLabel="Cancel"
+            okLabel={t("builderApp.publish")}
+            cancelLabel={t("modal.cancel")}
         >
             <div className="flex flex-col gap-4 mb-4">
-                <h2 className="text-xl font-semibold">Publish App</h2>
+                <h2 className="text-xl font-semibold">{t("builderApp.publishAppTitle")}</h2>
                 <div className="flex flex-col gap-3">
                     <p className="text-primary">
-                        This will publish your app to <span className="font-mono">local/{appName}</span>
+                        {t("builderApp.publishConfirmBody")} <span className="font-mono">local/{appName}</span>
                     </p>
                     <p className="text-warning">
                         <i className="fa fa-triangle-exclamation mr-2" />
-                        This will overwrite any existing app with the same name. Are you sure?
+                        {t("builderApp.publishOverwriteWarning")}
                     </p>
                 </div>
             </div>
@@ -191,6 +194,7 @@ const PublishAppModal = memo(({ appName }: { appName: string }) => {
 PublishAppModal.displayName = "PublishAppModal";
 
 const BuilderAppPanel = memo(() => {
+    const { t } = useTranslation();
     const model = BuilderAppPanelModel.getInstance();
     const focusElemRef = useRef<HTMLInputElement>(null);
     const activeTab = useAtomValue(model.activeTab);
@@ -265,27 +269,27 @@ const BuilderAppPanel = memo(() => {
         (e: React.MouseEvent) => {
             const menu: ContextMenuItem[] = [
                 {
-                    label: "Publish App",
+                    label: t("builderApp.publishApp"),
                     click: handlePublishClick,
                 },
                 {
                     type: "separator",
                 },
                 {
-                    label: "Open DevTools",
+                    label: t("builderApp.openDevTools"),
                     click: handleOpenDevToolsClick,
                 },
                 {
                     type: "separator",
                 },
                 {
-                    label: "Switch App",
+                    label: t("builderApp.switchApp"),
                     click: handleSwitchAppClick,
                 },
             ];
             ContextMenuModel.getInstance().showContextMenu(menu, e);
         },
-        [handleSwitchAppClick, handlePublishClick, handleOpenDevToolsClick]
+        [t, handleSwitchAppClick, handlePublishClick, handleOpenDevToolsClick]
     );
 
     return (
@@ -308,7 +312,7 @@ const BuilderAppPanel = memo(() => {
                 <div className="flex items-center justify-between">
                     <div className="flex">
                         <TabButton
-                            label="Preview"
+                            label={t("builderApp.tabPreview")}
                             tabType="preview"
                             isActive={activeTab === "preview"}
                             isAppFocused={isAppFocused}
@@ -316,21 +320,21 @@ const BuilderAppPanel = memo(() => {
                             showStatusDot={true}
                         />
                         <TabButton
-                            label="Code"
+                            label={t("builderApp.tabCode")}
                             tabType="code"
                             isActive={activeTab === "code"}
                             isAppFocused={isAppFocused}
                             onClick={() => handleTabClick("code")}
                         />
                         <TabButton
-                            label="Config/Data"
+                            label={t("builderApp.tabConfigData")}
                             tabType="configdata"
                             isActive={activeTab === "configdata"}
                             isAppFocused={isAppFocused}
                             onClick={() => handleTabClick("configdata")}
                         />
                         <TabButton
-                            label="Files"
+                            label={t("builderApp.tabFiles")}
                             tabType="files"
                             isActive={activeTab === "files"}
                             isAppFocused={isAppFocused}
@@ -338,7 +342,7 @@ const BuilderAppPanel = memo(() => {
                         />
                         {hasSecrets && (
                             <TabButton
-                                label="Secrets"
+                                label={t("builderApp.tabSecrets")}
                                 tabType="secrets"
                                 isActive={activeTab === "secrets"}
                                 isAppFocused={isAppFocused}
@@ -351,12 +355,12 @@ const BuilderAppPanel = memo(() => {
                             className="px-3 py-1 text-sm font-medium rounded bg-accent/80 text-primary hover:bg-accent transition-colors cursor-pointer"
                             onClick={handlePublishClick}
                         >
-                            Publish App
+                            {t("builderApp.publishApp")}
                         </button>
                         <button
                             className="px-2 py-1 text-sm font-medium rounded hover:bg-secondary/10 transition-colors cursor-pointer"
                             onClick={handleKebabClick}
-                            aria-label="More options"
+                            aria-label={t("builderApp.moreOptions")}
                         >
                             <i className="fa fa-ellipsis-vertical" />
                         </button>
