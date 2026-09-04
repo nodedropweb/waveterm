@@ -239,7 +239,7 @@ export const ConnStatusOverlay = React.memo(
                                     className="connstatus-error"
                                     options={{ scrollbars: { autoHide: "leave" } }}
                                 >
-                                    <CopyButton className="copy-button" onClick={handleCopy} title="Copy" />
+                                    <CopyButton className="copy-button" onClick={handleCopy} />
                                     {showError ? <div>error: {connStatus.error}</div> : null}
                                     {showWshError ? <div>unable to use wsh: {connStatus.wsherror}</div> : null}
                                 </OverlayScrollbarsComponent>
