@@ -1,0 +1,122 @@
+---
+sidebar_position: 2
+id: "keybindings"
+title: "Tastenkombinationen"
+---
+
+import { Kbd, KbdChord } from "@site/src/components/kbd";
+import { PlatformProvider, PlatformSelectorButton } from "@site/src/components/platformcontext";
+import { VersionBadge } from "@site/src/components/versionbadge";
+
+<PlatformProvider>
+
+Hier ist die Liste der Standard-Tastenkombinationen in Wave, unterteilt in Abschnitte.
+Manche Tastenkombinationen sind immer aktiv. Andere gelten nur für bestimmte Blocktypen.
+
+Beachte, dass dies die macOS-Tastenkombinationen sind (mit "Cmd"). Für Windows und Linux
+ersetze "Cmd" durch "Alt" (beachte, dass "Ctrl" sowohl unter Mac, Windows als auch Linux "Ctrl" ist).
+
+Chords werden mit einem + zwischen den Tasten dargestellt. Du hast 2 Sekunden Zeit, um nach der ersten Taste die zweite Chord-Taste zu drücken. Escape nach der ersten Chord-Taste ist immer wirkungslos.
+
+## Globale Tastenkombinationen
+
+<PlatformSelectorButton />
+<div style={{ marginBottom: 20 }}></div>
+
+| Taste                                               | Funktion                                                                                                                                               |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| <Kbd k="Cmd:t"/>                                  | Neuen Tab öffnen                                                                                                                                         |
+| <Kbd k="Cmd:n"/>                                  | Neuen Block öffnen (standardmäßig ein Terminal-Block mit derselben Verbindung und demselben Arbeitsverzeichnis). Mit der Einstellung `app:defaultnewblock` zum Launcher wechseln |
+| <Kbd k="Cmd:Shift:a"/>                            | Sichtbarkeit des WaveAI-Panels umschalten                                                                                                                         |
+| <Kbd k="Cmd:d"/>                                  | Horizontal teilen, neuen Block rechts öffnen                                                                                                      |
+| <Kbd k="Cmd:Shift:d"/>                            | Vertikal teilen, neuen Block unten öffnen                                                                                                               |
+| <KbdChord karr={["Ctrl:Shift:s", "ArrowUp"]}/>    | Vertikal teilen, neuen Block oben öffnen                                                                                                               |
+| <KbdChord karr={["Ctrl:Shift:s", "ArrowDown"]}/>  | Vertikal teilen, neuen Block unten öffnen                                                                                                               |
+| <KbdChord karr={["Ctrl:Shift:s", "ArrowLeft"]}/>  | Horizontal teilen, neuen Block links öffnen                                                                                                       |
+| <KbdChord karr={["Ctrl:Shift:s", "ArrowRight"]}/> | Horizontal teilen, neuen Block rechts öffnen                                                                                                      |
+| <Kbd k="Cmd:Shift:n"/>                            | Neues Fenster öffnen                                                                                                                                      |
+| <Kbd k="Cmd:w"/>                                  | Aktuellen Block schließen                                                                                                                                |
+| <Kbd k="Cmd:Shift:w"/>                            | Aktuellen Tab schließen                                                                                                                                  |
+| <Kbd k="Cmd:m"/>                                  | Aktuellen Block vergrößern / verkleinern                                                                                                                 |
+| <Kbd k="Cmd:g"/>                                  | "Verbindungs"-Umschalter öffnen                                                                                                                         |
+| <Kbd k="Cmd:i"/>                                  | Fokus auf aktuellen Block zurücksetzen (nützlich, wenn der Block den Eingabefokus verloren hat)                                                                                   |
+| <Kbd k="Ctrl:Shift"/>                             | Blocknummern anzeigen                                                                                                                                   |
+| <Kbd k="Ctrl:Shift:0"/>                           | WaveAI-Eingabe fokussieren                                                                                                                               |
+| <Kbd k="Ctrl:Shift:1-9"/>                         | Zu Blocknummer wechseln                                                                                                                                 |
+| <Kbd k="Ctrl:Shift:Arrows"/> / <Kbd k="Ctrl:Shift:h/j/k/l"/> | Zwischen Blöcken nach links, rechts, oben, unten bewegen                                                                                                              |
+| <Kbd k="Ctrl:Shift:x"/>                           | Aktuellen Block durch einen Launcher-Block ersetzen                                                                                                        |
+| <Kbd k="F2"/>                                     | Aktuellen Tab umbenennen <VersionBadge version="v0.15" />                                                                                                |
+| <Kbd k="Cmd:1-9"/>                                | Zu Tab-Nummer wechseln                                                                                                                                   |
+| <Kbd k="Cmd:["/> / <Kbd k="Shift:Cmd:["/>         | Zum Tab links wechseln                                                                                                                                        |
+| <Kbd k="Cmd:]"/> / <Kbd k="Shift:Cmd:]"/>         | Zum Tab rechts wechseln                                                                                                                                       |
+| <Kbd k="Cmd:Ctrl:1-9"/>                           | Zu Workspace-Nummer wechseln                                                                                                                             |
+| <Kbd k="Cmd:Shift:r"/>                            | UI aktualisieren                                                                                                                                 |
+| <Kbd k="Ctrl:Shift:i"/>                           | Terminal-Mehrfacheingabemodus umschalten                                                                                                                       |
+
+## Tastenkombinationen für die Dateivorschau
+
+| Taste                                       | Funktion                                                                                           |
+| ----------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| <Kbd k="[text]"/>                         | Jedes normale Zeichen (z. B. "a", "b") filtert die Dateiliste                                    |
+| <Kbd k="Escape"/>                         | Setzt den Filter zurück                                                                                  |
+| <Kbd k="ArrowUp"/> / <Kbd k="ArrowDown"/> | Dateiauswahl nach oben/unten ändern                                                                      |
+| <Kbd k="Enter"/>                          | Aktuell ausgewählte Datei/Verzeichnis öffnen                                                         |
+| <Kbd k="Cmd:ArrowUp"/>                    | Ein Verzeichnis "nach oben" bewegen (übergeordnetes Verzeichnis)                                                           |
+| <Kbd k="Cmd:ArrowLeft"/>                  | Zurück, zur zuvor ausgewählten Datei/Verzeichnis wechseln                                               |
+| <Kbd k="Cmd:ArrowRight"/>                 | Vorwärts (Gegenteil von Zurück)                                                                         |
+| <Kbd k="Cmd:o"/>                          | Eine neue Datei öffnen (akzeptiert relative Pfade zum aktuellen Verzeichnis)                                  |
+| <Kbd k="Cmd:s"/>                          | Wenn der Datei-Editor geöffnet ist, Datei speichern                                                                |
+| <Kbd k="Cmd:e"/>                          | Für Dateien, die in Vorschau oder bearbeitet werden können (Markdown, CSVs), zwischen Vorschau- und Bearbeitungsmodus wechseln |
+| <Kbd k="Cmd:r"/>                          | Wenn der Datei-Editor geöffnet ist, Änderungen verwerfen                                                           |
+
+## Web-Tastenkombinationen
+
+| Taste                       | Funktion                                                      |
+| ------------------------- | ------------------------------------------------------------- |
+| <Kbd k="Cmd:l"/>          | URL-Eingabeleiste fokussieren                                       |
+| <Kbd k="Escape"/>         | Wenn die URL-Eingabeleiste fokussiert ist, wird der Webinhalt fokussiert |
+| <Kbd k="Cmd:r"/>          | Webseite neu laden                                                |
+| <Kbd k="Cmd:ArrowLeft"/>  | Zurück                                                          |
+| <Kbd k="Cmd:ArrowRight"/> | Vorwärts                                                       |
+| <Kbd k="Cmd:f"/>          | In Webseite suchen                                               |
+| <Kbd k="Cmd:o"/>          | Ein Lesezeichen öffnen                                               |
+
+## WaveAI-Tastenkombinationen
+
+| Taste                     | Funktion                |
+| ----------------------- | ----------------------- |
+| <Kbd k="Cmd:Shift:a"/>  | WaveAI-Panel umschalten     |
+| <Kbd k="Ctrl:Shift:0" windows="Alt:0"/> | WaveAI-Eingabe fokussieren      |
+| <Kbd k="Cmd:k"/>        | KI-Chat leeren           |
+
+## Terminal-Tastenkombinationen
+
+| Taste                     | Funktion                     |
+| ----------------------- | ---------------------------- |
+| <Kbd k="Ctrl:Shift:c"/> | Kopieren                         |
+| <Kbd k="Ctrl:Shift:v"/> | Einfügen                        |
+| <Kbd k="Ctrl:v" mac="N/A" linux="N/A"/> | Einfügen (nur Windows) |
+| <Kbd k="Cmd:k"/>        | Terminal leeren               |
+| <Kbd k="Cmd:f"/>        | Im Terminal suchen             |
+| <Kbd k="Shift:Home"/>   | Nach oben scrollen                |
+| <Kbd k="Shift:End"/>    | Nach unten scrollen             |
+| <Kbd k="Cmd:Home" windows="N/A" linux="N/A"/>     | Nach oben scrollen (nur macOS)   |
+| <Kbd k="Cmd:End" windows="N/A" linux="N/A"/>      | Nach unten scrollen (nur macOS)|
+| <Kbd k="Cmd:ArrowLeft" windows="N/A" linux="N/A"/> | Zum Zeilenanfang springen (nur macOS) |
+| <Kbd k="Cmd:ArrowRight" windows="N/A" linux="N/A"/> | Zum Zeilenende springen (nur macOS) |
+| <Kbd k="Shift:PageUp"/> | Eine Seite nach oben scrollen           |
+| <Kbd k="Shift:PageDown"/>| Eine Seite nach unten scrollen        |
+
+## Tastenkombinationen für den Prozess-Viewer
+
+| Taste                     | Funktion                              |
+| ----------------------- | ------------------------------------- |
+| <Kbd k="Space"/>        | Live-Updates pausieren / fortsetzen           |
+| <Kbd k="Cmd:f"/>        | Prozessfilter / -suche öffnen          |
+| <Kbd k="Escape"/>       | Suchleiste schließen                      |
+
+## Anpassbare systemweite globale Tastenkombination
+
+Wave erlaubt es, eine benutzerdefinierte globale Tastenkombination festzulegen, um von überall auf deinem Computer aus dein zuletzt genutztes Fenster zu fokussieren. Weitere Informationen dazu findest du in der [Konfigurationsdokumentation](./config#customizable-systemwide-global-hotkey).
+
+</PlatformProvider>

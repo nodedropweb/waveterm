@@ -1,0 +1,134 @@
+---
+sidebar_position: 3.25
+id: "tabs"
+title: "Tabs"
+---
+
+import { PlatformProvider, PlatformSelectorButton } from "@site/src/components/platformcontext";
+import { Kbd } from "@site/src/components/kbd";
+
+<PlatformProvider>
+
+Tabs sind Sammlungen von [Widgets](./widgets), die zu gekachelten Dashboards angeordnet werden können. Du kannst innerhalb eines Workspace beliebig viele Tabs erstellen, um deine Workflows zu organisieren.
+
+## Tableiste
+
+Die Tableiste befindet sich oben im Fenster und zeigt alle Tabs innerhalb eines Workspace an. Du kannst auf einen Tab klicken, um zu ihm zu wechseln. Beim Wechseln laufen Befehle im vorherigen Tab weiter, und nicht gespeicherte Arbeit bleibt erhalten, bis du zu ihm zurückkehrst. Wenn du das Fenster schließt oder innerhalb desselben Fensters den Workspace wechselst, geht diese Arbeit verloren.
+
+<PlatformSelectorButton />
+
+### Einen neuen Tab erstellen
+
+Du kannst einen neuen Tab erstellen, indem du auf den <i className="fa-sharp fa-plus" title="plus"/>-Button rechts neben den Tabs in der Tableiste klickst, oder indem du <Kbd k="Cmd:t"/> drückst. Dadurch wird der Fokus auch auf den neuen Tab gesetzt.
+
+### Einen Tab schließen
+
+Du kannst einen Tab schließen, indem du mit der Maus darüber fährst und auf den erscheinenden <i className="fa-sharp fa-xmark-large" title="x"/>-Button klickst, oder indem du <Kbd k="Cmd:Shift:w"/> drückst. Du kannst einen Tab auch schließen, indem du [alle Blöcke darin schließt](#einen-block-löschen).
+
+Das Schließen eines Blocks ist eine destruktive Aktion, die alle laufenden Prozesse stoppt und nicht gespeicherte Arbeit verwirft. Dies kann nicht rückgängig gemacht werden.
+
+### Tabs neu anordnen
+
+Du kannst Tabs neu anordnen, indem du sie innerhalb der Tableiste ziehst.
+
+### Zwischen Tabs wechseln
+
+Du kannst zu einem vorhandenen Tab wechseln, indem du in der Tableiste darauf klickst. Du kannst auch folgende Tastenkombinationen nutzen:
+
+| Taste                | Funktion             |
+| ------------------ | -------------------- |
+| <Kbd k="Cmd:1-9"/> | Zu Tab-Nummer wechseln |
+| <Kbd k="Cmd:["/>   | Zum Tab links wechseln      |
+| <Kbd k="Cmd:]"/>   | Zum Tab rechts wechseln     |
+
+### Einen Tab anheften
+
+Das Anheften eines Tabs erschwert das versehentliche Schließen. Du kannst einen Tab anheften, indem du mit der rechten Maustaste darauf klickst und im erscheinenden Kontextmenü "Pin Tab" auswählst. Du kannst einen Tab auch anheften, indem du ihn auf einen niedrigeren Index als einen bereits angehefteten Tab ziehst. Wenn ein Tab angeheftet ist, wird der <i className="fa-sharp fa-xmark-large" title="x"/>-Button des Tabs durch einen <i className="fa-solid fa-sharp fa-thumbtack" title="pin"/>-Button ersetzt. Ein Klick auf diesen Button löst die Anheftung. Du kannst einen Tab auch lösen, indem du ihn auf einen höheren Index als einen bereits nicht angehefteten Tab ziehst.
+
+## Tab-Layout-System
+
+Die Tabs bestehen aus gekachelten Blöcken. Der Inhalt jedes Blocks ist ein einzelnes Widget. Du kannst Blöcke verschieben und zu Layouts anordnen, die am besten zu deinem Workflow passen. Du kannst Blöcke auch vergrößern, um dich auf ein bestimmtes Widget zu konzentrieren.
+
+![screenshot showing a block being dragged over another block, with the placeholder depicting a out-of-line before outer drop](./img/drag-edge.png)
+
+### Das Layout-System unter der Haube
+
+:::info
+
+**Definitionen**
+
+- Layout-Baum: die In-Memory-Darstellung eines Tab-Layouts, bestehend aus Knoten
+- Knoten: ein Eintrag im Layout-Baum, entweder ein einzelner Block (ein Blatt) oder eine geordnete Liste von Knoten. Definiert eine Kachelrichtung (Zeile oder Spalte) und eine einheitenlose Größe
+- Block: der Inhalt eines Blatts im Layout-Baum, definiert, welcher Inhalt an der jeweiligen Layout-Position angezeigt wird
+
+:::
+
+Unser Layout-System ahmt das [CSS-Flexbox](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_flexible_box_layout/Basic_concepts_of_flexbox)-System nach und besteht aus einem Baum von Spalten und Zeilen. Intern wird das Layout als N-Baum dargestellt, wobei jeder Knoten im Baum entweder ein einzelner Block oder eine Liste von Knoten ist. Jede Ebene im Baum wechselt die Kachelrichtung (Ebene 1 kachelt als Zeile, Ebene 2 als Spalte, Ebene 3 als Zeile usw.).
+
+### Layout-Aktionen
+
+<PlatformSelectorButton />
+
+#### Einen neuen Block hinzufügen
+
+Du kannst neue Blöcke hinzufügen, indem du ein Widget aus der rechten Seitenleiste auswählst.
+
+Ausgehend von der obersten Ebene des Baums, da die erste Ebene als Zeile kachelt, werden neue Blöcke rechts neben bestehenden Blöcken hinzugefügt. Sobald 5 Blöcke nebeneinander stehen, werden neue Blöcke beginnend von rechts nach links unterhalb bestehender Blöcke hinzugefügt. Wenn ein neuer Block unterhalb eines bestehenden hinzugefügt wird, wird der Knoten, der den bestehenden Block enthält, von einem Einzelblock-Knoten in einen Listen-Knoten umgewandelt, und die bestehende Blockdefinition wird eine Ebene tiefer im Baum als erstes Element der Knotenliste verschoben. Neue Blöcke werden immer dem letzten verfügbaren Knoten auf der tiefsten Ebene hinzugefügt, wobei "verfügbar" bedeutet, dass er weniger als fünf Kinder hat. Wir setzen kein Limit für die Anzahl der Blöcke in einem Tab, aber ab etwa 25 Blöcken kann die Leistung nachlassen.
+
+Auch wenn wir für jeden Knoten im Baum bei der automatischen Platzierung neuer Blöcke ein Limit von 5 Kindern definieren, gibt es kein tatsächliches Limit für die Anzahl der Kinder, die ein Knoten haben kann. Nach der Platzierung kannst du den Block frei im Layout verschieben.
+
+#### Einen Block löschen
+
+Du kannst Blöcke löschen, indem du auf den <i className="fa-sharp fa-xmark-large" title="x"/>-Button oben rechts im Block klickst, mit der rechten Maustaste auf die Block-Kopfzeile klickst und im Kontextmenü "Close Block" auswählst, oder indem du den Befehl [`wsh deleteblock`](./wsh-reference#deleteblock) ausführst. Alternativ kann der aktuell fokussierte Block/das aktuell fokussierte Widget durch Drücken von <Kbd k="Cmd:w"/> geschlossen werden.
+
+Wenn du einen Block löschst, wird der Layout-Baum automatisch angepasst, um die Baumtiefe zu minimieren.
+
+#### Einen Block verschieben
+
+Du kannst Blöcke verschieben, indem du auf die Block-Kopfzeile klickst und den Block im Tab ziehst. Du siehst Platzhalter, die anzeigen, wo der Block landet, wenn du ihn ablegst.
+
+Es gibt 7 verschiedene Ablagebereiche für jeden Block. Ein Block wird entlang seiner Diagonalen in Quadranten unterteilt. Wenn der Block als Zeile kachelt (von links nach rechts), platziert das Ablegen eines Blocks im linken oder rechten Quadranten den abgelegten Block auf derselben Ebene wie den Zielblock. Dies kann als Inline-Ablage betrachtet werden. Wenn du den Block außerhalb der Reihe ablegst (in Quadranten, die der entgegengesetzten Kachelrichtung entsprechen), wird der Block entweder eine Ebene über oder eine Ebene unter dem Zielblock platziert. Ablegen zur Außenseite platziert ihn auf derselben Ebene wie das übergeordnete Element des Zielblocks, während Ablegen zur Mitte des Blocks eine neue Ebene erzeugt, auf die sowohl der Zielblock als auch der abgelegte Block verschoben werden. Das mittlere Fünftel des Blocks ist für die Tausch-Aktion reserviert. Ablegen eines Blocks hier führt dazu, dass Zielblock und abgelegter Block ihre Position im Layout tauschen.
+
+<video width="100%" height="100%" playsinline autoplay muted controls>
+  <source src="./img/drag-move-24fps-crf43.mp4" type="video/mp4" />
+</video>
+
+##### Mögliche Block-Bewegungen
+
+:::note
+Alle Block-Bewegungen außer dem Tausch führen dazu, dass sich der Rest des Layouts verschiebt, um die neue Position des Blocks aufzunehmen.
+:::
+
+![screenshot showing a block being dragged over another block, with the placeholder depicting a swap movement](./img/drag-swap.png)
+![annotated example showing the drop targets within a block](./img/block-drag-example.jpg)
+
+1. Inline davor: Legt den Block unter demselben Knoten wie den Zielblock ab und platziert ihn in derselben Kachelrichtung vor dem Ziel
+2. Inline danach: Legt den Block unter demselben Knoten wie den Zielblock ab und platziert ihn in derselben Kachelrichtung nach dem Ziel
+3. Außerhalb der Reihe, davor außen: Legt den Block vor dem übergeordneten Knoten des Zielblocks in der entgegengesetzten Kachelrichtung ab
+4. Außerhalb der Reihe, davor innen: Segmentiert den Zielblock und erzeugt einen neuen Knoten im Baum. Platziert den abgelegten Block vor dem Zielblock in der entgegengesetzten Kachelrichtung.
+5. Außerhalb der Reihe, danach innen: Segmentiert den Zielblock und erzeugt einen neuen Knoten im Baum. Platziert den abgelegten Block nach dem Zielblock in der entgegengesetzten Kachelrichtung.
+6. Außerhalb der Reihe, danach außen: Legt den Block nach dem übergeordneten Knoten des Zielblocks in der entgegengesetzten Kachelrichtung ab
+7. Tausch: Tauscht die Position des abgelegten Blocks und des Zielblocks im Layout, der Rest des Layouts bleibt erhalten
+
+#### Einen Block in der Größe ändern
+
+<video width="100%" height="100%" playsinline autoplay muted controls>
+  <source src="./img/resize-24fps-crf43.mp4" type="video/mp4" />
+</video>
+
+![screenshot showing the line that appears when the cursor hovers over the margin of a block, indicating which blocks
+will be resized by dragging the margin](./img/node-resize.png)
+
+Du änderst nicht direkt die Größe eines Blocks, sondern die Größe der Knoten, die die Blöcke enthalten. Wenn du mit der Maus über den Rand eines Blocks fährst, ändert sich der Cursor zu <i className="fa-sharp fa-arrows-left-right" title="left/right arrows"/> oder <i className="fa-sharp fa-arrows-up-down" title="up/down arrows"/>, um die Richtung anzuzeigen, in der der Knoten in der Größe geändert werden kann. Nach 500ms erscheint außerdem eine Linie, die zeigt, wie viele Blöcke durch das Verschieben dieses Rands in der Größe geändert werden. Klicken und Ziehen auf diesem Rand ändert die Größe der Blöcke.
+
+Knotengrößen sind einheitenlose Werte. Das Verhältnis aller Knotengrößen auf einer bestimmten Baumebene bestimmt die Verschiebung jedes Knotens. Wenn du einen Block verschiebst und sein Knoten gelöscht wird, passen die anderen Knoten auf dieser Baumebene ihre Größen an das neue Größenverhältnis an.
+
+### Einen Block vergrößern
+
+Du kannst einen Block vergrößern, indem du auf den <i className="custom-icon-inline custom-icon-magnify-disabled" title="magnify"/>-Button klickst oder <Kbd k="Cmd:m"/> drückst. Du kannst einen Block wieder verkleinern, indem du auf den <i className="custom-icon-inline custom-icon-magnify-enabled" title="un-magnify"/>-Button klickst oder erneut <Kbd k="Cmd:m"/> drückst.
+
+### Den Abstand zwischen Blöcken ändern
+
+Der Abstand zwischen Blöcken beträgt standardmäßig 3px, dieser Wert kann jedoch durch Ändern des Konfigurationswerts `window:tilegapsize` angepasst werden. Siehe [Konfiguration](./config) für weitere Informationen zum Ändern von Konfigurationswerten.
+
+</PlatformProvider>
