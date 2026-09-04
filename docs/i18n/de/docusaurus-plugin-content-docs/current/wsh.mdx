@@ -1,0 +1,210 @@
+---
+sidebar_position: 4
+id: "wsh"
+title: "wsh-Überblick"
+---
+
+Der Befehl `wsh` stellt die zentrale Kommandozeilen-Schnittstelle von Wave Terminal bereit und ermöglicht es Nutzern, sowohl mit Terminal- als auch mit grafischen Elementen von der Kommandozeile aus zu interagieren. Diese Anleitung behandelt die Grundlagen der Nutzung von `wsh` und seine wichtigsten Funktionen.
+
+Eine Liste aller wsh-Befehle und ihrer Argumente findest du in der [wsh-Referenz](/wsh-reference).
+
+## Überblick
+
+Im Kern ermöglicht `wsh` eine nahtlose Interaktion zwischen deinen Terminal-Befehlen und Waves grafischen Blöcken. Damit kannst du:
+
+- Grafische Widgets direkt von der Kommandozeile aus steuern
+- Daten zwischen Terminal-Sitzungen und GUI-Komponenten teilen
+- Deinen Workspace programmatisch verwalten
+- Entfernte und lokale Umgebungen verbinden
+- CLI-Ausgaben und Dateien direkt an KI-Gespräche senden
+- Terminal-Befehle in separaten, isolierten Blöcken ausführen
+
+## Grundkonzepte
+
+### Mit Blöcken interagieren
+
+`wsh` ermöglicht die direkte Interaktion mit Waves grafischen Blöcken über die Kommandozeile. Zum Beispiel:
+
+```bash
+# Eine Datei im Editor öffnen
+wsh edit config.json
+
+# Den aktuellen Dateipfad aus einem Vorschau-Block abrufen
+wsh getmeta -b 2 file
+
+# Ausgabe an einen KI-Assistenten senden (das "-" liest von stdin)
+ls -la | wsh ai - "what are the largest files here?"
+```
+
+### Dauerhafter Status
+
+`wsh` kann über sein Variablensystem einen Status über Terminal-Sitzungen hinweg beibehalten:
+
+```bash
+# Eine Variable speichern, die über Sitzungen hinweg erhalten bleibt
+wsh setvar API_KEY=abc123
+
+# Global speichern
+wsh setvar DEPLOY_ENV=prod
+# Oder im aktuellen Workspace speichern
+wsh setvar -b workspace DEPLOY_ENV=staging
+
+# Gespeicherte Variablen in Befehlen nutzen
+curl -H "Authorization: $(wsh getvar API_KEY)" https://api.example.com
+```
+
+### Auf lokale Dateien von einem entfernten Rechner aus zugreifen
+
+Wenn du auf entfernten Rechnern arbeitest, kannst du mit dem Pfadpräfix `wsh://local/~/` zusammen mit `wsh file`-Befehlen auf Dateien auf deinem lokalen Computer zugreifen. Die Kurzform `/~/` kann ebenfalls als Alias für `wsh://local/~/` genutzt werden:
+
+```bash
+# Eine lokale Datei von einem entfernten Rechner lesen
+wsh file cat wsh://local/~/config/app.json
+
+# Ein lokales Skript per Shell-Prozesssubstitution auf dem entfernten Rechner ausführen
+bash <(wsh file cat wsh://local/~/scripts/deploy.sh)
+python <(wsh file cat wsh://local/~/scripts/deploy.py)
+
+# Entfernte Ausgabe an eine lokale Log-Datei anhängen
+echo "Remote machine log entry" | wsh file append wsh://local/~/app.log
+
+# Eine lokale Datei auf den entfernten Rechner kopieren
+wsh file cp wsh://local/~/data.csv ./remote-data.csv
+
+# Entfernte Datei zurück auf den lokalen Rechner kopieren
+wsh file cp ./results.txt wsh://local/~/results.txt
+
+# Du kannst auch die Kurzform /~/ anstelle von wsh://local/~/ nutzen
+wsh file cat /~/config/app.json
+```
+
+### Blockverwaltung
+
+Jedes visuelle Element in Wave ist ein Block, und `wsh` gibt dir vollständige Kontrolle darüber (Strg+Umschalt gedrückt halten, um Blocknummern anzuzeigen):
+
+```bash
+# Einen neuen Block erstellen, der eine Webseite zeigt
+wsh web open github.com
+
+# Eine Websuche in einem neuen Block durchführen
+wsh web open "wave terminal"
+
+# Einen Befehl in einem neuen Block ausführen und nach Abschluss automatisch schließen
+wsh run -x -- npm test
+
+# Informationen über den aktuellen Block abrufen
+wsh getmeta
+```
+
+## Häufige Workflows
+
+Hier sind einige gängige Wege, `wsh` zu nutzen:
+
+### Entwicklungs-Workflow
+
+```bash
+# Verzeichnis oder Markdown-Dateien öffnen
+wsh view .
+wsh view README.md
+
+# -m hinzufügen, um den Block im "vergrößerten" Modus zu öffnen
+wsh view -m README.md
+
+# Entwicklungsserver in einem neuen Block starten (-m vergrößert den Block beim Start)
+wsh run -m -- npm run dev
+
+# Dokumentation in einem Web-Block öffnen
+wsh web open http://localhost:3000
+```
+
+### Remote-Entwicklung
+
+```bash
+# Mit optionalem Schlüssel zu einem entfernten Server verbinden
+wsh ssh -i ~/.ssh/mykey.pem dev@server
+
+# Entfernte Dateien bearbeiten
+wsh edit /etc/nginx/nginx.conf
+
+# Entfernte Logs überwachen
+wsh run -- tail -f /var/log/app.log
+
+# Variablen zwischen Sitzungen teilen
+wsh setvar -b tab SHARED_ENV=staging
+```
+
+### KI-unterstützte Entwicklung
+
+Der Befehl `wsh ai` fügt der Wave-AI-Seitenleiste Inhalte hinzu. Standardmäßig werden Dateien angehängt, ohne automatisch abzusenden, sodass du vor dem Senden weiteren Kontext prüfen und hinzufügen kannst.
+
+```bash
+# Ausgabe an die KI-Seitenleiste weiterleiten (Frage in der UI stellen)
+git diff | wsh ai -
+
+# Dateien mit einer Nachricht anhängen
+wsh ai main.go utils.go -m "find bugs in these files"
+
+# Mit Nachricht automatisch absenden
+wsh ai config.json -s -m "explain this config"
+
+# Neuen Chat mit angehängten Dateien starten
+wsh ai -n *.log -m "analyze these logs"
+
+# Mehrere Dateitypen anhängen (Bilder, PDFs, Code)
+wsh ai screenshot.png report.pdf app.py -m "review these"
+
+# Debuggen mit stdin und automatischem Absenden
+dmesg | wsh ai -s - -m "help me understand these errors"
+```
+
+**Flags:**
+- `-` - Von stdin statt aus einer Datei lesen
+- `-m, --message` - Nachrichtentext zusammen mit Dateien hinzufügen
+- `-s, --submit` - Sofort automatisch absenden (Standard ist, auf den Nutzer zu warten)
+- `-n, --new` - Chat leeren und neues Gespräch beginnen
+
+**Dateigrenzen:**
+- Textdateien: max. 200KB
+- PDFs: max. 5MB
+- Bilder: max. 7MB
+- Maximal 15 Dateien pro Befehl
+
+## Tipps & Funktionen
+
+1. **Mit Blöcken arbeiten**
+
+   - Nutze Blocknummern (1-9), um bestimmte Blöcke innerhalb eines Tabs anzusprechen (Strg+Umschalt gedrückt halten, um Blocknummern anzuzeigen)
+   - Vollständige Block-IDs erhältst du per Rechtsklick auf die Kopfzeile eines Blocks und Auswahl von "Copy Block Id" (nützlich zum Skripten)
+   - Nutze Referenzen wie "this", "tab", "workspace" oder "global" für verschiedene Geltungsbereiche
+
+2. **Datenspeicherung**
+
+   - Nutze `wsh setvar/getvar` für Konfiguration und Secrets
+   - Speichere Dateidaten mit `wsh file`, die sich leicht in allen Terminals (lokal und entfernt) referenzieren lassen
+   - Nutze passende Speicher-Geltungsbereiche (Block, Tab, Workspace, global)
+
+3. **Befehlsausführung**
+   - Nutze `wsh run`, um Befehle in neuen Blöcken auszuführen
+   - Sende Befehlsausgaben und Dateien schnell mit `wsh ai` an KI-Blöcke
+
+## Skripten mit wsh
+
+wsh-Befehle können in Skripten kombiniert werden, um wiederkehrende Aufgaben zu automatisieren. Hier ist ein Beispiel, das eine Entwicklungsumgebung einrichtet und mit `wsh notify` einen lang laufenden Build überwacht:
+
+```bash
+#!/bin/bash
+# Entwicklungsumgebung einrichten
+wsh run -- docker-compose up -d
+wsh web open localhost:8080
+wsh view ./src
+wsh run -- npm run test:watch
+
+# Mit wsh notify benachrichtigt werden, wenn lang laufende Aufgaben abgeschlossen sind
+npm run build && wsh notify "Build complete" || wsh notify "Build failed"
+```
+
+## Hilfe erhalten
+
+Du kannst dir Hilfe zu verfügbaren Befehlen anzeigen lassen, indem du `wsh` ohne Argumente ausführst, oder detaillierte Hilfe zu einem bestimmten Befehl mit `wsh [command] -h` erhalten.
+
+Eine vollständige Referenz aller `wsh`-Funktionen findest du in der [WSH-Befehlsreferenz](./wsh-reference).

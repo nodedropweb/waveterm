@@ -1,0 +1,131 @@
+---
+sidebar_position: 1.9
+id: "claude-code"
+title: "Claude-Code-Integration"
+---
+
+import { VersionBadge } from "@site/src/components/versionbadge";
+
+# Claude-Code-Tab-Badges <VersionBadge version="v0.14.2" />
+
+Wenn du mehrere Claude-Code-Sitzungen parallel laufen lässt - eine pro Feature, eine pro Repo, ein paar lang laufende Aufgaben - wird es schwierig, ohne jeden Tab einzeln anzuklicken zu wissen, welcher deine Aufmerksamkeit braucht. Waves Badge-System löst das: Hooks in Claude Code schreiben einen kleinen visuellen Indikator in die Tab-Kopfzeile, sobald etwas Wichtiges passiert, sodass du auf einen Blick siehst, welche Sitzungen warten, fertig sind oder Probleme haben.
+
+:::info
+tl;dr Du kannst diese Seite direkt in Claude Code kopieren und einfügen, und es hilft dir, alles einzurichten!
+:::
+
+## So funktioniert es
+
+Claude Code unterstützt [Lifecycle-Hooks](https://code.claude.com/docs/en/hooks) - Shell-Befehle, die automatisch an bestimmten Punkten einer Sitzung ausgeführt werden. Waves Befehl `wsh badge` setzt oder entfernt einen visuellen Indikator am aktuellen Block oder Tab. Durch das Verknüpfen dieser beiden Dinge erhältst du ein ambientes Bewusstsein über all deine Sitzungen, ohne eine davon beobachten zu müssen.
+
+Badges werden automatisch entfernt, sobald du den Block fokussierst - sie sind also rein ein "Hey, schau hier"-Signal. Sobald du hineinklickst und liest, was passiert, verschwindet das Badge von selbst.
+
+Wave zeigt bereits ein Glockensymbol an, wenn ein Terminal ein BEL-Zeichen ausgibt. Diese Hooks ergänzen das um semantische Badges - *Freigabe benötigt*, *fertig* - die Tab-Wechsel und Splits überstehen.
+
+### Badge-Rollup
+
+Hat ein Tab mehrere Terminals (Blöcke), zeigt Wave das Badge mit der höchsten Priorität in der Tab-Kopfzeile. Bei Gleichstand in der Priorität gewinnt das zuerst gesetzte Badge, sodass das dringendste Signal aus jedem Bereich des Tabs nach oben durchdringt.
+
+## Einrichtung
+
+Diese Hooks kommen in deine globalen Claude-Code-Einstellungen, damit sie für jede Sitzung auf deinem Rechner gelten, nicht nur für ein Projekt.
+
+Füge Folgendes zu `~/.claude/settings.json` hinzu. Wenn du bereits einen `hooks`-Schlüssel hast, führe die Einträge zusammen:
+
+```json
+{
+  "hooks": {
+    "Notification": [
+      {
+        "matcher": "permission_prompt",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "wsh badge bell-exclamation --color '#e0b956' --priority 20 --beep"
+          }
+        ]
+      },
+      {
+        "matcher": "elicitation_dialog",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "wsh badge message-question --color '#e0b956' --priority 20 --beep"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "wsh badge check --color '#58c142' --priority 10"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "AskUserQuestion",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "wsh badge message-question --color '#e0b956' --priority 20 --beep"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+Das war's. Starte alle laufenden Claude-Code-Sitzungen neu, damit die Hooks wirksam werden.
+
+:::warning Bekanntes Problem
+Es gibt ein bekanntes Problem in Claude Code, bei dem `Notification`-Hooks um mehrere Sekunden verzögert ausgelöst werden können. Diese Verzögerung hat nichts mit Wave zu tun - sie tritt in Claude Code selbst auf. Details siehe [#5186](https://github.com/anthropics/claude-code/issues/5186) und [#19627](https://github.com/anthropics/claude-code/issues/19627).
+:::
+
+## Was jeder Hook macht
+
+### Freigabeabfrage — `bell-exclamation` gold, Priorität 20
+
+Claude Code benötigt gelegentlich deine Freigabe, bevor es fortfahren kann - um einen Befehl auszuführen, eine Datei außerhalb des Projekts zu schreiben oder ein Tool zu nutzen, das eine explizite Berechtigung erfordert. Trifft es auf so etwas, hält es an und wartet. Ohne Signal bemerkst du das vielleicht erst nach Minuten.
+
+Dieser Hook wird beim Benachrichtigungstyp `permission_prompt` ausgelöst und setzt ein hochprioritäres, goldenes Badge mit einem hörbaren Signalton. Priorität 20 bedeutet, dass es jedes andere Badge auf diesem Tab schlägt, sodass eine wartende Sitzung immer über einer fertigen erscheint.
+
+Klickst du in den Tab und genehmigst oder lehnst die Anfrage ab, verschwindet das Badge automatisch.
+
+### Sitzung abgeschlossen — `check` grün, Priorität 10
+
+Wenn Claude Code mit der Antwort fertig ist, setzt dieser Hook ein grünes Häkchen-Badge. Es ist ein dezentes Signal: ein Blick auf die Tableiste zeigt, welche Sitzungen fertig sind, und du kannst ihre Ausgabe in beliebiger Reihenfolge durchsehen.
+
+### AskUserQuestion — `message-question` gold, Priorität 20
+
+Wenn Claude Code das Tool `AskUserQuestion` nutzt, ist es pausiert und wartet auf deine Antwort, bevor es fortfahren kann. Dieser `PreToolUse`-Hook wird direkt vor diesem Tool-Aufruf ausgelöst und setzt dasselbe hochprioritäre goldene Badge wie die Freigabeabfrage.
+
+`PreToolUse`-Hooks können jedes Tool anhand seines Namens abgleichen, sodass du auch für andere Tools Badges hinzufügen kannst - zum Beispiel, um ein Signal zu erhalten, wann immer Claude einen Shell-Befehl ausführt (`Bash`) oder eine Datei bearbeitet (`Edit`). Jeder von Claude Code unterstützte Tool-Name kann als Matcher genutzt werden.
+
+## Eigene Icons und Farben wählen
+
+Icon-Namen sind [Font-Awesome](https://fontawesome.com/icons)-Icon-Namen ohne das Präfix `fa-`. Farben sind beliebige gültige CSS-Farben - Hex-Werte, benannte Farben oder alles andere, was CSS akzeptiert.
+
+Ein paar Icon- und Farbideen:
+
+| Situation | Icon | Farbe |
+|-----------|------|-------|
+| Benutzerdefinierter Alarm mit hoher Priorität | `triangle-exclamation` | `#FF453A` |
+| Blockiert / wartet auf Eingabe | `hourglass-half` | `#FF9500` |
+| Neutral / informativ | `circle-info` | `#429DFF` |
+| Hintergrundaufgabe läuft | `spinner` | `#00FFDB` |
+
+Alle verfügbaren Flags findest du in der [`wsh badge`-Referenz](/wsh-reference#badge).
+
+## Prioritäten anpassen
+
+Die Priorität bestimmt, welches Badge gewinnt, wenn mehrere Blöcke in einem Tab jeweils eines haben. Höhere Zahlen haben Vorrang. Die obigen Standardwerte nutzen:
+
+- **20** für Freigabeabfragen — erscheint immer über allem anderen
+- **10** für abgeschlossene Sitzungen — sichtbar, wenn nichts Dringenderes aktiv ist
+
+Wenn du weitere Hooks hinzufügst, halte blockierende Freigabesignale im oberen Bereich (15–25) und informative Signale im unteren Bereich (5–10).
