@@ -1,0 +1,14 @@
+{
+    "about": {
+        "title": "Wave Terminal",
+        "tagline1": "Open-Source-KI-Terminal",
+        "tagline2": "Entwickelt für nahtlose Workflows",
+        "clientVersion": "Client-Version {{version}}",
+        "updateChannel": "Update-Kanal: {{channel}}",
+        "github": "GitHub",
+        "website": "Website",
+        "openSource": "Open Source",
+        "sponsor": "Sponsor",
+        "copyright": "© {{year}} Command Line Inc."
+    }
+}
