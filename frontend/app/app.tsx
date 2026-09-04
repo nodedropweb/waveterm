@@ -17,9 +17,10 @@ import { makeWaveEnvImpl } from "@/app/waveenv/waveenvimpl";
 import { Workspace } from "@/app/workspace/workspace";
 import { getLayoutModelForStaticTab } from "@/layout/index";
 import { ContextMenuModel } from "@/store/contextmenu";
-import { atoms, createBlock, getSettingsPrefixAtom, refocusNode } from "@/store/global";
+import { atoms, createBlock, getSettingsKeyAtom, getSettingsPrefixAtom, refocusNode } from "@/store/global";
 import { appHandleKeyDown, keyboardMouseDownHandler } from "@/store/keymodel";
 import { getElemAsStr } from "@/util/focusutil";
+import { setLanguage, SupportedLanguage } from "@/util/i18n/i18n";
 import * as keyutil from "@/util/keyutil";
 import { PLATFORM } from "@/util/platformutil";
 import * as util from "@/util/util";
@@ -164,6 +165,14 @@ function AppSettingsUpdater() {
             document.body.style.removeProperty("--main-bg-color");
         }
     }, [windowSettings]);
+    return null;
+}
+
+function AppLanguageSync() {
+    const language = useAtomValue(getSettingsKeyAtom("app:language"));
+    useEffect(() => {
+        setLanguage((language as SupportedLanguage) ?? "en");
+    }, [language]);
     return null;
 }
 
@@ -382,6 +391,7 @@ const AppInner = () => {
             <AppKeyHandlers />
             <AppFocusHandler />
             <AppSettingsUpdater />
+            <AppLanguageSync />
             <BadgeAutoClearing />
             <DndProvider backend={HTML5Backend}>
                 <Workspace />
