@@ -1,0 +1,1123 @@
+---
+sidebar_position: 4.1
+id: "wsh-reference"
+title: "wsh-Referenz"
+---
+
+import { Kbd } from "@site/src/components/kbd";
+import { PlatformProvider, PlatformSelectorButton } from "@site/src/components/platformcontext";
+import { VersionBadge } from "@site/src/components/versionbadge";
+
+<PlatformProvider>
+
+# wsh-Befehl
+
+Der Befehl `wsh` ist in Wave-Blöcken immer verfügbar. Er ist ein leistungsstarkes Werkzeug zur Interaktion mit Wave-Blöcken und kann Daten zwischen deiner CLI und den Widget-Oberflächen austauschen.
+
+Dies ist die ausführliche wsh-Referenzdokumentation. Einen Überblick über die `wsh`-Funktionalität findest du in unserer [wsh-Befehlsdokumentation](/wsh).
+
+---
+
+## view
+
+Du kannst einen Vorschau-Block mit dem Inhalt einer beliebigen Datei oder eines Verzeichnisses öffnen, indem du Folgendes ausführst:
+
+```sh
+wsh view [path]
+wsh view -m [path]           # öffnet in vergrößertem Block
+```
+
+Mit diesem Befehl kannst du einfach Bilder, Markdown-Dateien und Verzeichnisse in der Vorschau ansehen. Bei Code-/Textdateien öffnet sich
+ein Codeedit-Block, mit dem du die Datei schnell in Waves integriertem grafischen Editor bearbeiten kannst.
+
+---
+
+## edit
+
+```sh
+wsh edit [path]
+wsh edit -m [path]           # öffnet in vergrößertem Block
+```
+
+Dies öffnet einen Codeedit-Block für die angegebene Datei. Nützlich, um Dateien auf einem lokalen oder entfernten Rechner schnell in Waves grafischem Editor zu bearbeiten. Dieser Befehl kehrt sofort nach dem Öffnen des Blocks zurück.
+
+Für die `$EDITOR`-Integration (z. B. mit `git commit`) siehe [`wsh editor`](#editor), der blockiert, bis der Editor geschlossen wird.
+
+---
+
+## editor
+
+```sh
+wsh editor [path]
+wsh editor -m [path]         # öffnet in vergrößertem Block
+```
+
+Dies öffnet einen Codeedit-Block für die angegebene Datei und **blockiert, bis der Editor geschlossen wird**. Nützlich, um deine Umgebungsvariable `$EDITOR` so zu setzen, dass CLI-Tools (z. B. `git commit`, `crontab -e`) Dateien in Waves grafischem Editor öffnen:
+
+```sh
+export EDITOR="wsh editor"
+```
+
+Die Datei muss bereits existieren. Nutze `-m`, um den Editor im vergrößerten Modus zu öffnen.
+
+---
+
+## getmeta
+
+Du kannst dir die Metadaten eines beliebigen Blocks oder Tabs ansehen, indem du Folgendes ausführst:
+
+```sh
+# Metadaten für den aktuellen Terminal-Block abrufen
+wsh getmeta
+
+# Metadaten für Block Nummer 2 abrufen (Blocknummern siehst du bei gedrückter Strg+Umschalt-Taste)
+wsh getmeta -b 2
+
+# Metadaten für eine Block-ID abrufen (Block-IDs per Rechtsklick auf eine Block-Kopfzeile "Copy Block Id")
+wsh getmeta -b [blockid]
+
+# Metadaten für einen Tab abrufen
+wsh getmeta -b tab
+
+# Einen einzelnen Metadaten-Schlüssel ausgeben
+wsh getmeta [-b [blockid]] [key]
+
+# Eine Reihe von Schlüsseln mit einem bestimmten Präfix ausgeben
+wsh getmeta -b tab "bg:*"
+
+# Eine Reihe von Schlüsseln mit Präfix ausgeben (und den 'clear'-Schlüssel einschließen)
+wsh getmeta -b tab --clear-prefix "bg:*"
+```
+
+Das ist besonders nützlich für Vorschau- und Web-Blöcke, da du die Datei oder URL sehen kannst, auf die sie verweisen, und sie in deinen CLI-Skripten nutzen kannst.
+
+Format der blockid:
+
+- `this` -- der aktuelle Block (das ist auch der Standard)
+- `tab` -- die ID des aktuellen Tabs
+- `d6ff4966-231a-4074-b78a-20acc7226b41` -- eine vollständige blockid ist eine UUID
+- `a67f55a3` -- blockids können auf die ersten 8 Zeichen gekürzt werden
+- `5` -- wird eine Zahl kleiner als 100 angegeben, ist es eine Blocknummer. Blöcke werden im aktuellen Tab fortlaufend von oben links nach unten rechts nummeriert. Halte <Kbd k="Ctrl:Shift"/> gedrückt, um ein Blocknummern-Overlay anzuzeigen.
+
+---
+
+## setmeta
+
+Du kannst jedes Metadaten-Schlüssel-Wert-Paar für Blöcke (und Tabs) mit dem Befehl setmeta aktualisieren. Der setmeta-Befehl nimmt dieselben `-b`-Argumente wie getmeta.
+
+```sh
+wsh setmeta -b [blockid] [key]=[value]
+wsh setmeta -b [blockid] file=~/myfile.txt
+wsh setmeta -b [blockid] url=https://waveterm.dev/
+
+# Metadaten für den aktuellen Tab mit der angegebenen JSON-Datei setzen
+wsh setmeta -b tab --json [jsonfile]
+
+# Metadaten für den aktuellen Tab mit einer von stdin gelesenen JSON-Datei setzen
+wsh setmeta -b tab --json
+```
+
+Block- und Tab-IDs erhältst du per Rechtsklick auf den entsprechenden Block und Auswahl von "Copy BlockId" (oder über die Blocknummer mit Strg+Umschalt). Wenn du
+die Metadaten eines Vorschau- oder Web-Blocks aktualisierst, siehst du die Änderungen sofort im Block widergespiegelt.
+
+Weitere nützliche Metadatenwerte zum Überschreiben von Block-Titeln, -Icons, -Farben, -Themes usw.
+
+Hier ist ein komplexerer Befehl, der den Hintergrund (bg:\*-Schlüssel) von einem Tab in den aktuellen Tab kopiert:
+
+```sh
+wsh getmeta -b [other-tab-id] "bg:*" --clear-prefix | wsh setmeta -b tab --json -
+```
+
+---
+
+## ai
+
+Fügt der Wave-AI-Seitenleiste Inhalte hinzu. Dateien werden als richtige Dateianhänge angehängt (mit Unterstützung für Bilder, PDFs und Text), nicht als Text kodiert. Standardmäßig wird der Inhalt der Seitenleiste hinzugefügt, ohne automatisch abzusenden, sodass du vor dem Senden an die KI weiteren Kontext prüfen und hinzufügen kannst.
+
+Du kannst mehrere Dateien gleichzeitig anhängen (bis zu 15 Dateien). Nutze `-m`, um eine Nachricht zusammen mit Dateien hinzuzufügen, `-s`, um sofort automatisch abzusenden, und `-n`, um ein neues Gespräch zu beginnen. Nutze "-", um von stdin zu lesen.
+
+```sh
+# Befehlsausgabe an KI weiterleiten (Frage in der UI stellen)
+git diff | wsh ai -
+docker logs mycontainer | wsh ai -
+
+# Dateien ohne automatisches Absenden anhängen (zuerst in der UI prüfen)
+wsh ai main.go utils.go
+wsh ai screenshot.png logs.txt
+
+# Dateien mit Nachricht anhängen
+wsh ai app.py -m "find potential bugs"
+wsh ai *.log -m "analyze these error logs"
+
+# Sofort automatisch absenden
+wsh ai config.json -s -m "explain this configuration"
+tail -n 50 app.log | wsh ai -s - -m "what's causing these errors?"
+
+# Neuen Chat starten und Dateien anhängen
+wsh ai -n report.pdf data.csv -m "summarize these reports"
+
+# Verschiedene Dateitypen anhängen (Bilder, PDFs, Code)
+wsh ai architecture.png api-spec.pdf server.go -m "review the system design"
+```
+
+**Dateigrößenlimits:**
+- Textdateien: max. 200KB
+- PDF-Dateien: max. 5MB
+- Bilddateien: max. 7MB (berücksichtigt den Overhead der Base64-Kodierung)
+- Maximal 15 Dateien pro Befehl
+
+**Flags:**
+- `-m, --message <text>` - Nachrichtentext zusammen mit Dateien hinzufügen
+- `-s, --submit` - Sofort automatisch absenden (Standard wartet auf den Nutzer)
+- `-n, --new` - Aktuellen Chat leeren und neues Gespräch beginnen
+
+---
+
+## editconfig
+
+Mit diesem Befehl kannst du einfach jede beliebige Konfigurationsdatei von Wave öffnen.
+
+```sh
+wsh editconfig [config-file-name]
+
+# öffnet die Standard-Datei settings.json
+wsh editconfig
+
+# öffnet presets.json
+wsh editconfig presets.json
+
+# öffnet widgets.json
+wsh editconfig widgets.json
+
+# öffnet die KI-Voreinstellungen
+wsh editconfig presets/ai.json
+```
+
+---
+
+## setbg
+
+Mit dem Befehl `setbg` kannst du für den aktuellen Tab ein Hintergrundbild oder eine Hintergrundfarbe mit verschiedenen Anpassungsoptionen festlegen.
+
+```sh
+wsh setbg [--opacity value] [--tile|--center] [--size value] [--border-color color] [--active-border-color color] (image-path|"#color"|color-name)
+```
+
+Du kannst einen Hintergrund festlegen mit:
+
+- Einer Bilddatei (angezeigt als Cover, gekachelt oder zentriert)
+- Einer Hex-Farbe (muss in Anführungszeichen stehen wie "#ff0000")
+- Einem CSS-Farbnamen (wie "blue" oder "forestgreen")
+
+Flags:
+
+- `--opacity value` - legt die Hintergrunddeckkraft fest (0.0-1.0, Standard 0.5)
+- `--tile` - kachelt das Hintergrundbild statt des Cover-Modus
+- `--center` - zentriert das Bild ohne Skalierung (gut für Logos)
+- `--size` - Größe für zentrierte Bilder (px, % oder auto)
+- `--clear` - entfernt den Hintergrund
+- `--border-color color` - legt die Rahmenfarbe des Blocks fest (Hex oder CSS-Farbname)
+- `--active-border-color color` - legt die Rahmenfarbe des fokussierten Blocks fest (Hex oder CSS-Farbname)
+- `--print` - zeigt die Metadaten an, ohne sie anzuwenden
+
+Unterstützte Bildformate: JPEG, PNG, GIF, WebP und SVG.
+
+Beispiele:
+
+```sh
+# Bildhintergrund mit Standardeinstellungen festlegen
+wsh setbg ~/pictures/background.jpg
+
+# Hintergrund mit benutzerdefinierter Deckkraft festlegen
+wsh setbg --opacity 0.3 ~/pictures/light-pattern.png
+
+# Gekachelten Hintergrund festlegen
+wsh setbg --tile --opacity 0.2 ~/pictures/texture.png
+
+# Ein Bild zentrieren (gut für Logos)
+wsh setbg --center ~/pictures/logo.png
+wsh setbg --center --size 200px ~/pictures/logo.png
+
+# Farbhintergründe festlegen
+wsh setbg "#ff0000"          # Hex-Farbe (benötigt Anführungszeichen)
+wsh setbg forestgreen        # CSS-Farbname
+
+# Nur die Deckkraft des aktuellen Hintergrunds ändern
+wsh setbg --opacity 0.7
+
+# Rahmenfarben zusammen mit einem Hintergrund festlegen
+wsh setbg --border-color "#ff0000" --active-border-color "#00ff00" ~/pictures/background.jpg
+wsh setbg --border-color steelblue forestgreen
+
+# Hintergrund entfernen
+wsh setbg --clear
+
+# Die Metadaten in der Vorschau ansehen
+wsh setbg --print "#ff0000"
+```
+
+Der Befehl prüft, dass:
+
+- Farbwerte gültige Hex-Codes oder CSS-Farbnamen sind
+- Bildpfade auf zugängliche, unterstützte Bilddateien verweisen
+- Der Deckkraftwert zwischen 0.0 und 1.0 liegt
+- Die Optionen center und tile nicht zusammen genutzt werden
+
+:::tip
+Nutze `--print`, um die Metadaten für eine Hintergrundkonfiguration in der Vorschau anzusehen, ohne sie anzuwenden. Du kannst diese JSON-Darstellung dann als [Hintergrundeintrag](/tab-backgrounds) kopieren
+:::
+
+---
+
+## badge
+
+<VersionBadge version="v0.14.2" />
+
+Der Befehl `badge` setzt oder entfernt einen visuellen Badge-Indikator an einer Block- oder Tab-Kopfzeile.
+
+```sh
+wsh badge [icon]
+wsh badge --clear
+```
+
+Badges werden genutzt, um Aufmerksamkeit auf einen Block oder Tab zu lenken, zum Beispiel um anzuzeigen, dass ein Prozess abgeschlossen ist oder Aufmerksamkeit benötigt. Wird kein Icon angegeben, ist der Standard `circle-small`. Icon-Namen sind [Font-Awesome](https://fontawesome.com/icons)-Icon-Namen (ohne das Präfix `fa-`).
+
+Flags:
+
+- `--color string` - legt die Badge-Farbe fest (CSS-Farbname oder Hex)
+- `--priority float` - legt die Badge-Priorität fest (Standard 10; Badges mit höherer Priorität haben Vorrang)
+- `--clear` - entfernt das Badge vom Block oder Tab
+- `--beep` - spielt beim Setzen des Badges den System-Signalton ab
+- `--pid int` - überwacht eine PID und entfernt das Badge automatisch, wenn sie beendet wird (setzt die Standardpriorität auf 5)
+- `-b, --block` - zielt auf einen bestimmten Block oder Tab (gleiches Format wie `getmeta`)
+
+Beispiele:
+
+```sh
+# Ein Standard-Badge auf dem aktuellen Block setzen
+wsh badge
+
+# Ein Badge mit benutzerdefiniertem Icon und Farbe setzen
+wsh badge circle-check --color green
+
+# Ein hochprioritäres Badge auf einem bestimmten Block setzen
+wsh badge triangle-exclamation --color red --priority 20 -b 2
+
+# Ein Badge setzen, das entfernt wird, wenn ein Prozess beendet wird
+wsh badge --pid 12345
+
+# Beim Fertigstellen den Signalton abspielen und ein Badge setzen
+wsh badge circle-check --beep
+
+# Das Badge am aktuellen Block entfernen
+wsh badge --clear
+
+# Das Badge an einem bestimmten Tab entfernen
+wsh badge --clear -b tab
+```
+
+:::note
+Das Flag `--pid` wird unter Windows nicht unterstützt.
+:::
+
+---
+
+## run
+
+Der Befehl `run` erstellt einen neuen Terminal-Befehlsblock und führt einen angegebenen Befehl darin aus. Der Befehl kann entweder als Argumente nach `--` oder mit dem Flag `-c` angegeben werden. Sofern nicht die Flags `-x` oder `-X` übergeben werden, können Befehle durch Drücken von `Enter` erneut ausgeführt werden, sobald der Befehl beendet ist.
+
+```sh
+# Einen nach -- angegebenen Befehl ausführen
+wsh run -- ls -la
+
+# Einen Befehl mit dem Flag -c ausführen
+wsh run -c "ls -la"
+
+# Mit angegebenem Arbeitsverzeichnis ausführen
+wsh run --cwd /path/to/dir -- ./script.sh
+
+# Im vergrößerten Modus ausführen
+wsh run -m -- make build
+
+# Ausführen und bei erfolgreichem Abschluss automatisch schließen
+wsh run -x -- npm test
+
+# Ausführen und unabhängig vom Status automatisch schließen
+wsh run -X -- ./long-running-task.sh
+```
+
+Der Befehl übernimmt standardmäßig die aktuellen Umgebungsvariablen und das aktuelle Arbeitsverzeichnis.
+
+Flags:
+
+- `-m, --magnified` - öffnet den Block im vergrößerten Modus
+- `-c, --command string` - führt einen Befehlsstring in der _Shell_ aus
+- `-x, --exit` - schließt den Block, wenn der Befehl erfolgreich beendet wird (bleibt bei einem Fehler offen)
+- `-X, --forceexit` - schließt den Block, wenn der Befehl beendet wird, unabhängig vom Status
+- `--delay int` - bei Nutzung von -x/-X, Verzögerung in Millisekunden vor dem Schließen des Blocks (Standard 2000)
+- `-p, --paused` - erstellt den Block im pausierten Zustand
+- `-a, --append` - hängt die Ausgabe beim Neustart des Befehls an, statt sie zu löschen
+- `--cwd string` - legt das Arbeitsverzeichnis für den Befehl fest
+
+Beispiele:
+
+```sh
+# Einen Build-Befehl im vergrößerten Modus ausführen
+wsh run -m -- npm run build
+
+# Ein Skript ausführen und nach Erfolg automatisch schließen
+wsh run -x -- ./backup-script.sh
+
+# Einen Befehl in einem bestimmten Verzeichnis ausführen
+wsh run --cwd ./project -- make test
+
+# Einen Shell-Befehl ausführen und nach Abschluss zwangsweise schließen
+wsh run -X -c "find . -name '*.log' -delete"
+
+# Einen Befehl im pausierten Zustand starten
+wsh run -p -- ./server --dev
+
+# Mit benutzerdefinierter Schließverzögerung ausführen
+wsh run -x --delay 5000 -- ./deployment.sh
+```
+
+Bei Nutzung der Flags `-x` oder `-X` schließt sich der Block automatisch, sobald der Befehl abgeschlossen ist. Das Flag `-x` schließt nur bei erfolgreichem Abschluss (Exit-Code 0), während `-X` unabhängig vom Status schließt. Das Flag `--delay` steuert, wie lange vor dem Schließen gewartet wird (Standard 2000ms).
+
+Das Flag `-p` erstellt den Block im pausierten Zustand, sodass du den Befehl vor der Ausführung prüfen kannst.
+
+:::tip
+Du kannst entweder `--` gefolgt von deinem Befehl und Argumenten nutzen, oder das Flag `-c` mit einem in Anführungszeichen gesetzten Befehlsstring. Die `--`-Methode ist vorzuziehen, wenn du die Argumentbehandlung erhalten möchtest, während `-c` für Shell-Befehle mit Pipes oder Umleitungen nützlich ist.
+:::
+
+---
+
+## deleteblock
+
+```sh
+wsh deleteblock -b [blockid]
+```
+
+Dies löscht den Block mit der angegebenen ID.
+
+---
+
+## ssh
+
+```sh
+wsh ssh [user@host]
+```
+
+Dies nutzt Waves interne SSH-Implementierung, um sich mit dem angegebenen entfernten Rechner zu verbinden. Mit dem Flag `-i` kann ein Pfad zu einer Identitätsdatei angegeben werden.
+
+---
+
+## wsl
+
+```sh
+wsh wsl [-d <distribution-name>]
+```
+
+Dies verbindet sich mit einer WSL-Distribution auf dem lokalen Rechner. Ist keine Distribution angegeben, wird die Standarddistribution genutzt.
+
+---
+
+## web
+
+Der Befehl `web` öffnet URLs in einem Web-Block innerhalb von Wave Terminal.
+
+```sh
+wsh web open [url] [-m] [-r blockid]
+```
+
+Du kannst eine bestimmte URL öffnen oder mit der konfigurierten Suchmaschine eine Suche durchführen.
+
+Flags:
+
+- `-m, --magnified` - öffnet den Web-Block im vergrößerten Modus
+- `-r, --replace <blockid>` - ersetzt einen bestehenden Block, statt einen neuen zu erstellen
+
+Beispiele:
+
+```sh
+# Eine URL öffnen
+wsh web open https://waveterm.dev
+
+# Mit der konfigurierten Suchmaschine suchen
+wsh web open "wave terminal documentation"
+
+# Im vergrößerten Modus öffnen
+wsh web open -m https://github.com
+
+# Einen bestehenden Block ersetzen
+wsh web open -r 2 https://example.com
+```
+
+Der Befehl öffnet einen neuen Web-Block mit der gewünschten Seite oder ersetzt einen bestehenden Block, wenn das Flag `-r` genutzt wird. Beachte, dass `--replace` und `--magnified` nicht zusammen genutzt werden können.
+
+---
+
+## notify
+
+Der Befehl `notify` erstellt eine Desktop-Benachrichtigung von Wave Terminal.
+
+```sh
+wsh notify [message] [-t title] [-s]
+```
+
+Damit kannst du Desktop-Benachrichtigungen aus Skripten oder Befehlen auslösen. Die Benachrichtigung erscheint über das native Benachrichtigungssystem deines Systems. Sie funktioniert sowohl auf entfernten Rechnern als auch auf deinem lokalen Rechner.
+
+Flags:
+
+- `-t, --title string` - legt den Titel der Benachrichtigung fest (Standard "Wsh Notify")
+- `-s, --silent` - deaktiviert den Benachrichtigungston
+
+Beispiele:
+
+```sh
+# Einfache Benachrichtigung
+wsh notify "Build completed successfully"
+
+# Benachrichtigung mit benutzerdefiniertem Titel
+wsh notify -t "Deployment Status" "Production deployment finished"
+
+# Stille Benachrichtigung
+wsh notify -s "Background task completed"
+```
+
+Das ist besonders nützlich für lang laufende Befehle, bei denen du über Abschluss oder Statusänderungen benachrichtigt werden möchtest.
+
+---
+
+## conn
+
+Dieser Befehl hat mehrere Unterbefehle, die verschiedene Funktionen im Zusammenhang mit Verbindungen ausführen.
+
+### status
+
+```sh
+wsh conn status
+```
+
+Dieser Befehl liefert den Status aller Verbindungen, die seit dem Start von Waveterm hergestellt wurden.
+
+### reinstall
+
+Für SSH-Verbindungen,
+
+```sh
+wsh conn reinstall [user@host]
+```
+
+Für WSL-Verbindungen,
+
+```sh
+wsh conn reinstall [wsl://<distribution-name>]
+```
+
+Dieser Befehl installiert die Wave-Shell-Erweiterungen auf der angegebenen Verbindung neu.
+
+### disconnect
+
+Für SSH-Verbindungen,
+
+```sh
+wsh conn disconnect [user@host]
+```
+
+Für WSL-Verbindungen,
+
+```sh
+wsh conn disconnect [wsl://<distribution name>]
+```
+
+Dieser Befehl trennt die angegebene Verbindung vollständig. Das gilt für alle Blöcke, in denen die Verbindung genutzt wird.
+
+### connect
+
+Für SSH-Verbindungen,
+
+```sh
+wsh conn connect [user@host]
+```
+
+Für WSL-Verbindungen,
+
+```sh
+wsh conn connect [wsl://<distribution-name>]
+```
+
+Dieser Befehl stellt eine Verbindung zur angegebenen Verbindung her, erstellt aber keinen Block dafür.
+
+### ensure
+
+Für SSH-Verbindungen,
+
+```sh
+wsh conn ensure [user@host]
+```
+
+Für WSL-Verbindungen,
+
+```sh
+wsh conn ensure [wsl://<distribution-name>]
+```
+
+Dieser Befehl stellt eine Verbindung zur angegebenen Verbindung her, falls sie noch nicht verbunden ist.
+
+---
+
+## setconfig
+
+```sh
+wsh setconfig [<config-name>=<config-value>]
+```
+
+Damit lassen sich verschiedene Optionen in der Datei `config/settings.json` festlegen. Es wird geprüft, ob eine gültige Konfigurationsoption angegeben wurde.
+
+---
+
+## file
+
+Der Befehl `file` bietet eine Reihe von Unterbefehlen zur Verwaltung von Dateien über verschiedene Speichersysteme hinweg, wie z. B. `wsh`-Remote-Server.
+
+:::note
+
+Wave Terminal kann Dateien von entfernten SSH-Hosts verwalten. Dateien werden über URIs adressiert, die
+je nach Speichersystem variieren. Ist kein Schema angegeben, wird die Datei als lokale Verbindung behandelt.
+
+URI-Format: `[profile]:[uri-scheme]://[connection]/[path]`
+
+Unterstützte URI-Schemata:
+
+- `wsh` - Wird genutzt, um über SSH per WSH-Helfer auf Dateien auf entfernten Hosts zuzugreifen. Ermöglicht Datei-Streaming zu Wave und anderen entfernten Rechnern.
+
+  Profile sind für WSH-URIs optional, sofern du den entfernten Host in deiner "connections.json" oder "~/.ssh/config"-Datei konfiguriert hast.
+
+  Ist ein Profil angegeben, muss es in "profiles.json" im Wave-Konfigurationsverzeichnis definiert sein.
+
+  Format: `wsh://[remote]/[path]`
+
+  Für den aktuellen Remote-Rechner und deinen lokalen Computer können Kurzformen genutzt werden:
+  `[path]` ein relativer oder absoluter Pfad auf dem aktuellen Remote-Rechner
+  `//[remote]/[path]` ein Pfad auf einem entfernten Rechner
+  `/~/[path]` ein Pfad relativ zum Home-Verzeichnis auf deinem lokalen Computer
+
+:::
+
+### cat
+
+```sh
+wsh file cat [file-uri]
+```
+
+Zeigt den Inhalt einer Datei an (maximale Dateigröße 10MB). Zum Beispiel:
+
+```sh
+wsh file cat wsh://user@ec2/home/user/config.txt
+wsh file cat ./local-config.txt
+```
+
+### write
+
+```sh
+wsh file write [file-uri]
+```
+
+Schreibt Daten von stdin in eine Datei. Die maximale Dateigröße beträgt 10MB. Zum Beispiel:
+
+```sh
+echo "hello" | wsh file write ./greeting.txt
+cat config.json | wsh file write //ec2-user@remote01/~/config.json
+```
+
+### append
+
+```sh
+wsh file append [file-uri]
+```
+
+Hängt Daten von stdin an eine Datei an. Die Eingabe wird lokal gepuffert (bis zu einem Gesamtdateigrößenlimit von 10MB), bevor sie geschrieben wird. Zum Beispiel:
+
+```sh
+cat additional-content.txt | wsh file append ./notes.txt
+echo "new line" | wsh file append //user@remote/~/notes.txt
+```
+
+### rm
+
+```sh
+wsh file rm [flag] [file-uri]
+```
+
+Entfernt eine Datei. Zum Beispiel:
+
+```sh
+wsh file rm wsh://user@ec2/home/user/config.txt
+wsh file rm ./local-config.txt
+```
+
+Flags:
+
+- `-r, --recursive` - löscht Verzeichniseinträge rekursiv
+
+### info
+
+```sh
+wsh file info [file-uri]
+```
+
+Zeigt Informationen über eine Datei an, einschließlich Größe, Erstellungszeit, Änderungszeit und Metadaten. Zum Beispiel:
+
+```sh
+wsh file info wsh://user@ec2/home/user/config.txt
+wsh file info ./local-config.txt
+```
+
+### cp
+
+```sh
+wsh file cp [flags] [source-uri] [destination-uri]
+```
+
+Kopiert Dateien zwischen verschiedenen Speichersystemen (maximale Dateigröße 10MB). Zum Beispiel:
+
+```sh
+# Eine entfernte Datei in dein lokales Dateisystem kopieren
+wsh file cp wsh://user@ec2/home/user/config.txt ./local-config.txt
+
+# Eine lokale Datei auf ein entferntes System kopieren
+wsh file cp ./local-config.txt wsh://user@ec2/home/user/config.txt
+
+# Zwischen entfernten Systemen kopieren
+wsh file cp wsh://user@ec2/home/user/config.txt wsh://user@server2/home/user/backup.txt
+```
+
+Flags:
+
+- `-f, --force` - überschreibt beim Kopieren jegliche Konflikte
+- `-m, --merge` - löscht beim Kopieren eines Verzeichnisses keine bestehenden Verzeichniseinträge, sondern führt dessen Inhalt mit dem des Ziels zusammen
+
+### mv
+
+```sh
+wsh file mv [flags] [source-uri] [destination-uri]
+```
+
+Verschiebt Dateien zwischen verschiedenen Speichersystemen (maximale Dateigröße 10MB). Die Quelldatei wird gelöscht, sobald der Vorgang erfolgreich abgeschlossen ist. Zum Beispiel:
+
+```sh
+# Eine entfernte Datei in dein lokales Dateisystem verschieben
+wsh file mv wsh://user@ec2/home/user/config.txt ./local-config.txt
+
+# Eine lokale Datei auf ein entferntes System verschieben
+wsh file mv ./local-config.txt wsh://user@ec2/home/user/config.txt
+
+# Zwischen entfernten Systemen verschieben
+wsh file mv wsh://user@ec2/home/user/config.txt wsh://user@server2/home/user/backup.txt
+```
+
+Flags:
+
+- `-f, --force` - überschreibt beim Verschieben jegliche Konflikte
+
+### ls
+
+```sh
+wsh file ls [flags] [file-uri]
+```
+
+Listet Dateien in einem Verzeichnis auf. Standardmäßig werden die Dateien im aktuellen Verzeichnis der aktuellen Terminal-Sitzung aufgelistet.
+
+Beispiele:
+
+```sh
+wsh file ls wsh://user@ec2/home/user/
+wsh file ls ./local-dir/
+```
+
+Flags:
+
+- `-l, --long` - nutzt das lange Listenformat mit Größe, Zeitstempeln und Metadaten
+- `-1, --one` - listet eine Datei pro Zeile auf
+- `-f, --files` - listet nur Dateien auf (keine Verzeichnisse)
+
+Wird die Ausgabe an einen anderen Befehl weitergeleitet, wird automatisch auf das Format "eine Datei pro Zeile" umgeschaltet:
+
+```sh
+# Einfach mit grep, awk usw. zu verarbeiten
+wsh file ls ./ | grep ".json$"
+```
+
+---
+
+## launch
+
+Mit dem Befehl `wsh launch` kannst du vorkonfigurierte Widgets direkt aus deinem Terminal öffnen.
+
+```sh
+wsh launch [flags] widget-id
+```
+
+Der Befehl sucht die angegebene Widget-ID sowohl in benutzerdefinierten als auch in Standard-Widgets und erstellt dann einen neuen Block mit der Konfiguration des Widgets.
+
+Flags:
+
+- `-m, --magnify` - öffnet das Widget im vergrößerten Modus und überschreibt die Standard-Vergrößerungseinstellung des Widgets
+
+Beispiele:
+
+```sh
+# Ein Widget mit seinen Standardeinstellungen starten
+wsh launch my-custom-widget
+
+# Ein Widget im vergrößerten Modus starten
+wsh launch -m system-monitor
+```
+
+Die Konfiguration des Widgets bestimmt die anfänglichen Blockeinstellungen, einschließlich Ansichtstyp, Metadaten und Standard-Vergrößerungszustand. Das Flag `-m` kann genutzt werden, um die Standard-Vergrößerungseinstellung des Widgets zu überschreiben.
+
+:::tip
+Widget-Konfigurationen können in deiner Konfigurationsdatei `widgets.json` angepasst werden, die du mit `wsh editconfig widgets.json` bearbeiten kannst
+:::
+
+---
+
+## getvar/setvar
+
+Wave Terminal bietet Befehle zur Verwaltung dauerhafter Variablen auf verschiedenen Ebenen (Block, Tab, Workspace oder clientweit).
+
+### setvar
+
+```sh
+wsh setvar [flags] KEY=VALUE...
+```
+
+Setzt eine oder mehrere Variablen. Standardmäßig werden Variablen auf Client-(globaler) Ebene gesetzt. Nutze `-l` für blocklokale Variablen.
+
+Beispiele:
+
+```sh
+# Eine einzelne Variable setzen
+wsh setvar API_KEY=abc123
+
+# Mehrere Variablen gleichzeitig setzen
+wsh setvar HOST=localhost PORT=8080 DEBUG=true
+
+# Eine blocklokale Variable setzen
+wsh setvar -l BLOCK_SPECIFIC=value
+
+# Variablen entfernen
+wsh setvar -r API_KEY PORT
+```
+
+Flags:
+
+- `-l, --local` - setzt Variablen lokal für den aktuellen Block
+- `-r, --remove` - entfernt die angegebenen Variablen, statt sie zu setzen
+- `--varfile string` - nutzt eine andere Variablendatei (Standard "var")
+- `-b [blockid]` - zum Festlegen einer bestimmten Zone (Block, Tab, Workspace, Client oder UUID)
+
+### getvar
+
+```sh
+wsh getvar [flags] [key]
+```
+
+Ruft den Wert einer Variable ab. Gibt den Exit-Code 0 zurück, wenn die Variable existiert, sonst 1. Das ermöglicht Shell-Skripte wie:
+
+```sh
+# Prüfen, ob eine Variable existiert
+if wsh getvar API_KEY >/dev/null; then
+    echo "API key is set"
+fi
+
+# Eine Variable in einem Befehl nutzen
+curl -H "Authorization: $(wsh getvar API_KEY)" https://api.example.com
+
+# Eine blocklokale Variable abrufen
+wsh getvar -l BLOCK_SPECIFIC
+
+# Alle Variablen auflisten
+wsh getvar --all
+
+# Alle Variablen mit Null-Terminatoren auflisten (zum Skripten)
+wsh getvar --all -0
+```
+
+Flags:
+
+- `-l, --local` - ruft für den aktuellen Block lokale Variablen ab
+- `--all` - listet alle Variablen auf
+- `-0, --null` - nutzt in der Ausgabe Null-Terminatoren statt Zeilenumbrüche
+- `--varfile string` - nutzt eine andere Variablendatei (Standard "var")
+
+Auf Variablen kann mit dem Flag `-b` in verschiedenen Geltungsbereichen zugegriffen werden:
+
+```sh
+# Auf Block-Ebene abrufen/setzen
+wsh getvar -b block MYVAR
+wsh setvar -b block MYVAR=value
+
+# Auf Tab-Ebene abrufen/setzen
+wsh getvar -b tab MYVAR
+wsh setvar -b tab MYVAR=value
+
+# Auf Workspace-Ebene abrufen/setzen
+wsh getvar -b workspace MYVAR
+wsh setvar -b workspace MYVAR=value
+
+# Auf Client-(globaler) Ebene abrufen/setzen
+wsh getvar -b client MYVAR
+wsh setvar -b client MYVAR=value
+```
+
+Mit diesen Befehlen gesetzte Variablen bleiben über Sitzungen hinweg erhalten und können genutzt werden, um Konfigurationswerte, Secrets oder andere String-Daten zu speichern, auf die über Blöcke oder Tabs hinweg zugegriffen werden muss.
+
+---
+
+## termscrollback
+
+Ruft den Terminal-Scrollback eines Terminal-Blocks ab. Nützlich, um Terminal-Ausgaben zur Weiterverarbeitung oder Archivierung zu erfassen.
+
+```sh
+wsh termscrollback [-b blockid] [flags]
+```
+
+Standardmäßig werden alle Zeilen des aktuellen Terminal-Blocks abgerufen. Du kannst Zeilenbereiche angeben oder nur die Ausgabe des letzten Befehls abrufen.
+
+Flags:
+
+- `-b, --block <blockid>` - gibt den Ziel-Terminal-Block an (Standard: aktueller Block)
+- `--start <line>` - Startzeilennummer (0 = Anfang, Standard: 0)
+- `--end <line>` - Endzeilennummer (0 = alle Zeilen, Standard: 0)
+- `--lastcommand` - ruft die Ausgabe des letzten Befehls ab (erfordert Shell-Integration)
+- `-o, --output <file>` - schreibt die Ausgabe in eine Datei statt nach stdout
+
+Beispiele:
+
+```sh
+# Den gesamten Scrollback des aktuellen Terminals abrufen
+wsh termscrollback
+
+# Scrollback von einem bestimmten Terminal-Block abrufen
+wsh termscrollback -b 2
+
+# Nur die Ausgabe des letzten Befehls abrufen
+wsh termscrollback --lastcommand
+
+# Einen bestimmten Zeilenbereich abrufen (Zeilen 100-200)
+wsh termscrollback --start 100 --end 200
+
+# Scrollback in eine Datei speichern
+wsh termscrollback -o terminal-log.txt
+
+# Ausgabe des letzten Befehls in eine Datei speichern
+wsh termscrollback --lastcommand -o last-output.txt
+
+# Ausgabe des letzten Befehls mit grep verarbeiten
+wsh termscrollback --lastcommand | grep "ERROR"
+```
+
+:::note
+Das Flag `--lastcommand` erfordert aktivierte Shell-Integration. Mit dieser Funktion kannst du nur die Ausgabe des zuletzt ausgeführten Befehls erfassen, was besonders für Skripte und Automatisierung nützlich ist.
+:::
+
+---
+
+## wavepath
+
+Mit dem Befehl `wavepath` kannst du die Pfade zu verschiedenen Wave-Terminal-Verzeichnissen und -Dateien abrufen, darunter Konfiguration, Datenspeicherung und Logs.
+
+```sh
+wsh wavepath {config|data|log}
+```
+
+Dieser Befehl liefert den vollständigen Pfad zum angeforderten Wave-Terminal-Systemverzeichnis oder zur Datei. Nützlich für den Zugriff auf Waves Konfigurationsdateien, Datenspeicherung oder zur Prüfung von Logs.
+
+Flags:
+
+- `-o, --open` - öffnet den Pfad in einem neuen Block
+- `-O, --open-external` - öffnet den Pfad in der Standard-externen Anwendung
+- `-t, --tail` - zeigt die letzten ~100 Zeilen der Log-Datei an (nur für den Log-Pfad gültig)
+
+Beispiele:
+
+```sh
+# Pfad zum Konfigurationsverzeichnis abrufen
+wsh wavepath config
+
+# Pfad zum Datenverzeichnis abrufen
+wsh wavepath data
+
+# Pfad zur Log-Datei abrufen
+wsh wavepath log
+
+# Log-Datei in einem neuen Block öffnen
+wsh wavepath -o log
+
+# Konfigurationsverzeichnis im System-Datei-Explorer öffnen
+wsh wavepath -O config
+
+# Aktuelle Log-Einträge ansehen
+wsh wavepath -t log
+```
+
+Der Befehl zeigt dir den vollständigen Pfad zu:
+
+- `config` - Wo Wave Terminal seine Konfigurationsdateien speichert
+- `data` - Wo Wave Terminal seine dauerhaften Daten speichert
+- `log` - Die Haupt-Log-Datei von Wave Terminal
+
+:::tip
+Nutze das Flag `-t` mit dem Log-Pfad, um schnell aktuelle Log-Einträge anzusehen, ohne die gesamte Datei öffnen zu müssen. Das ist besonders nützlich für die Fehlerbehebung.
+:::
+
+---
+
+## blocks
+
+Der Befehl `blocks` bietet Operationen zum Auflisten und Abfragen von Blöcken über Workspaces, Fenster und Tabs hinweg. In erster Linie nützlich zum Debuggen und Skripten.
+
+### list
+
+```sh
+wsh blocks list [flags]
+```
+
+Listet alle Blöcke mit optionaler Filterung nach Workspace, Fenster, Tab oder Ansichtstyp auf. Die Ausgabe kann als Tabelle (Standard) oder JSON zum Skripten formatiert werden.
+
+Flags:
+- `--workspace <id>` - beschränkt auf eine bestimmte Workspace-ID
+- `--window <id>` - beschränkt auf eine bestimmte Fenster-ID
+- `--tab <id>` - beschränkt auf eine bestimmte Tab-ID
+- `--view <type>` - filtert nach Ansichtstyp (term, web, preview, edit, sysinfo, waveai)
+- `--json` - gibt die Ergebnisse als JSON aus
+- `--timeout <ms>` - RPC-Timeout in Millisekunden (Standard: 5000)
+
+Beispiele:
+
+```sh
+# Alle Blöcke auflisten
+wsh blocks list
+
+# Nur Terminal-Blöcke auflisten
+wsh blocks list --view=term
+
+# Nach Workspace filtern
+wsh blocks list --workspace=12d0c067-378e-454c-872e-77a314248114
+
+# Als JSON zum Skripten ausgeben
+wsh blocks list --json
+```
+
+
+---
+
+## secret
+
+Der Befehl `secret` bietet sichere Speicherung und Verwaltung sensibler Informationen wie API-Schlüssel, Passwörter und Token. Secrets werden über das native sichere Speicher-Backend deines Systems gespeichert (Keychain unter macOS, Secret Service unter Linux, Credential Manager unter Windows).
+
+Secret-Namen müssen mit einem Buchstaben beginnen und dürfen nur Buchstaben, Zahlen und Unterstriche enthalten.
+
+### get
+
+```sh
+wsh secret get [name]
+```
+
+Ruft den Wert eines gespeicherten Secrets ab und zeigt ihn an.
+
+Beispiele:
+
+```sh
+# Einen API-Schlüssel abrufen
+wsh secret get github_token
+
+# In Skripten nutzen
+export API_KEY=$(wsh secret get my_api_key)
+```
+
+### set
+
+```sh
+wsh secret set [name]=[value]
+```
+
+Speichert einen Secret-Wert sicher. Dieser Befehl erfordert einen geeigneten System-Secret-Manager und schlägt fehl, wenn nur einfache Textspeicherung verfügbar ist.
+
+Beispiele:
+
+```sh
+# Ein API-Token setzen
+wsh secret set github_token=ghp_abc123xyz
+
+# Ein Datenbankpasswort setzen
+wsh secret set db_password=mySecurePassword123
+```
+
+:::warning
+Der Befehl `set` erfordert einen richtigen System-Secret-Manager (Keychain, Secret Service oder Credential Manager). Aus Sicherheitsgründen funktioniert er nicht mit einfacher Textspeicherung.
+:::
+
+### list
+
+```sh
+wsh secret list
+```
+
+Zeigt alle gespeicherten Secret-Namen an (Werte werden nicht angezeigt).
+
+Beispiel:
+
+```sh
+# Alle Secrets auflisten
+wsh secret list
+```
+
+### delete
+
+```sh
+wsh secret delete [name]
+```
+
+Entfernt ein Secret aus dem sicheren Speicher.
+
+Beispiele:
+
+```sh
+# Einen API-Schlüssel löschen
+wsh secret delete github_token
+
+# Mehrere Secrets löschen
+wsh secret delete old_api_key
+wsh secret delete temp_token
+```
+
+### ui
+
+```sh
+wsh secret ui [-m]
+```
+
+Öffnet die Secrets-Verwaltungsoberfläche in einem neuen Block. Bietet eine grafische Oberfläche zum Anzeigen und Verwalten all deiner Secrets.
+
+Flags:
+
+- `-m, --magnified` - öffnet die Secrets-Oberfläche im vergrößerten Modus
+
+Beispiele:
+
+```sh
+# Die Secrets-Oberfläche öffnen
+wsh secret ui
+
+# Die Secrets-Oberfläche im vergrößerten Modus öffnen
+wsh secret ui -m
+```
+
+Die Secrets-Oberfläche bietet eine bequeme grafische Möglichkeit, Secrets zu durchsuchen, hinzuzufügen, zu bearbeiten und zu löschen, ohne die Kommandozeile nutzen zu müssen.
+
+:::tip
+Nutze Secrets in deinen Skripten, um das Hartkodieren sensibler Werte zu vermeiden. Secrets funktionieren über entfernte Rechner hinweg - speichere einen API-Schlüssel lokal mit `wsh secret set` und greife dann von jeder SSH- oder WSL-Verbindung aus mit `wsh secret get` darauf zu. Das Secret wird sicher von deinem lokalen Rechner abgerufen, ohne es auf entfernten Systemen duplizieren zu müssen.
+:::
+</PlatformProvider>
