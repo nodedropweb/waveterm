@@ -116,6 +116,25 @@
         "deleteWorkspace": "Workspace löschen",
         "workspaceSwitcher": "Workspace-Umschalter"
     },
+    "widgets": {
+        "settingsAndHelp": "Einstellungen & Hilfe",
+        "configErrors": "Konfigurationsfehler",
+        "noLocalAppsFound": "Keine lokalen Apps gefunden",
+        "buildEditApps": "Apps erstellen/bearbeiten",
+        "settings": "Einstellungen",
+        "tips": "Tipps",
+        "secrets": "Secrets",
+        "releaseNotes": "Release Notes",
+        "help": "Hilfe",
+        "editWidgetsJson": "widgets.json bearbeiten",
+        "localWaveApps": "Lokale WaveApps",
+        "appsLabel": "Apps",
+        "settingsLabel": "Einstellungen",
+        "runningDevBuild": "Wave-Dev-Build aktiv"
+    },
+    "workspace": {
+        "noActiveTab": "Kein aktiver Tab"
+    },
     "connTypeahead": {
         "reconnectTo": "Erneut verbinden mit {{connection}}",
         "local": "Lokal",
