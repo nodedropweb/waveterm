@@ -1,0 +1,148 @@
+---
+sidebar_position: 3.3
+id: "widgets"
+title: "Widgets"
+---
+
+import { Kbd } from "@site/src/components/kbd";
+import { PlatformProvider, PlatformSelectorButton } from "@site/src/components/platformcontext";
+import { VersionBadge } from "@site/src/components/versionbadge";
+
+<PlatformProvider>
+
+# Widgets
+
+Jede einzelne Komponente befindet sich in ihrem eigenen Widget. Diese können hinzugefügt, entfernt, verschoben und in der Größe angepasst werden. Jedes Widget hat seine eigene Kopfzeile, die per Rechtsklick weitere Optionen für dieses Widget anzeigt.
+
+<PlatformSelectorButton />
+
+### Ein Widget hinzufügen
+
+Ein Widget kannst du über die Widget-Leiste auf der rechten Seite des Fensters hinzufügen. Dadurch wird ein Widget des ausgewählten Typs zum aktuellen Tab hinzugefügt.
+
+### Ein Widget schließen
+
+Widgets können geschlossen werden, indem du auf den **<code><i className="fa-solid fa-sharp fa-xmark"/></code>**-Button auf der rechten Seite der Kopfzeile klickst. Alternativ kann das aktuell fokussierte Widget durch Drücken von <Kbd k="Cmd:w"/> geschlossen werden.
+
+### Zwischen Widgets navigieren
+
+Es kann höchstens ein Widget fokussiert sein. Je nach Widget-Typ kannst du dadurch direkt mit dem Inhalt dieses Widgets interagieren. Ein fokussiertes Widget ist immer mit einem deutlichen Rahmen umrandet. Ein Widget kann durch Anklicken fokussiert werden. Alternativ kannst du das fokussierte Widget wechseln, indem du <Kbd k="Ctrl:Shift:Arrows"/> (Strg + Umschalt + Pfeiltasten) drückst, um relativ zum aktuell ausgewählten Widget zu navigieren.
+
+### Widgets vergrößern
+
+Das Vergrößern eines Widgets lässt es vor allem anderen erscheinen. Du kannst über das Kopfzeilen-Icon vergrößern, oder mit <Kbd k="Cmd:m"/>.
+
+### Widgets neu anordnen
+
+Durch Ziehen und Ablegen ihrer Kopfzeilen können Widgets an andere Stellen im Layout verschoben werden. So kannst du deinen Bildschirm ganz nach deinen Wünschen neu organisieren. Beim Ziehen siehst du eine Vorschau des gezogenen Widgets. Befindet sich das Widget über einer gültigen Ablagestelle, wird der Bereich, in den es verschoben würde, grün markiert. Loslassen platziert das Widget dort und ordnet die anderen Widgets entsprechend neu an. Wenn eine grüne Box die Hälfte zweier verschiedener Widgets bedeckt, wird das Widget zwischen den beiden platziert. Wenn die grüne Box die Hälfte eines Widgets am Bildschirmrand bedeckt, wird das Widget zwischen diesem Widget und dem Bildschirmrand platziert. Bedeckt die grüne Box ein Widget vollständig, tauschen die beiden Widgets ihre Position.
+
+Weitere Informationen findest du im [Tab-Layout-System](./layout#move-a-block).
+
+### Widgets in der Größe anpassen
+
+Wenn du mit der Maus zwischen zwei Widgets fährst, ändert sich dein Cursor zu <i className="fa-sharp fa-arrows-left-right"/> oder <i className="fa-sharp fa-arrows-up-down"/>, und eine grüne Linie zwischen den Widgets wird sichtbar. Durch Ziehen und Ablegen dieser grünen Linie kannst du die angrenzenden Widgets in der Größe anpassen.
+
+Weitere Informationen findest du im [Tab-Layout-System](./layout#resize-a-block).
+
+## Widget-Typen
+
+### Term
+
+Das übliche Terminal, das du kennst und schätzt. Wir fügen über den Befehl `wsh` einige Plugins hinzu, über die du weiter unten mehr erfährst.
+
+### Preview
+
+Preview ist der generische Widget-Typ zum Ansehen von Dateien. Je nach Dateityp kann dies viele verschiedene Formen annehmen.
+Du kannst \`wsh view [path]\` aus jedem Wave-Terminal-Fenster nutzen, um ein Vorschau-Widget mit dem Inhalt des angegebenen Pfads zu öffnen (z. B. `wsh view .` oder `wsh view ~/myimage.jpg`).
+
+#### Verzeichnis
+
+Beim Betrachten eines Verzeichnisses zeigt Preview einen Dateibetrachter ähnlich der macOS-App _Finder_ oder der Windows-App _Explorer_. Diese Variante ist etwas stärker auf Softwareentwicklung ausgerichtet, mit Fokus darauf, was der Befehl `ls -alh` anzeigt.
+
+##### Eine neue Datei ansehen
+
+Der einfachste Weg, eine neue Datei anzusehen, ist ein Doppelklick auf ihre Zeile im Dateibetrachter. Alternativ kannst du bei fokussiertem Widget mit den Pfeiltasten <Kbd k="ArrowUp" /> und <Kbd k="ArrowDown" /> eine Zeile auswählen und mit Enter die zugehörige Datei in der Vorschau öffnen.
+
+##### Eine Datei kopieren
+
+Wenn du zwei Verzeichnis-Widgets geöffnet hast, kannst du eine Datei oder ein Verzeichnis zwischen ihnen kopieren. Ziehe dazu die Datei oder das Verzeichnis von einem Verzeichnis-Vorschau-Widget in ein anderes, das an der gewünschten Zielstelle geöffnet ist. Das funktioniert sogar beim Kopieren von Dateien und Verzeichnissen über Verbindungen hinweg.
+
+##### Das übergeordnete Verzeichnis ansehen
+
+In der Verzeichnisansicht ist das so einfach wie das Öffnen der Datei `..`, als wäre es eine normale Datei. Das geht mit der oben beschriebenen Methode. Du kannst auch das Tastenkürzel <Kbd k="Cmd:ArrowUp"/> nutzen.
+
+##### Vor- und zurücknavigieren
+
+Beim Betrachten einer Datei kannst du zurücknavigieren, indem du auf den Zurück-Button in der Widget-Kopfzeile klickst oder das Tastenkürzel <Kbd k="Cmd:ArrowLeft" /> nutzt. Du kannst jederzeit mit <Kbd k="Cmd:ArrowLeft" /> und <Kbd k="Cmd:ArrowRight" /> vor- und zurücknavigieren.
+
+##### Die Dateiliste filtern
+
+Bei fokussiertem Widget kannst du nach Dateinamen filtern, indem du einen Teil des gesuchten Dateinamens eingibst. Um den Filter zu löschen, klicke auf das **<code><i className="fa-solid fa-sharp fa-xmark"/></code>** im Filter-Dropdown oder drücke <Kbd k="Escape" />.
+
+##### Nach einer Dateispalte sortieren
+
+Um Dateien nach einer bestimmten Spalte zu sortieren, klicke auf die Kopfzeile dieser Spalte. Ein erneuter Klick auf die Kopfzeile kehrt die Sortierreihenfolge um.
+
+##### Versteckte Dateien ein-/ausblenden
+
+Rechts in der Widget-Kopfzeile gibt es einen **<code><i className="fa fa-sharp fa-solid fa-eye"/></code>**-Button. Ein Klick darauf blendet versteckte Dateien ein und aus.
+
+##### Das Verzeichnis aktualisieren
+
+Rechts in der Widget-Kopfzeile gibt es einen Aktualisieren-Button **<code><i className="fa fa-sharp fa-solid fa-arrows-rotate" /></code>**. Ein Klick darauf aktualisiert den Verzeichnisinhalt.
+
+##### Zu häufig genutzten Verzeichnissen navigieren
+
+Links in der Widget-Kopfzeile gibt es ein Datei-Icon **<code><i className="fa fa-sharp fa-solid fa-folder-open"/></code>**. Klicken und Halten dieses Icons öffnet ein Menü, in dem du zu einem häufig genutzten Ordner navigieren kannst. Die verfügbaren Optionen sind _Home_, _Desktop_, _Downloads_ und _Root_.
+
+##### Ein neues Terminal im aktuellen Verzeichnis öffnen
+
+Wenn du mit der rechten Maustaste auf die Kopfzeile des Widgets klickst (alternativ auf das Zahnrad-Icon **<code><i className="fa fa-sharp fa-solid fa-cog"/></code>**), findest du unter anderem den Menüpunkt **Open Terminal in New Widget**. Dadurch wird ein neues Terminal-Widget in deinem aktuellen Verzeichnis erstellt.
+
+##### Ein neues Terminal in einem Unterverzeichnis öffnen
+
+Wenn du stattdessen ein Terminal für ein Unterverzeichnis öffnen möchtest, kannst du mit der rechten Maustaste auf die Zeile dieser Datei klicken, um die Option **Open Terminal in New Widget** zu erhalten. Ein Klick darauf öffnet ein Terminal in diesem Verzeichnis. Beachte, dass diese Option nur für Unterelemente verfügbar ist, die Verzeichnisse sind.
+
+##### Eine neue Vorschau für ein Unterelement öffnen
+
+Um eine neue Vorschau für ein Unterelement zu öffnen, kannst du mit der rechten Maustaste auf die Zeile dieser Datei klicken und die Option **Open Preview in New Widget** auswählen.
+
+##### Quick Look (nur macOS)
+
+Auf einem macOS-Host kannst du die Quick-Look-Funktion aus der Verzeichnisvorschau nutzen. Wähle dazu die gewünschte Datei aus und drücke <Kbd k="Space" />. Dadurch öffnet sich eine Vorschau deiner Datei in einem separaten Fenster. Diese Vorschau kann durch erneutes Drücken von <Kbd k="Space" /> wieder geschlossen werden. Dies unterstützt aktuell die Dateitypen, auf die der Befehl `qlmanage` zugreifen kann.
+
+#### Markdown
+
+Das Öffnen einer Markdown-Datei zeigt eine gerenderte Ansicht des Markdown-Inhalts. Diese Dateien können derzeit nicht in der Vorschau bearbeitet werden.
+
+#### Bilder/Medien
+
+Das Öffnen eines Bildes zeigt dieses Bild an. Das Öffnen eines Videos öffnet einen Player, mit dem du das Video ansehen kannst.
+
+### Codeedit
+
+Das Öffnen der meisten Textdateien öffnet Codeedit, um die Datei anzusehen oder zu bearbeiten. Technisch gesehen ist es Teil des Preview-Widgets, aber wichtig genug, um separat aufgeführt zu werden.
+Nach dem Öffnen eines Codeedit-Widgets ist es oft nützlich, es zu vergrößern (<Kbd k="Cmd:m" />), um eine größere Ansicht zu erhalten. Anschließend kannst du mit den folgenden Tastenkürzeln in den Bearbeitungsmodus wechseln, Änderungen vornehmen, speichern und dann mit <Kbd k="Cmd:w" /> das Widget schließen (alles ohne die Maus!).
+
+#### In den Bearbeitungsmodus wechseln
+
+Um in den Bearbeitungsmodus zu wechseln, klicke auf den Bearbeiten-Button rechts in der Kopfzeile. Damit kannst du den Dateiinhalt mit einem gewöhnlichen Monaco-Editor bearbeiten.
+Du kannst auch mit <Kbd k="Cmd:e" /> in den Bearbeitungsmodus wechseln.
+
+#### Eine Bearbeitung speichern
+
+Sobald du im **Bearbeitungsmodus** eine Änderung vorgenommen hast, klicke auf den Speichern-Button rechts in der Kopfzeile, um den Inhalt zu speichern.
+Du kannst auch mit <Kbd k="Cmd:s" /> speichern.
+
+#### Bearbeitungsmodus ohne Speichern verlassen
+
+Um den **Bearbeitungsmodus** ohne Speichern zu verlassen, klicke auf den Abbrechen-Button rechts in der Kopfzeile.
+Du kannst auch mit <Kbd k="Cmd:r" /> ohne Speichern verlassen.
+
+### Prozess-Viewer <VersionBadge version="v0.14.5" />
+
+Der Prozess-Viewer zeigt eine Live-Liste laufender Prozesse auf jedem verbundenen Host. Er ähnelt `top` oder `htop` und zeigt PID, Befehl, CPU% und Speichernutzung an. Unter Linux zeigt er zusätzlich Prozessstatus und Thread-Anzahl.
+
+Spalten lassen sich durch Klick auf ihre Kopfzeile sortieren. Ein Rechtsklick auf eine Zeile erlaubt das Senden von Unix-Signalen (SIGTERM, SIGKILL usw.) oder das Kopieren der PID. Du kannst die Liste filtern, indem du <Kbd k="Cmd:f"/> drückst und einen Suchbegriff eingibst. Drücke <Kbd k="Space"/>, um Live-Updates zu pausieren (nützlich, um einen bestimmten Prozess zu untersuchen); erneutes Drücken setzt sie fort.
+
+</PlatformProvider>
