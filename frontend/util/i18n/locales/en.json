@@ -355,7 +355,9 @@
         "tabConfigData": "Config/Data",
         "tabFiles": "Files",
         "tabSecrets": "Secrets",
-        "moreOptions": "More options"
+        "moreOptions": "More options",
+        "runningDevBuild": "Running Wave Dev Build",
+        "windowTitle": "WaveApp Builder"
     },
     "builderSecrets": {
         "notMapped": "Secret is Not Mapped",
@@ -964,5 +966,54 @@
         "openBookmarksJson": "Open bookmarks.json",
         "noMatchingBookmarks": "No matching bookmarks",
         "editBookmarksJson": "Edit bookmarks.json"
+    },
+    "builderBuildPanel": {
+        "addToContext": "Add to Context",
+        "builderOutputBlock": "from builder output:\n```\n{{text}}\n```",
+        "buildOutput": "Build Output",
+        "debug": "Debug",
+        "sendOutputToAI": "Send Output to AI",
+        "restartApp": "Restart App",
+        "waitingForOutput": "Waiting for output..."
+    },
+    "builderCode": {
+        "noAppSelected": "No builder app selected",
+        "loadingAppGo": "Loading app.go...",
+        "save": "Save"
+    },
+    "builderConfigData": {
+        "appNotRunningTitle": "App Not Running",
+        "appNotRunningBody": "The tsunami app must be running to view config and data. Please start the app from the Preview tab first.",
+        "errorLoadingTitle": "Error Loading Data",
+        "loadingData": "Loading data...",
+        "configAndData": "Config & Data",
+        "refresh": "Refresh",
+        "config": "Config",
+        "data": "Data",
+        "copyConfig": "Copy Config",
+        "copyData": "Copy Data",
+        "failedToFetchConfig": "Failed to fetch config: {{error}}",
+        "failedToFetchData": "Failed to fetch data: {{error}}"
+    },
+    "builderPreview": {
+        "noAppToPreview": "No App to Preview",
+        "noAppIntro": "Get started by using the AI chat interface on the left to create your WaveApp. Describe what you want to build, and the AI will help you generate the code.",
+        "appWillAppearPrefix": "Your app will appear here once",
+        "appWillAppearSuffix": "is created",
+        "unknownError": "Unknown Error",
+        "secretsRequiredTitle": "Secrets Required",
+        "secretsRequiredBody": "This app requires secrets that must be configured. Please use the Secrets tab to set and bind the required secrets for your app to run.",
+        "goToSecretsTab": "Go to Secrets Tab",
+        "buildErrorTitle": "Build Error",
+        "addErrorToAiContext": "Add Error to AI Context",
+        "askAiToFix": "Ask AI to Fix",
+        "askAiToFixPrefix": "Please help me fix this build error:",
+        "buildContext": "Build Error:\n```\n{{error}}\n```\n\nBuild Output:\n```\n{{output}}\n```",
+        "buildingTitle": "App is Building...",
+        "buildingBody": "Your WaveApp is being compiled and prepared. This may take a few moments.",
+        "notRunningTitle": "App is Not Running",
+        "notRunningBody": "Your WaveApp is currently not running. Click the button below to start it.",
+        "startApp": "Start App",
+        "starting": "Starting..."
     }
 }

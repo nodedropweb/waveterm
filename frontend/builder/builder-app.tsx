@@ -15,6 +15,7 @@ import { Provider, useAtomValue } from "jotai";
 import { useEffect, useRef } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
+import { useTranslation } from "react-i18next";
 
 type BuilderAppProps = {
     initOpts: BuilderInitOpts;
@@ -34,6 +35,7 @@ const BuilderKeyHandlers = () => {
 };
 
 function BuilderAppInner() {
+    const { t } = useTranslation();
     const builderAppId = useAtomValue(atoms.builderAppId);
     const hasDraftApp = !isBlank(builderAppId) && builderAppId.startsWith("draft/");
 
@@ -45,12 +47,13 @@ function BuilderAppInner() {
                 style={{ WebkitAppRegion: "drag" } as React.CSSProperties}
             >
                 {isDev() ? (
-                    <div className="text-accent text-xl" title="Running Wave Dev Build">
+                    <div className="text-accent text-xl" title={t("builderApp.runningDevBuild")}>
                         <i className="fa fa-brands fa-dev fa-fw" />
                     </div>
                 ) : null}
                 <div className="text-sm font-medium">
-                    WaveApp Builder{!isBlank(builderAppId) && ` (${builderAppId})`}
+                    {t("builderApp.windowTitle")}
+                    {!isBlank(builderAppId) && ` (${builderAppId})`}
                 </div>
             </div>
             <DndProvider backend={HTML5Backend}>

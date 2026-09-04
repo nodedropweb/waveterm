@@ -8,7 +8,9 @@ import { BuilderAppPanelModel } from "@/builder/store/builder-apppanel-model";
 import { BuilderBuildPanelModel } from "@/builder/store/builder-buildpanel-model";
 import { useAtomValue } from "jotai";
 import { memo, useCallback, useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { debounce } from "throttle-debounce";
+import i18n from "@/util/i18n/i18n";
 
 function handleBuildPanelContextMenu(e: React.MouseEvent, selectedText: string): void {
     e.preventDefault();
@@ -22,10 +24,10 @@ function handleBuildPanelContextMenu(e: React.MouseEvent, selectedText: string):
         { role: "copy" },
         { type: "separator" },
         {
-            label: "Add to Context",
+            label: i18n.t("builderBuildPanel.addToContext"),
             click: () => {
                 const model = WaveAIModel.getInstance();
-                const formattedText = `from builder output:\n\`\`\`\n${selectedText}\n\`\`\``;
+                const formattedText = i18n.t("builderBuildPanel.builderOutputBlock", { text: selectedText });
                 model.appendText(formattedText, true);
                 model.focusInput();
             },
@@ -35,6 +37,7 @@ function handleBuildPanelContextMenu(e: React.MouseEvent, selectedText: string):
 }
 
 const BuilderBuildPanel = memo(() => {
+    const { t } = useTranslation();
     const model = BuilderBuildPanelModel.getInstance();
     const outputLines = useAtomValue(model.outputLines);
     const showDebug = useAtomValue(model.showDebug);
@@ -92,7 +95,7 @@ const BuilderBuildPanel = memo(() => {
         const linesToSend = filtered.slice(-200);
         const text = linesToSend.join("\n");
         const aiModel = WaveAIModel.getInstance();
-        const formattedText = `from builder output:\n\`\`\`\n${text}\n\`\`\`\n`;
+        const formattedText = t("builderBuildPanel.builderOutputBlock", { text }) + "\n";
         aiModel.appendText(formattedText, true, { scrollToBottom: true });
         aiModel.focusInput();
     }, [model]);
@@ -104,7 +107,7 @@ const BuilderBuildPanel = memo(() => {
     return (
         <div className="w-full h-full flex flex-col bg-black rounded-br-2">
             <div className="flex-shrink-0 px-3 py-2 border-b border-gray-700 flex items-center justify-between">
-                <span className="text-sm font-semibold text-gray-300">Build Output</span>
+                <span className="text-sm font-semibold text-gray-300">{t("builderBuildPanel.buildOutput")}</span>
                 <div className="flex items-center gap-4">
                     <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
                         <input
@@ -113,19 +116,19 @@ const BuilderBuildPanel = memo(() => {
                             onChange={handleDebugToggle}
                             className="cursor-pointer"
                         />
-                        Debug
+                        {t("builderBuildPanel.debug")}
                     </label>
                     <button
                         className="px-3 py-1 text-sm font-medium rounded transition-colors bg-accent/80 text-white hover:bg-accent cursor-pointer"
                         onClick={handleSendToAI}
                     >
-                        Send Output to AI
+                        {t("builderBuildPanel.sendOutputToAI")}
                     </button>
                     <button
                         className="px-3 py-1 text-sm font-medium rounded transition-colors bg-accent/80 text-white hover:bg-accent cursor-pointer"
                         onClick={handleRestart}
                     >
-                        Restart App
+                        {t("builderBuildPanel.restartApp")}
                     </button>
                 </div>
             </div>
@@ -138,7 +141,7 @@ const BuilderBuildPanel = memo(() => {
                 >
                     {/* this comment fixes JSX blank line in pre tag */}
                     {filteredLines.length === 0 ? (
-                        <span className="text-secondary">Waiting for output...</span>
+                        <span className="text-secondary">{t("builderBuildPanel.waitingForOutput")}</span>
                     ) : (
                         filteredLines.join("\n")
                     )}

@@ -355,7 +355,9 @@
         "tabConfigData": "Konfiguration/Daten",
         "tabFiles": "Dateien",
         "tabSecrets": "Secrets",
-        "moreOptions": "Weitere Optionen"
+        "moreOptions": "Weitere Optionen",
+        "runningDevBuild": "Wave-Entwicklungsversion läuft",
+        "windowTitle": "WaveApp Builder"
     },
     "builderSecrets": {
         "notMapped": "Secret ist nicht zugeordnet",
@@ -964,5 +966,54 @@
         "openBookmarksJson": "bookmarks.json öffnen",
         "noMatchingBookmarks": "Keine passenden Lesezeichen",
         "editBookmarksJson": "bookmarks.json bearbeiten"
+    },
+    "builderBuildPanel": {
+        "addToContext": "Zum Kontext hinzufügen",
+        "builderOutputBlock": "von der Builder-Ausgabe:\n```\n{{text}}\n```",
+        "buildOutput": "Build-Ausgabe",
+        "debug": "Debug",
+        "sendOutputToAI": "Ausgabe an KI senden",
+        "restartApp": "App neu starten",
+        "waitingForOutput": "Warte auf Ausgabe..."
+    },
+    "builderCode": {
+        "noAppSelected": "Keine Builder-App ausgewählt",
+        "loadingAppGo": "app.go wird geladen...",
+        "save": "Speichern"
+    },
+    "builderConfigData": {
+        "appNotRunningTitle": "App läuft nicht",
+        "appNotRunningBody": "Die Tsunami-App muss laufen, um Konfiguration und Daten anzuzeigen. Bitte starte die App zuerst über den Vorschau-Tab.",
+        "errorLoadingTitle": "Fehler beim Laden der Daten",
+        "loadingData": "Daten werden geladen...",
+        "configAndData": "Konfiguration & Daten",
+        "refresh": "Aktualisieren",
+        "config": "Konfiguration",
+        "data": "Daten",
+        "copyConfig": "Konfiguration kopieren",
+        "copyData": "Daten kopieren",
+        "failedToFetchConfig": "Konfiguration konnte nicht abgerufen werden: {{error}}",
+        "failedToFetchData": "Daten konnten nicht abgerufen werden: {{error}}"
+    },
+    "builderPreview": {
+        "noAppToPreview": "Keine App zur Vorschau",
+        "noAppIntro": "Starte mit der KI-Chat-Oberfläche links, um deine WaveApp zu erstellen. Beschreibe, was du bauen möchtest, und die KI hilft dir, den Code zu generieren.",
+        "appWillAppearPrefix": "Deine App erscheint hier, sobald",
+        "appWillAppearSuffix": "erstellt wurde",
+        "unknownError": "Unbekannter Fehler",
+        "secretsRequiredTitle": "Secrets erforderlich",
+        "secretsRequiredBody": "Diese App benötigt Secrets, die konfiguriert werden müssen. Bitte verwende den Secrets-Tab, um die erforderlichen Secrets für deine App festzulegen und zu verknüpfen.",
+        "goToSecretsTab": "Zum Secrets-Tab",
+        "buildErrorTitle": "Build-Fehler",
+        "addErrorToAiContext": "Fehler zum KI-Kontext hinzufügen",
+        "askAiToFix": "KI um Behebung bitten",
+        "askAiToFixPrefix": "Bitte hilf mir, diesen Build-Fehler zu beheben:",
+        "buildContext": "Build-Fehler:\n```\n{{error}}\n```\n\nBuild-Ausgabe:\n```\n{{output}}\n```",
+        "buildingTitle": "App wird erstellt...",
+        "buildingBody": "Deine WaveApp wird kompiliert und vorbereitet. Dies kann einen Moment dauern.",
+        "notRunningTitle": "App läuft nicht",
+        "notRunningBody": "Deine WaveApp läuft derzeit nicht. Klicke auf die Schaltfläche unten, um sie zu starten.",
+        "startApp": "App starten",
+        "starting": "Wird gestartet..."
     }
 }
