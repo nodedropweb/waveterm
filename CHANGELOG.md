@@ -9,7 +9,7 @@ Basis dieses Forks: Wave Terminal `v0.14.5`.
 
 Die Einträge sind neuestes zuerst sortiert.
 
-## Unveröffentlicht (Branch `claude/block-content-scroll-limit-igiitl`)
+## [PR #2](https://github.com/nodedropweb/waveterm/pull/2) — 2026-09-05
 
 ### Browser-Block
 
@@ -32,7 +32,7 @@ Die Einträge sind neuestes zuerst sortiert.
   Traditionelles Chinesisch) bleiben erhalten und sind über die Sprachleiste am Anfang jeder
   README-Datei verlinkt. Die vorherige englische Originaldatei wurde nach `README.en.md`
   verschoben.
-  (dieser Commit)
+  ([`d5ae9ed`](https://github.com/nodedropweb/waveterm/commit/d5ae9ed))
 
 ### Tastenkürzel
 
