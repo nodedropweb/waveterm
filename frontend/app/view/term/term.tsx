@@ -285,8 +285,8 @@ const TerminalView = ({ blockId, model }: ViewComponentProps<TermViewModel>) => 
         if (termScrollback < 0) {
             termScrollback = 0;
         }
-        if (termScrollback > 50000) {
-            termScrollback = 50000;
+        if (termScrollback > 500000) {
+            termScrollback = 500000;
         }
         const termAllowBPM = globalStore.get(model.termBPMAtom) ?? true;
         const termMacOptionIsMeta = globalStore.get(termMacOptionIsMetaAtom) ?? false;

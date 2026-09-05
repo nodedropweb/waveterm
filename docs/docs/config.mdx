@@ -64,7 +64,7 @@ wsh editconfig
 | term:localshellpath                  | string   | set to override the default shell path for local terminals                                                                                                                                                                                                    |
 | term:localshellopts                  | string[] | set to pass additional parameters to the term:localshellpath (example: `["-NoLogo"]` for PowerShell will remove the copyright notice)                                                                                                                         |
 | term:copyonselect                    | bool     | set to false to disable terminal copy-on-select                                                                                                                                                                                                               |
-| term:scrollback                      | int      | size of terminal scrollback buffer, max is 10000                                                                                                                                                                                                              |
+| term:scrollback                      | int      | size of terminal scrollback buffer in lines (default 2000, max 500000); higher values use more memory                                                                                                                                                        |
 | term:theme                           | string   | preset name of terminal theme to apply by default (default is "default-dark")                                                                                                                                                                                 |
 | term:transparency                    | float64  | set the background transparency of terminal theme (default 0.5, 0 = not transparent, 1.0 = fully transparent)                                                                                                                                                 |
 | term:allowbracketedpaste             | bool     | allow bracketed paste mode in terminal (default false)                                                                                                                                                                                                        |
@@ -137,7 +137,7 @@ For reference, this is the current default configuration (v0.14.0):
     "conn:askbeforewshinstall": true,
     "conn:wshenabled": true,
     "editor:minimapenabled": true,
-    "web:defaulturl": "https://github.com/wavetermdev/waveterm",
+    "web:defaulturl": "https://www.google.com",
     "web:defaultsearch": "https://www.google.com/search?q={query}",
     "window:tilegapsize": 3,
     "window:maxtabcachesize": 10,

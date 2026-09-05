@@ -575,6 +575,20 @@ export const getFilteredAIModeConfigs = (
     };
 };
 
+// Wave's built-in modes ship translated name/description strings (see locales/*.json,
+// "aimode.modes.*"), since their config values are shipped defaults, not user-authored text.
+const BUILT_IN_MODE_I18N_KEYS: Record<string, string> = {
+    "waveai@quick": "aimode.modes.quick",
+    "waveai@balanced": "aimode.modes.balanced",
+    "waveai@deep": "aimode.modes.deep",
+    "waveaibuilder@default": "aimode.modes.builderDefault",
+    "waveaibuilder@deep": "aimode.modes.builderDeep",
+};
+
+export function getBuiltInModeI18nKey(mode: string): string | undefined {
+    return BUILT_IN_MODE_I18N_KEYS[mode];
+}
+
 /**
  * Get the display name for an AI mode configuration.
  * If display:name is set, use that. Otherwise, construct from model/provider.
