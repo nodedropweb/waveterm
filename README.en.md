@@ -80,7 +80,7 @@ The WSH helper runs on the following platforms:
 ## Changes in this fork
 
 This repository is a fork of [wavetermdev/waveterm](https://github.com/wavetermdev/waveterm).
-All changes made on top of the original are documented in the [CHANGELOG](./CHANGELOG.md).
+All changes made on top of the original are documented in the [CHANGELOG](./CHANGELOG.en.md).
 
 ## Roadmap
 
