@@ -1,5 +1,7 @@
 # Changelog
 
+[Deutsch](CHANGELOG.md) | [English](CHANGELOG.en.md)
+
 Dieses Repository ist ein Fork von [wavetermdev/waveterm](https://github.com/wavetermdev/waveterm).
 Dieses Dokument listet ausschließlich die Änderungen auf, die **in diesem Fork** zusätzlich zum
 Original vorgenommen wurden — nicht die reguläre Versionshistorie von Wave Terminal selbst
