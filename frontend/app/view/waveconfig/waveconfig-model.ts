@@ -9,6 +9,7 @@ import { TabRpcClient } from "@/app/store/wshrpcutil";
 import { SecretsContent } from "@/app/view/waveconfig/secretscontent";
 import { WaveConfigView } from "@/app/view/waveconfig/waveconfig";
 import type { WaveConfigEnv } from "@/app/view/waveconfig/waveconfigenv";
+import i18n from "@/util/i18n/i18n";
 import { base64ToString, stringToBase64 } from "@/util/util";
 import { atom, type Atom, type PrimitiveAtom } from "jotai";
 import type * as MonacoTypes from "monaco-editor";
@@ -36,7 +37,7 @@ function validateAiJson(parsed: any): ValidationResult {
     const keys = Object.keys(parsed);
     for (const key of keys) {
         if (!key.startsWith("ai@")) {
-            return { error: `Invalid key "${key}": all top-level keys must start with "ai@"` };
+            return { error: i18n.t("waveConfig.invalidKeyMustStartWithAi", { key }) };
         }
     }
     return { success: true };
@@ -48,7 +49,7 @@ function validateWaveAiJson(parsed: any): ValidationResult {
     for (const key of keys) {
         if (!keyPattern.test(key)) {
             return {
-                error: `Invalid key "${key}": keys must only contain letters, numbers, underscores, @, dots, and hyphens`,
+                error: i18n.t("waveConfig.invalidKeyChars", { key }),
             };
         }
     }
@@ -58,46 +59,46 @@ function validateWaveAiJson(parsed: any): ValidationResult {
 function makeConfigFiles(isWindows: boolean): ConfigFile[] {
     return [
         {
-            name: "General",
+            name: i18n.t("waveConfig.fileGeneral"),
             path: "settings.json",
             language: "json",
             docsUrl: "https://docs.waveterm.dev/config",
             hasJsonView: true,
         },
         {
-            name: "Connections",
+            name: i18n.t("waveConfig.fileConnections"),
             path: "connections.json",
             language: "json",
             docsUrl: "https://docs.waveterm.dev/connections",
-            description: isWindows ? "SSH hosts and WSL distros" : "SSH hosts",
+            description: isWindows ? i18n.t("waveConfig.sshHostsAndWsl") : i18n.t("waveConfig.sshHosts"),
             hasJsonView: true,
         },
         {
-            name: "Sidebar Widgets",
+            name: i18n.t("waveConfig.fileSidebarWidgets"),
             path: "widgets.json",
             language: "json",
             docsUrl: "https://docs.waveterm.dev/customwidgets",
             hasJsonView: true,
         },
         {
-            name: "Wave AI Modes",
+            name: i18n.t("waveConfig.fileWaveAiModes"),
             path: "waveai.json",
             language: "json",
-            description: "Local models and BYOK",
+            description: i18n.t("waveConfig.localModelsAndByok"),
             docsUrl: "https://docs.waveterm.dev/waveai-modes",
             validator: validateWaveAiJson,
             hasJsonView: true,
             // visualComponent: WaveAIVisualContent,
         },
         {
-            name: "Tab Backgrounds",
+            name: i18n.t("waveConfig.fileTabBackgrounds"),
             path: "backgrounds.json",
             language: "json",
             docsUrl: "https://docs.waveterm.dev/tab-backgrounds",
             hasJsonView: true,
         },
         {
-            name: "Secrets",
+            name: i18n.t("waveConfig.fileSecrets"),
             path: "secrets",
             isSecrets: true,
             hasJsonView: false,
@@ -106,30 +107,32 @@ function makeConfigFiles(isWindows: boolean): ConfigFile[] {
     ];
 }
 
-const deprecatedConfigFiles: ConfigFile[] = [
-    {
-        name: "Presets",
-        path: "presets.json",
-        language: "json",
-        deprecated: true,
-        hasJsonView: true,
-    },
-    {
-        name: "AI Presets",
-        path: "presets/ai.json",
-        language: "json",
-        deprecated: true,
-        docsUrl: "https://docs.waveterm.dev/ai-presets",
-        validator: validateAiJson,
-        hasJsonView: true,
-    },
-];
+function makeDeprecatedConfigFiles(): ConfigFile[] {
+    return [
+        {
+            name: i18n.t("waveConfig.filePresets"),
+            path: "presets.json",
+            language: "json",
+            deprecated: true,
+            hasJsonView: true,
+        },
+        {
+            name: i18n.t("waveConfig.fileAiPresets"),
+            path: "presets/ai.json",
+            language: "json",
+            deprecated: true,
+            docsUrl: "https://docs.waveterm.dev/ai-presets",
+            validator: validateAiJson,
+            hasJsonView: true,
+        },
+    ];
+}
 
 export class WaveConfigViewModel implements ViewModel {
     blockId: string;
     viewType = "waveconfig";
     viewIcon = atom("gear");
-    viewName = atom("Wave Config");
+    viewName = atom(i18n.t("waveConfig.waveConfigTitle"));
     viewComponent = WaveConfigView;
     noPadding = atom(true);
     nodeModel: BlockNodeModel;
@@ -251,7 +254,7 @@ export class WaveConfigViewModel implements ViewModel {
 
     getDeprecatedConfigFiles(): ConfigFile[] {
         const presetsJsonExists = globalStore.get(this.presetsJsonExistsAtom);
-        return deprecatedConfigFiles.filter((f) => {
+        return makeDeprecatedConfigFiles().filter((f) => {
             if (f.path === "presets.json") {
                 return presetsJsonExists;
             }
@@ -267,7 +270,7 @@ export class WaveConfigViewModel implements ViewModel {
         if (!this.hasChanges()) {
             return true;
         }
-        return window.confirm("You have unsaved changes. Discard and continue?");
+        return window.confirm(i18n.t("waveConfig.unsavedChangesConfirm"));
     }
 
     discardChanges() {
@@ -360,7 +363,7 @@ export class WaveConfigViewModel implements ViewModel {
             const parsed = JSON.parse(fileContent);
 
             if (typeof parsed !== "object" || parsed == null || Array.isArray(parsed)) {
-                globalStore.set(this.validationErrorAtom, "JSON must be an object, not an array, primitive, or null");
+                globalStore.set(this.validationErrorAtom, i18n.t("waveConfig.jsonMustBeObject"));
                 return;
             }
 
@@ -414,7 +417,7 @@ export class WaveConfigViewModel implements ViewModel {
             if (backend === "basic_text" || backend === "unknown") {
                 globalStore.set(
                     this.storageBackendErrorAtom,
-                    "No appropriate secret manager found. Cannot manage secrets securely."
+                    i18n.t("waveConfig.noSecretManagerFound")
                 );
             } else {
                 globalStore.set(this.storageBackendErrorAtom, null);
@@ -547,7 +550,7 @@ export class WaveConfigViewModel implements ViewModel {
         const value = globalStore.get(this.newSecretValueAtom);
 
         if (!name) {
-            globalStore.set(this.errorMessageAtom, "Secret name cannot be empty");
+            globalStore.set(this.errorMessageAtom, i18n.t("waveConfig.secretNameCannotBeEmpty"));
             return;
         }
 

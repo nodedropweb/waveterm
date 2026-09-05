@@ -7,8 +7,10 @@ import { RpcApi } from "@/app/store/wshclientapi";
 import { TabRpcClient } from "@/app/store/wshrpcutil";
 import { WebView, WebViewModel } from "@/app/view/webview/webview";
 import * as services from "@/store/services";
+import i18n from "@/util/i18n/i18n";
 import * as jotai from "jotai";
 import { memo, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 class TsunamiViewModel extends WebViewModel {
     shellProcFullStatus: jotai.PrimitiveAtom<BlockControllerRuntimeStatus>;
@@ -56,7 +58,7 @@ class TsunamiViewModel extends WebViewModel {
         });
         this.viewName = jotai.atom((get) => {
             const meta = get(this.appMeta);
-            return meta?.title || "WaveApp";
+            return meta?.title || i18n.t("tsunami.defaultAppTitle");
         });
         const initialRTInfo = RpcApi.GetRTInfoCommand(TabRpcClient, {
             oref: WOS.makeORef("block", this.blockId),
@@ -180,16 +182,8 @@ class TsunamiViewModel extends WebViewModel {
 
     getSettingsMenuItems(): ContextMenuItem[] {
         const items = super.getSettingsMenuItems();
-        // Filter out homepage and navigation-related menu items for tsunami view
-        const filteredItems = items.filter((item) => {
-            const label = item.label?.toLowerCase() || "";
-            return (
-                !label.includes("homepage") &&
-                !label.includes("home page") &&
-                !label.includes("navigation") &&
-                !label.includes("nav")
-            );
-        });
+        // Filter by stable id (not the translated label) so this survives localization
+        const filteredItems = items.filter((item) => item.id !== "homepage" && item.id !== "navigation");
 
         // Check if we should show the Remix option
         const blockData = globalStore.get(this.blockAtom);
@@ -199,15 +193,15 @@ class TsunamiViewModel extends WebViewModel {
         // Add tsunami-specific menu items at the beginning
         const tsunamiItems: ContextMenuItem[] = [
             {
-                label: "Stop WaveApp",
+                label: i18n.t("tsunami.stopWaveApp"),
                 click: () => this.destroyController(),
             },
             {
-                label: "Restart WaveApp",
+                label: i18n.t("tsunami.restartWaveApp"),
                 click: () => this.restartController(),
             },
             {
-                label: "Restart WaveApp and Force Rebuild",
+                label: i18n.t("tsunami.restartAndForceRebuild"),
                 click: () => this.restartAndForceRebuild(),
             },
             {
@@ -218,7 +212,7 @@ class TsunamiViewModel extends WebViewModel {
         if (showRemixOption) {
             tsunamiItems.push(
                 {
-                    label: "Remix WaveApp in Builder",
+                    label: i18n.t("tsunami.remixInBuilder"),
                     click: () => this.remixInBuilder(),
                 },
                 {
@@ -232,6 +226,7 @@ class TsunamiViewModel extends WebViewModel {
 }
 
 const TsunamiView = memo((props: ViewComponentProps<TsunamiViewModel>) => {
+    const { t } = useTranslation();
     const { model } = props;
     const shellProcFullStatus = jotai.useAtomValue(model.shellProcFullStatus);
     const blockData = jotai.useAtomValue(model.blockAtom);
@@ -249,17 +244,17 @@ const TsunamiView = memo((props: ViewComponentProps<TsunamiViewModel>) => {
     // Check for configuration errors
     const errors = [];
     if (!appPath && !appId) {
-        errors.push("App path or app ID must be set (tsunami:apppath or tsunami:appid)");
+        errors.push(t("tsunami.missingAppPathOrId"));
     }
     if (controller !== "tsunami") {
-        errors.push("Invalid controller (must be 'tsunami')");
+        errors.push(t("tsunami.invalidController"));
     }
 
     // Show errors if any exist
     if (errors.length > 0) {
         return (
             <div className="w-full h-full flex flex-col items-center justify-center gap-4">
-                <h1 className="text-4xl font-bold text-main-text-color">Tsunami</h1>
+                <h1 className="text-4xl font-bold text-main-text-color">{t("tsunami.title")}</h1>
                 <div className="flex flex-col gap-2">
                     {errors.map((error, index) => (
                         <div key={index} className="text-sm" style={{ color: "var(--color-error)" }}>
@@ -298,10 +293,10 @@ const TsunamiView = memo((props: ViewComponentProps<TsunamiViewModel>) => {
                     onClick={() => model.forceRestartController()}
                     className="px-4 py-2 bg-accent-color text-primary-text-color rounded hover:bg-accent-color/80 transition-colors cursor-pointer"
                 >
-                    Start
+                    {t("tsunami.start")}
                 </button>
             )}
-            {isRestarting && <div className="text-sm text-success-color">Starting...</div>}
+            {isRestarting && <div className="text-sm text-success-color">{t("tsunami.starting")}</div>}
         </div>
     );
 });

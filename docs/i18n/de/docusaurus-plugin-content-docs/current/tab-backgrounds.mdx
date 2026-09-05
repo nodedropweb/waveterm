@@ -1,0 +1,120 @@
+---
+sidebar_position: 3.5
+id: "tab-backgrounds"
+title: "Tab-Hintergründe"
+---
+
+# Tab-Hintergründe
+
+Waves Hintergrundsystem nutzt die volle Kraft von CSS-Hintergründen und lässt dich über das Attribut "background" umfangreiche visuelle Effekte erzeugen. Du kannst Vollfarben, Verläufe (linear und radial), Bilder und sogar mehrere Elemente überblendet anwenden.
+
+## Hintergründe verwalten
+
+Benutzerdefinierte Hintergründe werden in `~/.config/waveterm/backgrounds.json` gespeichert.
+
+**Zum Bearbeiten über die Oberfläche:**
+1. Klicke auf das Einstellungssymbol (Zahnrad) in der Widget-Leiste
+2. Wähle "Settings" aus dem Menü
+3. Wähle "Tab Backgrounds" aus der Einstellungs-Seitenleiste
+
+**Oder starte über die Kommandozeile:**
+```bash
+wsh editconfig backgrounds.json
+```
+
+## Dateiformat
+
+Hintergründe folgen diesem Format:
+
+```json
+{
+  "bg@<key>": {
+    "display:name": "<Hintergrundname>",
+    "display:order": <Zahl>,
+    "bg": "<CSS-background-Wert>",
+    "bg:opacity": <Fließkommazahl>
+  }
+}
+```
+
+Wie Waves integrierte Hintergründe definiert sind, kannst du in der [Standard-backgrounds.json-Datei](https://github.com/wavetermdev/waveterm/blob/main/pkg/wconfig/defaultconfig/backgrounds.json) nachsehen.
+
+## Konfigurationsschlüssel
+
+| Schlüsselname         | Typ    | Funktion                                                                                                |
+| -------------------- | ------ | ------------------------------------------------------------------------------------------------------- |
+| display:name         | string | In der UI angezeigter Name (erforderlich)                                                                    |
+| display:order        | float  | Steuert die Reihenfolge im Menü (optional)                                                               |
+| bg                   | string | CSS-Attribut `background` für den Tab (unterstützt Farben, Verläufe, Bilder usw.)                       |
+| bg:opacity           | float  | Die Deckkraft des Hintergrunds (Standard: 0.5)                                                         |
+| bg:blendmode         | string | Der [Blend-Modus](https://developer.mozilla.org/en-US/docs/Web/CSS/blend-mode) des Hintergrunds         |
+| bg:bordercolor       | string | Die Rahmenfarbe, wenn ein Block nicht aktiv ist (selten verwendet)                                        |
+| bg:activebordercolor | string | Die Rahmenfarbe, wenn ein Block aktiv ist                                                          |
+
+## Beispiele
+
+#### Einfache Vollfarbe:
+
+```json
+{
+  "bg@blue": {
+    "display:name": "Blue",
+    "bg": "blue",
+    "bg:opacity": 0.3,
+    "bg:activebordercolor": "rgba(0, 0, 255, 1.0)"
+  }
+}
+```
+
+#### Komplexer Verlauf:
+
+```json
+{
+  "bg@duskhorizon": {
+    "display:name": "Dusk Horizon",
+    "bg": "linear-gradient(0deg, rgba(128,0,0,1) 0%, rgba(204,85,0,0.7) 20%, rgba(255,140,0,0.6) 45%, rgba(160,90,160,0.5) 65%, rgba(60,60,120,1) 100%), radial-gradient(circle at 30% 30%, rgba(255,255,255,0.1), transparent 60%), radial-gradient(circle at 70% 70%, rgba(255,255,255,0.05), transparent 70%)",
+    "bg:opacity": 0.9,
+    "bg:blendmode": "overlay"
+  }
+}
+```
+
+#### Hintergrundbild:
+
+```json
+{
+  "bg@ocean": {
+    "display:name": "Ocean Scene",
+    "bg": "url('/path/to/ocean.jpg') center/cover no-repeat",
+    "bg:opacity": 0.2
+  }
+}
+```
+
+:::info
+Hintergrundbilder unterstützen sowohl URLs als auch lokale Dateipfade. Für bessere Zuverlässigkeit empfehlen wir lokale Dateien. Lokale Pfade müssen absolut sein oder mit `~` beginnen (z. B. `~/Downloads/background.png`). Wir unterstützen gängige Webformate: PNG, JPEG/JPG, WebP, GIF und SVG.
+:::
+
+:::tip
+Der Befehl `setbg` kann dir helfen, das Hintergrund-JSON zu erzeugen:
+
+```bash
+# Vorschau eines Vollfarben-Hintergrunds
+wsh setbg --print "#ff0000"
+{
+  "bg:*": true,
+  "bg": "#ff0000",
+  "bg:opacity": 0.5
+}
+
+# Vorschau eines zentrierten Bildhintergrunds
+wsh setbg --print --center --opacity 0.3 ~/logo.png
+{
+  "bg:*": true,
+  "bg": "url('/absolute/path/to/logo.png') no-repeat center/auto",
+  "bg:opacity": 0.3
+}
+```
+
+Füge einfach das erforderliche Feld `display:name` und eine `bg@<key>`-Umschließung hinzu, um deinen Hintergrundeintrag zu vervollständigen!
+:::

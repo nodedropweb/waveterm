@@ -4,6 +4,7 @@
 import { Markdown } from "@/app/element/markdown";
 import { VDomModel } from "@/app/view/vdom/vdom-model";
 import { adaptFromReactOrNativeKeyEvent, checkKeyPressed } from "@/util/keyutil";
+import i18n from "@/util/i18n/i18n";
 import clsx from "clsx";
 import debug from "debug";
 import * as jotai from "jotai";
@@ -426,7 +427,7 @@ function VDomTag({ elem, model }: { elem: VDomElem; model: VDomModel }) {
         return <WaveStyle src={props.src} model={model} />;
     }
     if (!AllowedSimpleTags[elem.tag] && !AllowedSvgTags[elem.tag]) {
-        return <div>{"Invalid Tag <" + elem.tag + ">"}</div>;
+        return <div>{i18n.t("vdom.invalidTag", { tag: elem.tag })}</div>;
     }
     let childrenComps = convertChildren(elem, model);
     if (elem.tag == FragmentTag) {

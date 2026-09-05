@@ -21,15 +21,18 @@ import { createRef } from "react";
 import { PreviewView } from "./preview";
 import { makeDirectoryDefaultMenuItems } from "./preview-directory-utils";
 import type { PreviewEnv } from "./previewenv";
+import i18n from "@/util/i18n/i18n";
 
 // TODO drive this using config
-const BOOKMARKS: { label: string; path: string }[] = [
-    { label: "Home", path: "~" },
-    { label: "Desktop", path: "~/Desktop" },
-    { label: "Downloads", path: "~/Downloads" },
-    { label: "Documents", path: "~/Documents" },
-    { label: "Root", path: "/" },
-];
+function getBookmarks(): { label: string; path: string }[] {
+    return [
+        { label: i18n.t("preview.home"), path: "~" },
+        { label: i18n.t("preview.desktop"), path: "~/Desktop" },
+        { label: i18n.t("preview.downloads"), path: "~/Downloads" },
+        { label: i18n.t("preview.documents"), path: "~/Documents" },
+        { label: i18n.t("preview.rootBookmark"), path: "/" },
+    ];
+}
 
 const MaxFileSize = 1024 * 1024 * 10; // 10MB
 const MaxCSVSize = 1024 * 1024 * 1; // 1MB
@@ -208,8 +211,8 @@ export class PreviewModel implements ViewModel {
                     elemtype: "iconbutton",
                     icon: "folder-open",
                     longClick: (e: React.MouseEvent<any>) => {
-                        const menuItems: ContextMenuItem[] = BOOKMARKS.map((bookmark) => ({
-                            label: `Go to ${bookmark.label} (${bookmark.path})`,
+                        const menuItems: ContextMenuItem[] = getBookmarks().map((bookmark) => ({
+                            label: i18n.t("preview.goTo", { label: bookmark.label, path: bookmark.path }),
                             click: () => this.goHistory(bookmark.path),
                         }));
                         ContextMenuModel.getInstance().showContextMenu(menuItems, e);
@@ -222,7 +225,7 @@ export class PreviewModel implements ViewModel {
             const blockData = get(this.blockAtom);
             return blockData?.meta?.edit ?? false;
         });
-        this.viewName = atom("Preview");
+        this.viewName = atom(i18n.t("blockUtil.preview"));
         this.hideViewName = atom(true);
         this.viewText = atom((get) => {
             let headerPath = get(this.metaFilePath);
@@ -266,21 +269,21 @@ export class PreviewModel implements ViewModel {
                 if (fileInfo.state != "hasData") {
                     viewTextChildren.push({
                         elemtype: "textbutton",
-                        text: "Loading ...",
+                        text: i18n.t("preview.loadingEllipsis"),
                         className: clsx(`grey rounded-[4px] !py-[2px] !px-[10px] text-[11px] font-[500]`),
                         onClick: () => {},
                     });
                 } else if (fileInfo.data.readonly) {
                     viewTextChildren.push({
                         elemtype: "textbutton",
-                        text: "Read Only",
+                        text: i18n.t("preview.readOnly"),
                         className: clsx(`yellow rounded-[4px] !py-[2px] !px-[10px] text-[11px] font-[500]`),
                         onClick: () => {},
                     });
                 } else {
                     viewTextChildren.push({
                         elemtype: "textbutton",
-                        text: "Save",
+                        text: i18n.t("preview.save"),
                         className: clsx(`${saveClassName} rounded-[4px] !py-[2px] !px-[10px] text-[11px] font-[500]`),
                         onClick: () => fireAndForget(this.handleFileSave.bind(this)),
                     });
@@ -288,7 +291,7 @@ export class PreviewModel implements ViewModel {
                 if (get(this.canPreview)) {
                     viewTextChildren.push({
                         elemtype: "textbutton",
-                        text: "Preview",
+                        text: i18n.t("preview.preview"),
                         className: "grey rounded-[4px] !py-[2px] !px-[10px] text-[11px] font-[500]",
                         onClick: () => fireAndForget(() => this.setEditMode(false)),
                     });
@@ -296,7 +299,7 @@ export class PreviewModel implements ViewModel {
             } else if (get(this.canPreview)) {
                 viewTextChildren.push({
                     elemtype: "textbutton",
-                    text: "Edit",
+                    text: i18n.t("preview.edit"),
                     className: "grey rounded-[4px] !py-[2px] !px-[10px] text-[11px] font-[500]",
                     onClick: () => fireAndForget(() => this.setEditMode(true)),
                 });
@@ -338,7 +341,7 @@ export class PreviewModel implements ViewModel {
                     {
                         elemtype: "iconbutton",
                         icon: showHiddenFiles ? "eye" : "eye-slash",
-                        title: showHiddenFiles ? "Hide Hidden Files" : "Show Hidden Files",
+                        title: showHiddenFiles ? i18n.t("preview.hideHiddenFiles") : i18n.t("preview.showHiddenFiles"),
                         click: () => {
                             globalStore.set(this.showHiddenFiles, (prev) => !prev);
                         },
@@ -354,13 +357,13 @@ export class PreviewModel implements ViewModel {
                     {
                         elemtype: "iconbutton",
                         icon: "book",
-                        title: "Table of Contents",
+                        title: i18n.t("element.tableOfContents"),
                         click: () => this.markdownShowTocToggle(),
                     },
                     {
                         elemtype: "iconbutton",
                         icon: "arrows-rotate",
-                        title: "Refresh",
+                        title: i18n.t("preview.refresh"),
                         click: () => this.refreshCallback?.(),
                     },
                 ] as IconButtonDecl[];
@@ -370,7 +373,7 @@ export class PreviewModel implements ViewModel {
                     {
                         elemtype: "iconbutton",
                         icon: "arrows-rotate",
-                        title: "Refresh",
+                        title: i18n.t("preview.refresh"),
                         click: () => this.refreshCallback?.(),
                     },
                 ] as IconButtonDecl[];
@@ -416,7 +419,7 @@ export class PreviewModel implements ViewModel {
                 return statFile;
             } catch (e) {
                 const errorStatus: ErrorMsg = {
-                    status: "File Read Failed",
+                    status: i18n.t("preview.fileReadFailed"),
                     text: `${e}`,
                 };
                 globalStore.set(this.errorMsgAtom, errorStatus);
@@ -446,7 +449,7 @@ export class PreviewModel implements ViewModel {
                 return file;
             } catch (e) {
                 const errorStatus: ErrorMsg = {
-                    status: "File Read Failed",
+                    status: i18n.t("preview.fileReadFailed"),
                     text: `${e}`,
                 };
                 globalStore.set(this.errorMsgAtom, errorStatus);
@@ -508,29 +511,29 @@ export class PreviewModel implements ViewModel {
         const genErr = getFn(this.errorMsgAtom);
 
         if (!fileInfo) {
-            return { errorStr: `Load Error: ${genErr?.text}` };
+            return { errorStr: `${i18n.t("preview.loadError")} ${genErr?.text}` };
         }
         if (connErr != "") {
-            return { errorStr: `Connection Error: ${connErr}` };
+            return { errorStr: `${i18n.t("preview.connectionError")} ${connErr}` };
         }
         if (fileInfo?.notfound) {
             return { specializedView: "codeedit" };
         }
         if (mimeType == null) {
-            return { errorStr: `Unable to determine mimetype for: ${fileInfo.path}` };
+            return { errorStr: `${i18n.t("preview.unableToDetermineMimetype")} ${fileInfo.path}` };
         }
         if (isStreamingType(mimeType)) {
             return { specializedView: "streaming" };
         }
         if (!fileInfo) {
             const fileNameStr = fileName ? " " + JSON.stringify(fileName) : "";
-            return { errorStr: "File Not Found" + fileNameStr };
+            return { errorStr: i18n.t("preview.fileNotFound") + fileNameStr };
         }
         if (fileInfo.size > MaxFileSize) {
-            return { errorStr: "File Too Large to Preview (10 MB Max)" };
+            return { errorStr: i18n.t("preview.fileTooLarge") };
         }
         if (mimeType == "text/csv" && fileInfo.size > MaxCSVSize) {
-            return { errorStr: "CSV File Too Large to Preview (1 MB Max)" };
+            return { errorStr: i18n.t("preview.csvFileTooLarge") };
         }
         if (mimeType == "directory") {
             return { specializedView: "directory" };
@@ -550,7 +553,7 @@ export class PreviewModel implements ViewModel {
         if (isTextFile(mimeType) || fileInfo.size == 0) {
             return { specializedView: "codeedit" };
         }
-        return { errorStr: `Preview (${mimeType})` };
+        return { errorStr: i18n.t("preview.previewMimeType", { mimeType }) };
     }
 
     updateOpenFileModalAndError(isOpen, errorMsg = null) {
@@ -667,7 +670,7 @@ export class PreviewModel implements ViewModel {
             console.log("saved file", filePath);
         } catch (e) {
             const errorStatus: ErrorMsg = {
-                status: "Save Failed",
+                status: i18n.t("preview.saveFailed"),
                 text: `${e}`,
             };
             globalStore.set(this.errorMsgAtom, errorStatus);
@@ -706,7 +709,7 @@ export class PreviewModel implements ViewModel {
         const overrideFontSize = blockData?.meta?.["editor:fontsize"];
         const menuItems: ContextMenuItem[] = [];
         menuItems.push({
-            label: "Copy Full Path",
+            label: i18n.t("preview.copyFullPath"),
             click: () =>
                 fireAndForget(async () => {
                     const filePath = await globalStore.get(this.statFilePath);
@@ -724,7 +727,7 @@ export class PreviewModel implements ViewModel {
                 }),
         });
         menuItems.push({
-            label: "Copy File Name",
+            label: i18n.t("preview.copyFileName"),
             click: () =>
                 fireAndForget(async () => {
                     const fileInfo = await globalStore.get(this.statFile);
@@ -758,7 +761,7 @@ export class PreviewModel implements ViewModel {
                 }
             );
             fontSizeSubMenu.unshift({
-                label: "Default (" + defaultFontSize + "px)",
+                label: i18n.t("preview.defaultFontSize", { fontSize: defaultFontSize }),
                 type: "checkbox",
                 checked: overrideFontSize == null,
                 click: () => {
@@ -769,23 +772,23 @@ export class PreviewModel implements ViewModel {
                 },
             });
             menuItems.push({
-                label: "Editor Font Size",
+                label: i18n.t("preview.editorFontSize"),
                 submenu: fontSizeSubMenu,
             });
             if (globalStore.get(this.newFileContent) != null) {
                 menuItems.push({ type: "separator" });
                 menuItems.push({
-                    label: "Save File",
+                    label: i18n.t("preview.saveFile"),
                     click: () => fireAndForget(this.handleFileSave.bind(this)),
                 });
                 menuItems.push({
-                    label: "Revert File",
+                    label: i18n.t("preview.revertFile"),
                     click: () => fireAndForget(this.handleFileRevert.bind(this)),
                 });
             }
             menuItems.push({ type: "separator" });
             menuItems.push({
-                label: "Word Wrap",
+                label: i18n.t("preview.wordWrap"),
                 type: "checkbox",
                 checked: wordWrap,
                 click: () =>
@@ -799,7 +802,7 @@ export class PreviewModel implements ViewModel {
         }
         if (loadableSV.state == "hasData" && loadableSV.data.specializedView == "directory") {
             menuItems.push({ type: "separator" });
-            menuItems.push({ label: "Default Settings", enabled: false });
+            menuItems.push({ label: i18n.t("preview.defaultSettings"), enabled: false });
             menuItems.push(...makeDirectoryDefaultMenuItems(this));
         }
         return menuItems;

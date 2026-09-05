@@ -7,17 +7,18 @@ import { atoms } from "@/store/global";
 import { cn } from "@/util/util";
 import { useAtomValue } from "jotai";
 import { memo, useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const NotRunningView = memo(() => {
+    const { t } = useTranslation();
     return (
         <div className="w-full h-full flex items-center justify-center bg-background">
             <div className="flex flex-col items-center gap-6 max-w-[500px] text-center px-8">
                 <i className="fa fa-triangle-exclamation text-6xl text-warning" />
                 <div className="flex flex-col gap-3">
-                    <h2 className="text-2xl font-semibold text-primary">App Not Running</h2>
+                    <h2 className="text-2xl font-semibold text-primary">{t("builderConfigData.appNotRunningTitle")}</h2>
                     <p className="text-base text-secondary leading-relaxed">
-                        The tsunami app must be running to view config and data. Please start the app from the Preview
-                        tab first.
+                        {t("builderConfigData.appNotRunningBody")}
                     </p>
                 </div>
             </div>
@@ -28,12 +29,13 @@ const NotRunningView = memo(() => {
 NotRunningView.displayName = "NotRunningView";
 
 const ErrorView = memo(({ errorMsg }: { errorMsg: string }) => {
+    const { t } = useTranslation();
     return (
         <div className="w-full h-full flex items-center justify-center bg-background">
             <div className="flex flex-col items-center gap-6 max-w-2xl text-center px-8">
                 <i className="fa fa-circle-xmark text-6xl text-error" />
                 <div className="flex flex-col gap-3">
-                    <h2 className="text-2xl font-semibold text-error">Error Loading Data</h2>
+                    <h2 className="text-2xl font-semibold text-error">{t("builderConfigData.errorLoadingTitle")}</h2>
                     <div className="text-left bg-panel border border-error/30 rounded-lg p-4">
                         <pre className="text-sm text-secondary whitespace-pre-wrap font-mono">{errorMsg}</pre>
                     </div>
@@ -46,11 +48,12 @@ const ErrorView = memo(({ errorMsg }: { errorMsg: string }) => {
 ErrorView.displayName = "ErrorView";
 
 const LoadingView = memo(() => {
+    const { t } = useTranslation();
     return (
         <div className="w-full h-full flex items-center justify-center bg-background">
             <div className="flex flex-col items-center gap-6">
                 <i className="fa fa-spinner fa-spin text-6xl text-secondary" />
-                <p className="text-base text-secondary">Loading data...</p>
+                <p className="text-base text-secondary">{t("builderConfigData.loadingData")}</p>
             </div>
         </div>
     );
@@ -66,6 +69,7 @@ type ConfigDataState = {
 };
 
 const BuilderConfigDataTab = memo(() => {
+    const { t } = useTranslation();
     const model = BuilderAppPanelModel.getInstance();
     const builderStatus = useAtomValue(model.builderStatusAtom);
     const builderId = useAtomValue(atoms.builderId);
@@ -95,10 +99,10 @@ const BuilderConfigDataTab = memo(() => {
             ]);
 
             if (!configResponse.ok) {
-                throw new Error(`Failed to fetch config: ${configResponse.statusText}`);
+                throw new Error(t("builderConfigData.failedToFetchConfig", { error: configResponse.statusText }));
             }
             if (!dataResponse.ok) {
-                throw new Error(`Failed to fetch data: ${dataResponse.statusText}`);
+                throw new Error(t("builderConfigData.failedToFetchData", { error: dataResponse.statusText }));
             }
 
             const config = await configResponse.json();
@@ -176,13 +180,13 @@ const BuilderConfigDataTab = memo(() => {
     return (
         <div className="w-full h-full flex flex-col bg-background">
             <div className="shrink-0 flex items-center justify-between px-4 py-2 border-b border-border">
-                <h3 className="text-lg font-semibold text-primary">Config & Data</h3>
+                <h3 className="text-lg font-semibold text-primary">{t("builderConfigData.configAndData")}</h3>
                 <button
                     onClick={handleRefresh}
                     className="px-3 py-1 text-sm font-medium rounded bg-accent/80 text-primary hover:bg-accent transition-colors cursor-pointer flex items-center gap-2"
                 >
                     <i className="fa fa-refresh" />
-                    Refresh
+                    {t("builderConfigData.refresh")}
                 </button>
             </div>
             <div className="flex-1 overflow-auto p-4">
@@ -191,9 +195,9 @@ const BuilderConfigDataTab = memo(() => {
                         <div className="flex items-center justify-between">
                             <h4 className="text-base font-semibold text-primary flex items-center gap-2">
                                 <i className="fa fa-gear" />
-                                Config
+                                {t("builderConfigData.config")}
                             </h4>
-                            <CopyButton title="Copy Config" onClick={handleCopyConfig} />
+                            <CopyButton title={t("builderConfigData.copyConfig")} onClick={handleCopyConfig} />
                         </div>
                         <div className="bg-panel border border-border rounded-lg p-4 overflow-auto">
                             <pre className="text-xs text-primary font-mono whitespace-pre">
@@ -205,9 +209,9 @@ const BuilderConfigDataTab = memo(() => {
                         <div className="flex items-center justify-between">
                             <h4 className="text-base font-semibold text-primary flex items-center gap-2">
                                 <i className="fa fa-database" />
-                                Data
+                                {t("builderConfigData.data")}
                             </h4>
-                            <CopyButton title="Copy Data" onClick={handleCopyData} />
+                            <CopyButton title={t("builderConfigData.copyData")} onClick={handleCopyData} />
                         </div>
                         <div className="bg-panel border border-border rounded-lg p-4 overflow-auto">
                             <pre className="text-xs text-primary font-mono whitespace-pre">

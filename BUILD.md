@@ -127,6 +127,8 @@ If you're on Linux ARM64, run the following:
 USE_SYSTEM_FPM=1 task package
 ```
 
+On Windows, you can instead run `scripts/build-windows.ps1`, which checks for the required prerequisites (Node, Go, Zig, Task) before invoking `task package`.
+
 ## Debugging
 
 ### Frontend logs

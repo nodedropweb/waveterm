@@ -1,0 +1,428 @@
+---
+sidebar_position: 6
+id: "customwidgets"
+title: "Benutzerdefinierte Widgets"
+---
+
+# Benutzerdefinierte Widgets
+
+Wave erlaubt es Nutzern, eigene Widgets zu erstellen, um ihre Erfahrung individuell an das anzupassen, was für sie funktioniert. Wir planen, dies in Zukunft stark zu erweitern, aber schon jetzt ist es möglich, Widgets zu erstellen, auf die du per Knopfdruck zugreifen kannst. Alle Widgets können durch Bearbeiten der Datei `<WAVETERM_HOME>/config/widgets.json` erstellt werden. Durch Hinzufügen eines Widgets zu dieser Datei kannst du Widgets zur Widget-Leiste hinzufügen. Standardmäßig sieht die Widget-Leiste so aus:
+![The default widget bar](./img/all-widgets-default.webp)
+
+Durch Hinzufügen weiterer Widgets kannst du eine Widget-Leiste erhalten, die so aussieht:
+
+![A widget bar with custom widgets added](./img/all-widgets-extra.webp)
+
+## Der Aufbau eines Widgets
+
+Alle Widgets haben eine ähnliche Struktur, die ungefähr wie im folgenden Beispiel aussieht:
+
+```json
+"<widget name>": {
+    "icon": "<font awesome icon name>",
+    "label": "<the text label of the widget>",
+    "color": "<the color of the label>",
+    "blockdef": {
+        "meta": {
+            "view": "term",
+            "controller": "cmd",
+            "cmd": "<the actual cli command>"
+        }
+    }
+}
+```
+
+Das besteht aus mehreren Teilen. Zunächst hat jedes Widget einen eindeutigen Bezeichner. Der zu diesem Namen gehörige Wert ist der äußere `WidgetConfigType`. Er ist unten rot umrandet:
+
+![An example of a widget with outer keys labeled as WidgetConfigType and inner keys labeled as MetaTSType. In the example, the outer keys are icon, label, color, and blockdef. The inner keys are view, controller, and cmd.](./img/widget-example.webp)
+
+Dieser `WidgetConfigType` wird von allen Widget-Typen geteilt. Das heißt, alle Widgets — unabhängig vom Typ — nutzen dafür dieselben Schlüssel. Die zulässigen Schlüssel sind:
+
+| Schlüssel             | Beschreibung                                                                                                                                                                                                                                                                                |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| "display:order" | (optional) Überschreibt die Reihenfolge der Widgets mit einer Zahl, falls du eine andere Reihenfolge als in der Datei `widgets.json` möchtest. Standard ist 0.                                                                                                                     |
+| "icon"          | (optional) Der Name eines [Font-Awesome-Icons](#font-awesome-icons). Standard ist `"browser"`.                                                                                                                                                                                                |
+| "color"         | (optional) Ein String, der eine Farbe wie in CSS darstellt. Hex-Codes und benutzerdefinierte CSS-Eigenschaften sind eingeschlossen. Standard ist `"var(--secondary-text-color)"`, eine Farbe, die Wave für Text nutzt, der sich von anderem Text abheben soll. Werkseitig ist das `"#c3c8c2"`. |
+| "label"         | (optional) Ein String, der die Beschriftung unter dem Widget darstellt. Er dient auch als Tooltip beim Hovern, wenn der Schlüssel `"description"` nicht ausgefüllt ist. Standardmäßig null.                                                                                                  |
+| "description"   | (optional) Eine Beschreibung dessen, was das Widget tut. Ist sie angegeben, dient sie als Tooltip beim Hovern. Standardmäßig null.                                                                                                                                                            |
+| "magnified"     | (optional) Ein Boolean, der angibt, ob das Widget vergrößert gestartet werden soll. Standardmäßig false.                                                                                                                                                                                  |
+| "blockdef"      | Hier wird der nicht-visuelle Teil des Widgets definiert. Beachte, dass alle weiteren Definitionen innerhalb eines meta-Objekts in diesem stattfinden.                                                                                                                                      |
+
+<a name="font-awesome-icons" />
+:::info
+
+**Font-Awesome-Icons**
+
+[Font Awesome](https://fontawesome.com/search) bietet eine Vielzahl nützlicher Icons, die du als Widget-Icon in deiner App verwenden kannst. Im einfachsten Fall gibst du nur den Icon-Namen an, und er wird genutzt. Zum Beispiel liefert der String `"house"` ein Icon mit einem Haus. Wir erlauben dir auch, verschiedene Stile auf dein Icon anzuwenden, indem du den Namen wie folgt änderst:
+
+| Format                         | Beschreibung                                                                                                                                                                                           |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| &lt;icon&nbsp;name&gt;         | Das einfache Icon ohne zusätzliche Stile.                                                                                                                                                     |
+| solid@&lt;icon&nbsp;name&gt;   | Fügt dem Icon die Klasse `fa-solid` hinzu, um den Inhalt mit einer Füllfarbe statt eines Hintergrunds zu füllen.                                                                                   |
+| regular@&lt;icon&nbsp;name&gt; | Fügt dem Icon die Klasse `fa-regular` hinzu, damit der Inhalt keine Füllfarbe hat und stattdessen eine Standardumrisslinie nutzt.                                                                     |
+| brands@&lt;icon&nbsp;name&gt;  | Erforderlich, um einem markenbezogenen Icon die notwendige Klasse `fa-brands` hinzuzufügen. Ohne dies werden Marken-Icons nicht korrekt gerendert. Funktioniert nicht mit Icons, die keine Marken-Icons sind. |
+
+:::
+
+Die übrigen Optionen sind Teil des inneren `MetaTSType` (im Bild blau umrandet). Er enthält alle Details dazu, wie das Widget tatsächlich funktioniert. Die gültigen Schlüssel variieren je nach Widget-Typ. Sie werden im Folgenden im Detail behandelt.
+
+## Terminal- und CLI-Widgets
+
+Ein Terminal-Widget oder CLI-Widget ist ein Widget, das einfach ein Terminal öffnet und einen CLI-Befehl ausführt. Sie sehen meist etwa so aus wie im Beispiel unten:
+
+```json
+{
+    <... other widgets go here ...>,
+    "<widget name>": {
+        "icon": "<font awesome icon name>",
+        "label": "<the text label of the widget>",
+        "color": "<the color of the label>",
+        "blockdef": {
+            "meta": {
+                "view": "term",
+                "controller": "cmd",
+                "cmd": "<the actual cli command>"
+            }
+        }
+    },
+    <... other widgets go here ...>
+}
+```
+
+Der `WidgetConfigType` nutzt die üblichen, allen Widgets gemeinsamen Optionen. Der `MetaTSType` kann die unten aufgeführten Schlüssel enthalten:
+
+| Schlüssel                    | Beschreibung                                                                                                                                                                                                                                                                        |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| "view"                 | Ein String, der den allgemeinen Widget-Typ angibt. Bei benutzerdefinierten Terminal-Widgets muss dies auf `"term"` gesetzt sein.                                                                                                                                          |
+| "controller"           | Ein String, der den Typ des genutzten Befehls angibt. Für dauerhaftere Shell-Sitzungen auf "shell" setzen. Für einmalige Befehle auf `"cmd"` setzen. Ist `"cmd"` gesetzt, hat das Widget in seiner Kopfzeile einen zusätzlichen Aktualisieren-Button, der ein erneutes Ausführen des Befehls erlaubt.       |
+| "cmd"                  | (optional) Ist `"controller"` auf `"cmd"` gesetzt, gibt diese Option den tatsächlich auszuführenden Befehl an. Da er als Befehl ausgeführt wird, gibt es keine Shell-Sitzung, es sei denn, du startest einen Befehl, der selbst eine Shell-Sitzung enthält. Standard ist ein leerer String. |
+| "cmd:args"             | (optional, Array von Strings) an `cmd` zu übergebende Argumente                                                                                                                                                                                                                        |
+| "cmd:shell"            | (optional) Ist cmd:shell false (Standard), nutzen wir `cmd` + `cmd:args` (geeignet zur Übergabe an `execve`). Ist cmd:shell true, nutzen wir nur `cmd`, und cmd kann Leerzeichen sowie Shell-Syntax (wie Pipes oder Umleitungen usw.) enthalten                                           |
+| "cmd:interactive"      | (optional) Ist `"controller"` auf `"term"` gesetzt, fügt dieser Boolean dem gestarteten Terminal das Interactive-Flag hinzu. Standard false.                                                                                                                                          |
+| "cmd:login"            | (optional) Ist `"controller"` auf `"term"` gesetzt, fügt dieser Boolean dem term-Befehl das Login-Flag hinzu. Standard false.                                                                                                                                                    |
+| "cmd:runonstart"       | (optional) Der Befehl wird erneut ausgeführt, wenn der Block erstellt oder die App gestartet wird. Ohne diese Option musst du den Befehl manuell ausführen. Standard true.                                                                                                                                |
+| "cmd:runonce"          | (optional) Läuft beim Start, setzt dann aber "cmd:runonce" und "cmd:runonstart" auf false (sodass künftige Ausführungen einen manuellen Neustart erfordern)                                                                                                                                                       |
+| "cmd:clearonstart"     | (optional) Beim Ausführen des Befehls wird der Inhalt des Blocks gelöscht. Standard false.                                                                                                                                                                                        |
+| "cmd:closeonexit"      | (optional) Schließt den Block automatisch, wenn der Befehl erfolgreich beendet wird (Exit-Code = 0)                                                                                                                                                                                        |
+| "cmd:closeonexitforce" | (optional) Schließt den Block automatisch, wenn der Befehl beendet wird (Erfolg oder Fehlschlag)                                                                                                                                                                                           |
+| "cmd:closeonexitdelay  | (optional) Ändert die Verzögerung zwischen Beendigung des Befehls und Schließen des Blocks, in Millisekunden, Standard 2000                                                                                                                                                           |
+| "cmd:env"              | (optional) Ein Schlüssel-Wert-Objekt, das mit dem Befehl auszuführende Umgebungsvariablen darstellt. Standard ist ein leeres Objekt.                                                                                                                                            |
+| "cmd:cwd"              | (optional) Ein String, der das mit dem Befehl auszuführende aktuelle Arbeitsverzeichnis darstellt. Funktioniert aktuell nur lokal. Standard ist das Home-Verzeichnis.                                                                                                                           |
+| "cmd:nowsh"            | (optional) Ein Boolean, der die wsh-Integration für den Befehl deaktiviert. Standard false.                                                                                                                                                                                        |
+| "cmd:jwt"              | (optional) Ein Boolean, der das Hinzufügen eines JWT-Tokens zur Umgebung erzwingt. Erforderlich, um WaveApps als Widgets auszuführen (lokal und remote). Standard false.                                                                                                                        |
+| "term:localshellpath"  | (optional) Legt die für die Ausführung deines Widget-Befehls genutzte Shell fest. Funktioniert nur lokal. Bleibt es leer, ermittelt Wave stattdessen dein Systemstandard.                                                                                                                                |
+| "term:localshellopts"  | (optional) Legt die für `"term:localshellpath"` zu nutzenden Shell-Optionen fest. Nützlich, wenn du eine nicht standardmäßige Shell nutzt und eine bestimmte Option angeben musst, die wir nicht abdecken. Funktioniert nur lokal. Standard ist ein leerer String.                                  |
+| "cmd:initscript"       | (optional) nur für den "shell"-Controller. Ein Init-Skript, das vor dem Starten der Shell ausgeführt wird (kann ein Inline-Skript oder ein absoluter lokaler Dateipfad sein)                                                                                                                                   |
+| cmd:initscript.sh"     | (optional) wie `cmd:initscript`, gilt aber nur für bash/zsh-Shells                                                                                                                                                                                                            |
+| cmd:initscript.bash"   | (optional) wie `cmd:initscript`, gilt aber nur für bash-Shells                                                                                                                                                                                                                |
+| cmd:initscript.zsh"    | (optional) wie `cmd:initscript`, gilt aber nur für zsh-Shells                                                                                                                                                                                                                 |
+| cmd:initscript.pwsh"   | (optional) wie `cmd:initscript`, gilt aber nur für pwsh/powershell-Shells                                                                                                                                                                                                     |
+| cmd:initscript.fish"   | (optional) wie `cmd:initscript`, gilt aber nur für fish-Shells                                                                                                                                                                                                                |
+
+### Beispiel für lokale Shell-Widgets
+
+Wenn du mehrere Shells auf deinem Rechner installiert hast, möchtest du manchmal eine andere als die Standard-Shell nutzen. Für solche Fälle ist es einfach, für jede ein Widget zu erstellen.
+
+Angenommen, du möchtest ein Widget, das eine `fish`-Shell startet. Sobald `fish` auf deinem System installiert ist, kannst du ein Widget wie folgt definieren:
+
+```json
+{
+    <... other widgets go here ...>,
+    "fish" : {
+        "icon": "fish",
+        "color": "#4abc39",
+        "label": "fish",
+        "blockdef": {
+            "meta": {
+                "view": "term",
+                "controller": "shell",
+                "term:localshellpath": "/usr/local/bin/fish",
+                "term:localshellopts": "-i -l"
+            }
+        }
+    },
+    <... other widgets go here ...>
+}
+```
+
+Dadurch wird ein Icon zur Widget-Leiste hinzugefügt, mit dem du ein Terminal mit der `fish`-Shell starten kannst.
+![The example fish widget](./img/widget-example-fish.webp)
+
+:::info
+Es ist möglich, dass `fish` nicht in deinem PATH liegt. In diesem Fall funktioniert `"fish"` als Wert von `"term:localshellpath"` nicht. In diesen Fällen musst du einen direkten Pfad dazu angeben. Das ist oft etwas wie `"/usr/local/bin/fish"`, kann auf deinem System aber abweichen.
+:::
+
+Wenn du dasselbe für z. B. Powershell Core, oder `pwsh`, tun möchtest, kannst du das Widget wie folgt definieren:
+
+```json
+{
+    <... other widgets go here ...>,
+    "pwsh" : {
+        "icon": "rectangle-terminal",
+        "color": "#2671be",
+        "label": "pwsh",
+        "blockdef": {
+            "meta": {
+                "view": "term",
+                "controller": "shell",
+                "term:localshellpath": "pwsh"
+            }
+        }
+    },
+    <... other widgets go here ...>
+}
+```
+
+Dadurch wird ein Icon zur Widget-Leiste hinzugefügt, mit dem du ein Terminal mit der `pwsh`-Shell starten kannst.
+![The example pwsh widget](./img/widget-example-pwsh.webp)
+
+:::info
+Es ist möglich, dass `pwsh` nicht in deinem PATH liegt. In diesem Fall funktioniert `"pwsh"` als Wert von `"term:localshellpath"` nicht. In diesen Fällen musst du einen direkten Pfad dazu angeben. Das könnte auf einem Unix-System etwa `"/usr/local/bin/pwsh"` sein oder unter Windows <code>"C:\\Program&nbsp;Files\\PowerShell\\7\\pwsh.exe"</code>, kann auf deinem System aber
+abweichen. Beachte außerdem, dass unter Windows sowohl `pwsh.exe` als auch `pwsh` funktionieren, unter Unix-Systemen aber nur `pwsh`.
+:::
+
+### Beispiel für Remote-Shell-Widgets
+
+Wenn du ein Terminal-Widget für eine bestimmte Verbindung (SSH oder WSL) öffnen möchtest, kannst du den Metadaten-Schlüssel `connection` nutzen. Der Wert des connection-Schlüssels sollte mit connections.json (oder dem, was in deinem Verbindungs-Dropdown erscheint) übereinstimmen. Beachte, dass du nur den kanonischen Namen nutzen solltest (nicht einen benutzerdefinierten "display:name", den du gesetzt hast). Für WSL könnte das etwa `wsl://Ubuntu` sein, für SSH-Verbindungen etwa `user@remotehostname`.
+
+```json
+{
+	<... other widgets go here ...>,
+	"remote-term": {
+		"icon": "rectangle-terminal",
+		"label": "remote",
+		"blockdef": {
+			"meta": {
+				"view": "term",
+				"controller": "shell",
+				"connection": "<connection>"
+			}
+		}
+	},
+	<... other widgets go here ...>
+}
+```
+
+### Beispiel für Cmd-Widgets
+
+Hier sind ein paar einfache Cmd-Widgets als Beispiele.
+
+Angenommen, du möchtest ein Widget, das beim Öffnen speedtest-go ausführt. Dann kannst du ein Widget wie folgt definieren:
+
+```json
+{
+    <... other widgets go here ...>,
+    "speedtest" : {
+        "icon": "gauge-high",
+        "label": "speed",
+        "blockdef": {
+            "meta": {
+                "view": "term",
+                "controller": "cmd",
+                "cmd": "speedtest-go --unix",
+                "cmd:clearonstart": true
+            }
+        }
+    },
+    <... other widgets go here ...>
+}
+```
+
+Dadurch wird ein Icon zur Widget-Leiste hinzugefügt, mit dem du ein Terminal starten kannst, das den Befehl `speedtest-go --unix` ausführt.
+![The example speedtest widget](./img/widget-example-speed.webp)
+
+`"cmd"` für `"controller"` zu nutzen, ist der einfachste Weg, das zu erreichen. `"cmd:clearonstart"` ist nicht notwendig, sorgt aber dafür, dass bei jedem Ausführen des Befehls (was per Rechtsklick auf die Kopfzeile und Auswahl von `Force Controller Restart` geschehen kann) der vorherige Inhalt gelöscht wird.
+
+Angenommen, du möchtest nun eine TUI-App ausführen, zum Beispiel `dua`. Es stellt sich heraus, dass du das mehr oder weniger genauso tun kannst:
+
+```json
+{
+    <... other widgets go here ...>,
+    "dua" : {
+        "icon": "brands@linux",
+        "label": "dua",
+        "blockdef": {
+            "meta": {
+                "view": "term",
+                "controller": "cmd",
+                "cmd": "dua"
+            }
+        }
+    },
+    <... other widgets go here ...>
+}
+```
+
+Dadurch wird ein Icon zur Widget-Leiste hinzugefügt, mit dem du ein Terminal starten kannst, das den Befehl `dua` ausführt.
+![The example speedtest widget](./img/widget-example-dua.webp)
+
+Da dies eine TUI-App ist, die beim Schließen nichts zurückgibt, ändert die Option `"cmd:clearonstart"` das Verhalten nicht, weshalb sie hier weggelassen wurde.
+
+## Web-Widgets
+
+Manchmal möchte man direkt eine Seite zu einer Webseite öffnen. Das lässt sich einfach durch Erstellen eines benutzerdefinierten `"web"`-Widgets erreichen. Sie haben im Allgemeinen diese Form:
+
+```json
+{
+    <... other widgets go here ...>,
+    "<widget name>": {
+        "icon": "<font awesome icon name>",
+        "label": "<the text label of the widget>",
+        "color": "<the color of the label>",
+        "blockdef": {
+            "meta": {
+                "view": "web",
+                "url": "<url of the first webpage>"
+            }
+        }
+    },
+    <... other widgets go here ...>
+}
+```
+
+Der `WidgetConfigType` nutzt die üblichen, allen Widgets gemeinsamen Optionen. Der `MetaTSType` kann die unten aufgeführten Schlüssel enthalten:
+| Schlüssel | Beschreibung |
+|-----|-------------|
+| "view" | Ein String, der den allgemeinen Widget-Typ angibt. Bei benutzerdefinierten Web-Widgets muss dies auf `"web"` gesetzt sein.|
+| "url" | Dieser String ist die URL der aktuellen Seite. Als Teil eines Widgets dient er als Startseite des Widgets. Ist er nicht angegeben, wird standardmäßig die global konfigurierbare `"web:defaulturl"` genutzt, die bei einer frischen Installation [https://github.com/wavetermdev/waveterm](https://github.com/wavetermdev/waveterm) ist. |
+| "pinnedurl" | (optional) Dieser String ist die URL, zu der dich der Startseiten-Button führt. Ist er nicht angegeben, wird standardmäßig die global konfigurierbare `"web:defaulturl"` genutzt, die bei einer frischen Installation [https://github.com/wavetermdev/waveterm](https://github.com/wavetermdev/waveterm) ist. |
+
+### Beispiel für Web-Widgets
+
+Angenommen, du möchtest ein Widget, das automatisch bei YouTube startet und YouTube als Startseite nutzt. Das geht so:
+
+```json
+{
+    <... other widgets go here ...>,
+    "youtube" : {
+        "icon": "brands@youtube",
+        "label": "youtube",
+        "blockdef": {
+            "meta": {
+                "view": "web",
+                "url": "https://youtube.com",
+                "pinnedurl": "https://youtube.com"
+            }
+        }
+    },
+    <... other widgets go here ...>
+}
+```
+
+Dadurch wird ein Icon zur Widget-Leiste hinzugefügt, mit dem du ein Web-Widget auf der YouTube-Startseite starten kannst.
+![The example speedtest widget](./img/widget-example-youtube.webp)
+
+Alternativ, angenommen du möchtest ein Web-Widget, das wie ein Lesezeichen zu GitHub öffnet, danach aber Google als Startseite nutzt. Das geht einfach so:
+
+```json
+{
+    <... other widgets go here ...>,
+    "github" : {
+        "icon": "brands@github",
+        "label": "github",
+        "blockdef": {
+            "meta": {
+                "view": "web",
+                "url": "https://github.com",
+                "pinnedurl": "https://google.com"
+            }
+        }
+    },
+    <... other widgets go here ...>
+}
+```
+
+Dadurch wird ein Icon zur Widget-Leiste hinzugefügt, mit dem du ein Web-Widget auf der GitHub-Startseite starten kannst.
+![The example speedtest widget](./img/widget-example-github.webp)
+
+## Sysinfo-Widgets
+
+Das Sysinfo-Widget beschränkt sich bewusst auf eine kleine Teilmenge möglicher Werte, die wir mit der Zeit erweitern werden. Es ist aber dennoch möglich, deine eigene Version davon zu konfigurieren — zum Beispiel, wenn du standardmäßig ein anderes Diagramm laden möchtest. Die allgemeine Form dieses Widgets ist:
+
+```json
+{
+    <... other widgets go here ...>,
+    "<widget name>": {
+        "icon": "<font awesome icon name>",
+        "label": "<the text label of the widget>",
+        "color": "<the color of the label>",
+        "blockdef": {
+            "meta": {
+                "view": "sysinfo",
+                "graph:numpoints": <the max number of points in the graph>,
+                "sysinfo:type": <the name of the plot collection>,
+            }
+        }
+    },
+    <... other widgets go here ...>
+}
+```
+
+Der `WidgetConfigType` nutzt die üblichen, allen Widgets gemeinsamen Optionen. Der `MetaTSType` kann die unten aufgeführten Schlüssel enthalten:
+| Schlüssel | Beschreibung |
+|-----|-------------|
+| "view" | Ein String, der den allgemeinen Widget-Typ angibt. Bei benutzerdefinierten Sysinfo-Widgets muss dies auf `"sysinfo"` gesetzt sein.|
+| "graph:numpoints" | Die maximale Anzahl an Punkten, die im Diagramm angezeigt werden können. Entspricht der Anzahl der Sekunden, die das Diagrammfenster abdeckt. Standard ist 100.|
+| "sysinfo:type" | Ein String, der die im Diagramm anzuzeigende Typ-Sammlung darstellt. Gültige Werte hierfür sind `"CPU"`, `"Mem"`, `"CPU + Mem"` und `All CPU`. Beachte, dass Groß-/Kleinschreibung beachtet wird. Ist kein Wert angegeben, zeigt das Diagramm standardmäßig `"CPU"`.|
+
+### Beispiel für Sysinfo-Widgets
+
+Angenommen, du hast einen Build-Prozess, der 3 Minuten dauert, und möchtest den gesamten Build im Sysinfo-Diagramm sehen können. Außerdem möchtest du sowohl CPU als auch Speicher sehen, da beide von diesem Prozess betroffen sind. In diesem Fall kannst du ein Widget wie folgt einrichten:
+
+```json
+{
+    <... other widgets go here ...>,
+    "3min-info" : {
+        "icon": "circle-3",
+        "label": "3mininfo",
+        "blockdef": {
+            "meta": {
+                "view": "sysinfo",
+                "graph:numpoints": 180,
+                "sysinfo:type": "CPU + Mem"
+            }
+        }
+    },
+    <... other widgets go here ...>
+}
+```
+
+Dadurch wird ein Icon zur Widget-Leiste hinzugefügt, mit dem du standardmäßig die CPU- und Speicher-Diagramme mit 180 Sekunden an Daten starten kannst.
+![The example speedtest widget](./img/widget-example-3mininfo.webp)
+
+Angenommen, du bist mit den standardmäßigen 100 Punkten (und 100 Sekunden) zufrieden, möchtest aber beim Start alle CPU-Daten sehen. In diesem Fall kannst du Folgendes schreiben:
+
+```json
+{
+    <... other widgets go here ...>,
+    "all-cpu" : {
+        "icon": "chart-scatter",
+        "label": "all-cpu",
+        "blockdef": {
+            "meta": {
+                "view": "sysinfo",
+                "sysinfo:type": "All CPU"
+            }
+        }
+    },
+    <... other widgets go here ...>
+}
+```
+
+Dadurch wird ein Icon zur Widget-Leiste hinzugefügt, mit dem du standardmäßig die Alle-CPU-Diagramme starten kannst.
+
+![The example speedtest widget](./img/widget-example-all-cpu.webp)
+
+## Standard-Widgets überschreiben
+
+Wave wird mit 5 Standard-Widgets in der Widget-Leiste ausgeliefert (terminal, files, web, ai und sysinfo). Du kannst diese ändern oder entfernen, indem du ihre Konfiguration in widgets.json überschreibst. Die Namen der 5 Widgets, in Reihenfolge, sind:
+
+- `defwidget@terminal`
+- `defwidget@files`
+- `defwidget@web`
+- `defwidget@ai`
+- `defwidget@sysinfo`
+
+Um eines davon zu entfernen, setze diesen Schlüssel einfach auf `null` in deiner widgets.json-Datei.
+
+Um ihre Definitionen einzusehen, zu kopieren und einzufügen oder zu verstehen, wie sie funktionieren, kannst du alle ihre Definitionen unter [GitHub - default widgets.json](https://github.com/wavetermdev/waveterm/blob/main/pkg/wconfig/defaultconfig/widgets.json) ansehen.

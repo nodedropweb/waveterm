@@ -3,16 +3,18 @@
 
 import clsx from "clsx";
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import "./copybutton.scss";
 import { IconButton } from "./iconbutton";
 
 type CopyButtonProps = {
-    title: string;
+    title?: string;
     className?: string;
     onClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
 };
 
 const CopyButton = ({ title, className, onClick }: CopyButtonProps) => {
+    const { t } = useTranslation();
     const [isCopied, setIsCopied] = useState(false);
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -47,7 +49,7 @@ const CopyButton = ({ title, className, onClick }: CopyButtonProps) => {
             decl={{
                 elemtype: "iconbutton",
                 icon: isCopied ? "check" : "copy",
-                title,
+                title: title ?? t("element.copy"),
                 className: clsx("copy-button", { copied: isCopied }),
                 click: handleOnClick,
             }}

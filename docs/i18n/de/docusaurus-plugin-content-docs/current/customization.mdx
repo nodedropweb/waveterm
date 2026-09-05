@@ -1,0 +1,83 @@
+---
+sidebar_position: 3.2
+id: "customization"
+title: "Anpassung"
+---
+
+## Tab-Themes
+
+![Tab Context Menu](./img/tab-context-menu.png#right)
+
+Klicke mit der rechten Maustaste auf einen beliebigen Tab, um ein Menü zu öffnen, in dem du den Tab umbenennen und verschiedene Hintergründe auswählen kannst.
+
+Es ist auch möglich, eigene Hintergrund-Themes mit benutzerdefinierten Farben, Verläufen, Bildern und mehr zu erstellen, indem du deine Konfigurationsdatei backgrounds.json bearbeitest. Wie Waves integrierte Tab-Hintergründe definiert sind, kannst du in der [Standard-backgrounds.json-Datei](https://github.com/wavetermdev/waveterm/blob/main/pkg/wconfig/defaultconfig/backgrounds.json) nachsehen.
+
+Um standardmäßig einen Tab-Hintergrund auf alle neuen Tabs anzuwenden, setze den Schlüssel `tab:background` in deiner [Wave-Konfigurationsdatei](/config) auf einen der voreingestellten Hintergrund-Schlüssel (z. B. `"bg@ocean-depths"`). Die verfügbaren integrierten Hintergrund-Schlüssel findest du in der [Standard-backgrounds.json-Datei](https://github.com/wavetermdev/waveterm/blob/main/pkg/wconfig/defaultconfig/backgrounds.json).
+
+## Terminal-Anpassung
+
+#### Terminal-Theme
+
+![Terminal Context Menu](./img/terminal-context-menu.png#right)
+
+Klicke mit der rechten Maustaste auf den Kopfbereich eines beliebigen Terminal-Blocks, um ein Menü zu öffnen, in dem du ein Terminal-Theme
+für dieses Terminal festlegen kannst.
+
+Du kannst das Standard-Theme für alle Terminals (deren Theme nicht manuell überschrieben wurde) festlegen, indem du deine settings.json-Datei bearbeitest, den Schlüssel `term:theme` hinzufügst und ihn auf den passenden Schlüssel setzt. Die Schlüssel findest du
+in der [Standard-termthemes.json-Datei](https://github.com/wavetermdev/waveterm/blob/main/pkg/wconfig/defaultconfig/termthemes.json).
+
+Wenn du eine eigene termthemes.json-Datei im Konfigurationsverzeichnis hinzufügst, kannst du auch eigene Terminal-Themes erstellen (folge einfach demselben Format).
+
+#### Schriftgröße
+
+Über dasselbe Kontextmenü kannst du auch die Schriftgröße des Terminals ändern. Um die Standard-Schriftgröße für alle deine (nicht überschriebenen) Terminals zu ändern, setze den Konfigurationsschlüssel `term:fontsize` auf die gewünschte Größe, z. B. `{ "term:fontsize": 14}`.
+
+#### Schriftart
+
+Es gibt keine Benutzeroberfläche, um die Standard-Terminal-Schriftart zu bearbeiten. Sie _kann_ aber überschrieben werden. In deiner settings.json-Datei kannst du den Schlüssel `term:fontfamily` hinzufügen und auf eine Schriftart setzen, die auf deinem lokalen System _installiert_ ist. Wenn du eine nicht installierte oder eine nicht dicktengleiche (non-monospace) Schriftart angibst, sieht dein Terminal schrecklich aus (mach das nicht 🙂) - lösche den Schlüssel, um zur Standardschrift zurückzukehren.
+
+## Widget-Seitenleiste
+
+![Terminal Context Menu](./img/custom-widgets.png#right)
+
+Siehe [Benutzerdefinierte Widgets](/customwidgets) für eine ausführliche Dokumentation dazu, wie du änderst, was in deiner rechten Widget-Seitenleiste erscheint.
+
+Mit widgets.json kannst du beliebige Standard-Widgets entfernen und eigene Widgets hinzufügen. Du kannst Icons, Farben, Text und Standardwerte (wie Verzeichnisse, Webseiten, KI-Modell, Remote-Verbindung, Befehle usw.) deiner benutzerdefinierten Widgets vollständig anpassen.
+
+Du kannst die Hilfe-Widgets unten rechts auch ausblenden, indem du den Konfigurationsschlüssel `widget:showhelp` auf `false` setzt.
+
+## Tab-Hintergründe
+
+Wave unterstützt leistungsstarke, benutzerdefinierte Hintergründe für deine Tabs mit Bildern, Mustern, Verläufen und Farben. Der schnellste Weg, einen Bildhintergrund festzulegen, ist der Befehl `wsh setbg`:
+
+```bash
+# Bildhintergrund mit 50% Deckkraft (Standard) festlegen
+wsh setbg ~/pictures/background.jpg
+
+# Farbhintergrund festlegen (Anführungszeichen verhindern, dass # als Shell-Kommentar interpretiert wird)
+wsh setbg "#ff0000"          # Hex-Farbe
+wsh setbg forestgreen        # CSS-Farbname
+
+# Deckkraft anpassen
+wsh setbg --opacity 0.3 ~/pictures/light-pattern.png
+wsh setbg --opacity 0.7      # nur die Deckkraft des aktuellen Hintergrunds ändern
+
+# Optionen zur Bildpositionierung
+wsh setbg --tile ~/pictures/texture.png          # gekacheltes Muster erstellen
+wsh setbg --center ~/pictures/logo.png           # zentrieren ohne Skalierung
+wsh setbg --center --size 200px ~/pictures/logo.png  # zentrieren mit bestimmter Größe (px, %, auto)
+
+# Hintergrund entfernen
+wsh setbg --clear
+```
+
+Du kannst jedes JPEG-, PNG-, GIF-, WebP- oder SVG-Bild als Hintergrund verwenden. Die Option `--center` ist besonders nützlich für Logos oder Icons, bei denen die Originalgröße beibehalten werden soll.
+
+Um die Metadaten für einen Hintergrund in der Vorschau zu sehen, ohne ihn anzuwenden, nutze das Flag `--print`:
+
+```bash
+wsh setbg --print "#ff0000"
+```
+
+Weitere fortgeschrittene Anpassungsoptionen, einschließlich Verläufe, Farben und das Speichern eigener benutzerdefinierter Hintergründe, findest du in unserer Dokumentation zu [Tab-Hintergründen](/tab-backgrounds).
+

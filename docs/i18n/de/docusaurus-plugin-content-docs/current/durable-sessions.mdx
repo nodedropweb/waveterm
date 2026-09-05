@@ -1,0 +1,216 @@
+---
+sidebar_position: 3.5
+id: "durable-sessions"
+title: "Dauerhafte Sitzungen"
+---
+
+import { VersionBadge } from "@site/src/components/versionbadge";
+
+# Dauerhafte Sitzungen <VersionBadge version="v0.14" />
+
+Halte deine entfernten SSH-Shell-Sitzungen über Netzwerkwechsel, Ruhezustand des Computers und Wave-Neustarts hinweg am Leben.
+
+## Überblick
+
+Dauerhafte Sitzungen schützen deinen Terminal-Status bei der Arbeit mit entfernten SSH-Verbindungen, ähnlich wie tmux oder screen, aber direkt in Wave integriert. Anders als bei Standard-SSH-Sitzungen, die bei Verbindungsabbruch enden, bleiben bei dauerhaften Sitzungen erhalten:
+
+- **Shell-Status** - Aktuelles Verzeichnis, Umgebungsvariablen und Shell-Verlauf
+- **Laufende Programme** - Hintergrundjobs und lang laufende Befehle werden weiter ausgeführt
+- **Terminal-Verlauf** - Vollständiger Scrollback-Puffer bleibt über Wiederverbindungen hinweg erhalten
+
+Dauerhafte Sitzungen verbinden sich automatisch neu, sobald deine Verbindung wiederhergestellt ist, und setzen genau dort fort, wo du aufgehört hast.
+
+:::info Nur Remote-Verbindungen
+Dauerhafte Sitzungen sind ausschließlich für **entfernte SSH-Verbindungen** konzipiert. Lokale Terminals und WSL-Verbindungen nutzen Standard-Sitzungen, da sie von Netzwerkunterbrechungen nicht betroffen sind und aktiv bleiben, solange Wave läuft.
+:::
+
+## So funktioniert es
+
+Wenn du eine dauerhafte Sitzung startest, startet Wave einen schlanken Job-Manager auf dem entfernten Server. Ähnlich wie tmux und screen tut dieser Manager Folgendes:
+
+1. Hält deinen Shell-Prozess unabhängig von der Wave-Verbindung am Laufen
+2. Puffert Terminal-Ausgaben während der Trennung
+3. Ermöglicht Wave, sich beim Wiederverbinden nahtlos erneut anzuhängen
+4. Übersteht Wave-Neustarts und Netzwerkunterbrechungen
+
+Die Sitzung läuft auf dem entfernten Server weiter, selbst wenn du Wave schließt, deinen Computer in den Ruhezustand versetzt oder das Netzwerk wechselst.
+
+## Sitzungsstatus-Anzeige
+
+Das Schild-Symbol in deiner Terminal-Kopfzeile zeigt den aktuellen Sitzungsstatus:
+
+| Symbol | Status | Beschreibung |
+|------|--------|-------------|
+| <i className="fa-sharp fa-regular fa-shield" style={{color: 'rgb(140, 145, 140)'}}></i> | Standard-Sitzung | Verbindungsabbrüche beenden die Sitzung |
+| <i className="fa-sharp fa-solid fa-shield" style={{color: '#0ea5e9'}}></i> | Dauerhaft (verbunden) | Sitzung ist geschützt und verbunden |
+| <i className="fa-sharp fa-solid fa-shield" style={{color: '#7dd3fc'}}></i> | Dauerhaft (getrennt) | Sitzung läuft, aktuell getrennt |
+| <i className="fa-sharp fa-solid fa-shield" style={{color: 'rgb(140, 145, 140)'}}></i> | Dauerhaft (wartend) | Konfiguriert, aber noch nicht gestartet |
+
+Fahre mit der Maus über das Schild-Symbol, um detaillierte Statusinformationen und verfügbare Aktionen zu sehen.
+
+## Konfiguration
+
+Dauerhafte Sitzungen können auf drei Ebenen konfiguriert werden, wobei spezifischere Einstellungen allgemeinere überschreiben:
+
+### Globale Einstellungen (niedrigste Priorität)
+
+Lege den Standard für alle SSH-Verbindungen in deiner `settings.json` fest:
+
+```json
+{
+  "term:durable": true
+}
+```
+
+### Verbindungseinstellungen (mittlere Priorität)
+
+Konfiguriere die Dauerhaftigkeit pro Verbindung in deiner `connections.json`:
+
+```json
+{
+  "connections": {
+    "user@host": {
+      "term:durable": true
+    }
+  }
+}
+```
+
+### Blockeinstellungen (höchste Priorität)
+
+Überschreibe die Einstellung für einzelne Terminal-Blöcke über:
+
+- **Kontextmenü**: Rechtsklick auf Terminal → Erweitert → Session Durability
+- **Flyover-Aktionen**: Klick auf das Schild-Symbol → "Restart as Durable" oder "Restart as Standard"
+- **Kommandozeile**: Nutze `wsh setmeta term:durable=true` oder `wsh setmeta term:durable=false`
+
+Konfigurationshierarchie (höchste zu niedrigste Priorität):
+1. Einstellung auf Blockebene
+2. Einstellung auf Verbindungsebene
+3. Globale Einstellung
+
+### Standardverhalten
+
+- **SSH-Verbindungen**: Dauerhafte Sitzungen standardmäßig deaktiviert (Opt-in über Konfiguration)
+- **Lokale Terminals**: Nutzen immer Standard-Sitzungen (Dauerhaftigkeit nicht anwendbar)
+- **WSL-Verbindungen**: Nutzen immer Standard-Sitzungen (Dauerhaftigkeit nicht anwendbar)
+
+## Zwischen Modi wechseln
+
+### Standard zu dauerhaft
+
+1. Fahre mit der Maus über das reguläre Schild-Symbol
+2. Klicke im Flyover auf **"Restart as Durable"**
+3. Deine Sitzung startet mit aktivierter Dauerhaftigkeit neu
+
+Oder nutze das Kontextmenü:
+- Rechtsklick auf Terminal → Erweitert → Session Durability → Restart Session in Durable Mode
+
+### Dauerhaft zu Standard
+
+1. Öffne das Terminal-Kontextmenü (Rechtsklick)
+2. Navigiere zu Erweitert → Session Durability
+3. Wähle **"Restart Session in Standard Mode"**
+
+:::warning Moduswechsel startet die Sitzung neu
+Der Wechsel zwischen Standard- und dauerhaftem Modus erfordert einen Neustart der Shell. Alle laufenden Prozesse in der aktuellen Sitzung werden beendet.
+:::
+
+## Sitzungsstatus
+
+### Verbunden
+Dein Terminal ist mit der entfernten Sitzung verbunden. Du kannst mit der Shell interagieren und Ausgaben in Echtzeit sehen.
+
+### Getrennt
+Verbindung verloren, aber die Sitzung läuft auf dem entfernten Server weiter. Wave verbindet sich automatisch neu, sobald möglich. Alle von dir gestarteten Befehle laufen weiter.
+
+### Wartet auf Start
+Sitzung ist für Dauerhaftigkeit konfiguriert, aber noch nicht gestartet. Klicke auf "Start Session" oder führe einen Befehl aus, um zu beginnen.
+
+### Wird gestartet
+Der Job-Manager wird auf dem entfernten Server initialisiert. Die Sitzung wird in Kürze verbunden.
+
+### Beendet
+Die Sitzung wurde beendet. Häufige Gründe:
+- **Beendet (Exited)**: Shell wurde normal geschlossen (z. B. `exit` eingegeben)
+- **Verloren (Lost)**: Sitzung auf dem Server nicht gefunden (könnte beendet worden sein oder das System wurde neu gestartet)
+- **Start fehlgeschlagen (Failed to Start)**: Der Job-Manager hatte bei der Initialisierung einen Fehler
+
+Klicke auf "Restart Session", um eine neue dauerhafte Sitzung zu starten, oder auf "Restart as Standard", um den Modus zu wechseln.
+
+## Anwendungsfälle
+
+### Lang laufende Befehle
+Starte einen Build-, Deployment- oder Datenverarbeitungsjob und klapp deinen Laptop zu. Der Befehl läuft weiter, und du kannst später nachsehen.
+
+```bash
+# Einen langen Build starten
+./build.sh
+
+# Laptop zuklappen, Kaffee holen
+# Später: erneut verbinden und die fertige Ausgabe sehen
+```
+
+### Instabile Netzwerke
+Arbeite aus einem Café, im Zug oder über eine Mobilfunkverbindung. Kurze Unterbrechungen beenden deine Sitzung nicht und du verlierst keine Arbeit.
+
+### Mehrere Standorte
+Beginne die Arbeit an deinem Desktop, mach auf deinem Laptop weiter. Deine Sitzung und ihr Status bleiben auf dem entfernten Server erhalten.
+
+### Systemwartung
+Wave-Updates, -Neustarts oder -Abstürze unterbrechen deine Remote-Arbeit nicht. Verbinde dich erneut und mach sofort weiter.
+
+## Sitzungslebenszyklus
+
+Dauerhafte Sitzungen sind an den Terminal-Block in Wave gebunden. Die Sitzung wird beendet, wenn du:
+
+- **Den Block schließt**: Schließt das Terminal und beendet die entfernte Sitzung
+- **Die Verbindung wechselst**: Das Ändern der Verbindung eines Blocks beendet die alte Sitzung
+- **Den Workspace/Tab löschst**: Entfernt den Block und beendet zugehörige Sitzungen
+
+### Aufräumverhalten
+
+Wenn du einen Block schließt, während er **getrennt** ist, läuft die entfernte Sitzung bis zur nächsten Wiederverbindung weiter. Wenn Wave sich wieder mit diesem Server verbindet, räumt es automatisch verwaiste Sitzungen von geschlossenen Blöcken auf.
+
+Das stellt sicher, dass sich entfernte Sitzungen nicht auf deinen Servern ansammeln, wenn du Terminals offline schließt.
+
+## Einschränkungen
+
+- **Lokale Terminals**: Nicht anwendbar (bereits dauerhaft mit deinem lokalen Rechner)
+- **WSL-Verbindungen**: Nicht anwendbar (WSL-Sitzungen werden von Windows verwaltet)
+- **Netzwerklatenz**: Getrennte Sitzungen puffern Ausgaben; das Wiederverbinden kann einen Moment zur Synchronisierung dauern
+- **Serverressourcen**: Jede dauerhafte Sitzung unterhält für die Sitzungsverwaltung einen schlanken Go-Prozess auf dem entfernten Server
+
+## Fehlerbehebung
+
+### Sitzung zeigt "Lost" an
+Die Sitzung wurde auf dem entfernten Server beendet, möglicherweise wegen:
+- Serverneustart
+- Manuelle Beendigung des Job-Manager-Prozesses
+- Dem entfernten System sind die Ressourcen ausgegangen
+
+**Lösung**: Klicke auf "Restart Session", um eine neue dauerhafte Sitzung zu starten.
+
+### Sitzung verbindet sich nicht neu
+Prüfe, ob:
+- Deine SSH-Verbindung zum Server funktioniert (Verbindungsstatus prüfen)
+- Der Job-Manager-Prozess auf dem entfernten Server noch läuft
+
+**Versuche**: Rechtsklick auf Terminal → Erweitert → Force Restart Controller
+
+### Fehler "Failed to Start"
+Der Job-Manager konnte auf dem entfernten Server nicht initialisiert werden. Prüfe die Fehlermeldung für Details.
+
+**Versuche**: Starte die Sitzung neu. Falls das Problem weiter besteht, melde einen Fehlerbericht mit den Fehlerdetails.
+
+:::info Technische Details
+Dauerhafte Sitzungen nutzen Unix-Domain-Sockets auf dem entfernten Server, um dauerhafte Verbindungen zwischen der Shell und Waves Job-Manager aufrechtzuerhalten. Der Job-Manager-Prozess läuft unabhängig und übersteht SSH-Verbindungsabbrüche.
+:::
+
+## Datenschutz & Sicherheit
+
+- Dauerhafte Sitzungen laufen vollständig auf deinen entfernten Servern
+- Alle Daten werden über SSH zwischen deiner lokalen Wave-Instanz und dem entfernten Rechner übertragen
+- Keine offenen Ports auf dem entfernten Rechner - die Kommunikation läuft über deine bestehende SSH-Verbindung
+- Bei Trennung werden Ausgaben lokal auf dem entfernten Rechner gepuffert, bis du dich wieder verbindest
+- Sitzungen sind pro Benutzer isoliert und nutzen die Berechtigungen deines entfernten Benutzers

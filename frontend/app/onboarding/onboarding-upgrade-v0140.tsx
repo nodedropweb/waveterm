@@ -2,17 +2,15 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { useWaveEnv } from "@/app/waveenv/waveenv";
+import { useTranslation } from "react-i18next";
 
 const UpgradeOnboardingModal_v0_14_0_Content = () => {
     const waveEnv = useWaveEnv();
+    const { t } = useTranslation();
     return (
         <div className="flex flex-col items-start w-full mb-2 unselectable">
             <div className="text-secondary leading-relaxed mb-4">
-                <p className="mb-0">
-                    Wave v0.14 introduces Durable Sessions. Enable them to keep your remote sessions alive through
-                    network interruptions, computer sleep, and restarts — they'll automatically reconnect when your
-                    connection is restored.
-                </p>
+                <p className="mb-0">{t("onboardingUpgrade.v0140.intro")}</p>
             </div>
 
             <div className="flex w-full items-start gap-4 mb-4">
@@ -21,25 +19,27 @@ const UpgradeOnboardingModal_v0_14_0_Content = () => {
                 </div>
                 <div className="flex flex-col items-start gap-2 flex-1">
                     <div className="text-foreground text-base font-semibold leading-[18px]">
-                        Durable SSH Sessions{" "}
+                        {t("onboardingUpgrade.v0140.durableSectionTitle")}{" "}
                         <button
                             onClick={() => waveEnv.electron.openExternal("https://docs.waveterm.dev/durable-sessions")}
                             className="text-accent text-sm font-normal cursor-pointer hover:underline"
                         >
-                            [see docs]
+                            {t("onboardingUpgrade.v0140.seeDocs")}
                         </button>
                     </div>
                     <div className="text-secondary leading-5">
                         <ul className="list-disc list-outside space-y-1 pl-5">
                             <li>
-                                <strong>Session Protection</strong> - Programs and shell state survive disconnects
+                                <strong>{t("onboardingUpgrade.v0140.sessionProtectionLabel")}</strong> -{" "}
+                                {t("onboardingUpgrade.v0140.sessionProtectionBody")}
                             </li>
                             <li>
-                                <strong>Visual Status Indicators</strong> - Shield icons show status
+                                <strong>{t("onboardingUpgrade.v0140.visualStatusLabel")}</strong> -{" "}
+                                {t("onboardingUpgrade.v0140.visualStatusBody")}
                             </li>
                             <li>
-                                <strong>Flexible Configuration</strong> - Enable globally, per-connection, or
-                                per-terminal
+                                <strong>{t("onboardingUpgrade.v0140.flexibleConfigLabel")}</strong> -{" "}
+                                {t("onboardingUpgrade.v0140.flexibleConfigBody")}
                             </li>
                         </ul>
                     </div>
@@ -52,15 +52,17 @@ const UpgradeOnboardingModal_v0_14_0_Content = () => {
                 </div>
                 <div className="flex flex-col items-start gap-2 flex-1">
                     <div className="text-foreground text-base font-semibold leading-[18px]">
-                        Enhanced Connection Monitoring
+                        {t("onboardingUpgrade.v0140.connectionMonitoringSectionTitle")}
                     </div>
                     <div className="text-secondary leading-5">
                         <ul className="list-disc list-outside space-y-1 pl-5">
                             <li>
-                                <strong>Connection Keepalives</strong> - Active monitoring with keepalive probes
+                                <strong>{t("onboardingUpgrade.v0140.keepalivesLabel")}</strong> -{" "}
+                                {t("onboardingUpgrade.v0140.keepalivesBody")}
                             </li>
                             <li>
-                                <strong>Stalled Connection Detection</strong> - Visual feedback for network issues
+                                <strong>{t("onboardingUpgrade.v0140.stalledDetectionLabel")}</strong> -{" "}
+                                {t("onboardingUpgrade.v0140.stalledDetectionBody")}
                             </li>
                         </ul>
                     </div>
@@ -72,17 +74,21 @@ const UpgradeOnboardingModal_v0_14_0_Content = () => {
                     <i className="text-[24px] text-accent fa-solid fa-sparkles"></i>
                 </div>
                 <div className="flex flex-col items-start gap-2 flex-1">
-                    <div className="text-foreground text-base font-semibold leading-[18px]">Wave AI Updates</div>
+                    <div className="text-foreground text-base font-semibold leading-[18px]">
+                        {t("onboardingUpgrade.v0140.aiSectionTitle")}
+                    </div>
                     <div className="text-secondary leading-5">
                         <ul className="list-disc list-outside space-y-1 pl-5">
                             <li>
-                                <strong>Image Support</strong> - Vision capabilities for BYOK providers
+                                <strong>{t("onboardingUpgrade.v0140.imageSupportLabel")}</strong> -{" "}
+                                {t("onboardingUpgrade.v0140.imageSupportBody")}
                             </li>
                             <li>
-                                <strong>Stop Generation</strong> - Ability to stop AI responses mid-generation
+                                <strong>{t("onboardingUpgrade.v0140.stopGenerationLabel")}</strong> -{" "}
+                                {t("onboardingUpgrade.v0140.stopGenerationBody")}
                             </li>
                             <li>
-                                <strong>Improved Auto-scrolling</strong>
+                                <strong>{t("onboardingUpgrade.v0140.autoScrollLabel")}</strong>
                             </li>
                         </ul>
                     </div>
@@ -94,14 +100,18 @@ const UpgradeOnboardingModal_v0_14_0_Content = () => {
                     <i className="text-[24px] text-accent fa-solid fa-terminal"></i>
                 </div>
                 <div className="flex flex-col items-start gap-2 flex-1">
-                    <div className="text-foreground text-base font-semibold leading-[18px]">Terminal Improvements</div>
+                    <div className="text-foreground text-base font-semibold leading-[18px]">
+                        {t("onboardingUpgrade.v0140.terminalSectionTitle")}
+                    </div>
                     <div className="text-secondary leading-5">
                         <ul className="list-disc list-outside space-y-1 pl-5">
                             <li>
-                                <strong>Enhanced Context Menu</strong> - Quick access to splits, themes, and more
+                                <strong>{t("onboardingUpgrade.v0140.contextMenuLabel")}</strong> -{" "}
+                                {t("onboardingUpgrade.v0140.contextMenuBody")}
                             </li>
                             <li>
-                                <strong>OSC 52 Clipboard Support</strong> - CLI apps can copy to system clipboard
+                                <strong>{t("onboardingUpgrade.v0140.osc52Label")}</strong> -{" "}
+                                {t("onboardingUpgrade.v0140.osc52Body")}
                             </li>
                         </ul>
                     </div>

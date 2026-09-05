@@ -1,0 +1,110 @@
+---
+sidebar_position: 1.5
+id: "waveai"
+title: "Wave AI"
+---
+
+import { Kbd } from "@site/src/components/kbd";
+import { PlatformProvider, PlatformSelectorButton } from "@site/src/components/platformcontext";
+
+<PlatformProvider>
+
+<PlatformSelectorButton />
+
+<br/><br/>
+Kontextbewusster Terminal-Assistent mit Zugriff auf Terminal-Ausgabe, Widgets und Dateisystem.
+
+## Tastenkombinationen
+
+| Kombination | Aktion |
+|----------|--------|
+| <Kbd k="Cmd:Shift:a"/> | KI-Panel umschalten |
+| <Kbd k="Ctrl:Shift:0" windows="Alt:0"/> | KI-Eingabe fokussieren |
+| <Kbd k="Cmd:k"/> | Chat leeren / neu starten |
+| <Kbd k="Enter"/> | Nachricht senden |
+| <Kbd k="Shift:Enter"/> | Neue Zeile |
+
+## Widget-Kontext-Umschalter
+
+Steuert den Zugriff der KI auf deinen Workspace:
+
+**AN**: Die KI kann Terminal-Ausgaben lesen, Screenshots von Widgets erstellen, auf Dateien/Verzeichnisse zugreifen (mit Freigabe), in Web-Widgets navigieren und Tools für benutzerdefinierte Widgets nutzen. Nützlich für Debugging, Code-Analyse und Workspace-Aufgaben.
+
+**AUS**: Die KI sieht nur deine Nachrichten und angehängte Dateien. Standard-Chat-Modus für allgemeine Fragen.
+
+## Dateianhänge
+
+Ziehe Dateien auf das KI-Panel, um sie anzuhängen (nicht bei allen Modellen unterstützt):
+
+| Typ | Formate | Größenlimit | Hinweise |
+|------|---------|------------|-------|
+| Bilder | JPEG, PNG, GIF, WebP, SVG | 10 MB | Automatisch auf max. 4096px verkleinert, zu WebP konvertiert |
+| PDFs | `.pdf` | 5 MB | Textextraktion zur Analyse |
+| Text/Code | `.js`, `.ts`, `.py`, `.go`, `.md`, `.json`, `.yaml` usw. | 200 KB | Alle gängigen Sprachen und Konfigurationen |
+
+## CLI-Integration
+
+Nutze `wsh ai`, um Dateien und Prompts von der Kommandozeile aus zu senden:
+
+```bash
+git diff | wsh ai -                          # An die KI weiterleiten
+wsh ai main.go -m "find bugs"                # Dateien mit Nachricht anhängen
+wsh ai $(tail -n 500 my.log) -m "review" -s  # Automatisch mit Ausgabe absenden
+```
+
+Unterstützt Textdateien, Bilder, PDFs und Verzeichnisse. Nutze `-n` für einen neuen Chat, `-s` zum automatischen Absenden.
+
+## KI-Tools (bei aktiviertem Widget-Kontext)
+
+### Terminal
+- **Terminal-Ausgabe lesen**: Ruft den Scrollback von Terminal-Widgets ab, unterstützt Zeilenbereiche
+
+### Dateisystem
+- **Dateien lesen**: Liest Textdateien mit Unterstützung für Zeilenbereiche (Freigabe erforderlich)
+- **Verzeichnisse auflisten**: Liefert Dateiinformationen, Größen, Berechtigungen, Zeitstempel (Freigabe erforderlich)
+- **Textdateien schreiben**: Dateien mit Diff-Vorschau und Freigabe erstellen oder ändern (Freigabe erforderlich)
+
+### Web
+- **Im Web navigieren**: Ändert URLs in Web-Browser-Widgets
+
+### Alle Widgets
+- **Screenshots erstellen**: Erstellt Screenshots eines beliebigen Widgets zur visuellen Analyse (nicht bei allen Modellen unterstützt)
+
+:::warning Sicherheit
+Dateisystemoperationen erfordern eine ausdrückliche Freigabe. Du behältst die Kontrolle über jeden Dateizugriff.
+:::
+
+## Lokale Modelle & BYOK
+
+Wave AI unterstützt die Nutzung eigener KI-Modelle und API-Schlüssel:
+
+- **Lokale Modelle**: Betreibe KI-Modelle lokal mit [Ollama](https://ollama.ai), [LM Studio](https://lmstudio.ai), [vLLM](https://docs.vllm.ai) und anderen OpenAI-kompatiblen Servern
+- **BYOK (Bring Your Own Key)**: Nutze deine eigenen API-Schlüssel mit OpenAI, OpenRouter, Google AI (Gemini), Azure OpenAI und anderen Cloud-Anbietern
+- **Mehrere Modi**: Konfiguriere mehrere KI-Anbieter und -Modelle und wechsle zwischen ihnen
+- **Datenschutz**: Behalte deine Daten lokal oder nutze deinen bevorzugten Cloud-Anbieter
+
+Die vollständige Anleitung zu Konfiguration, Beispielen und Fehlerbehebung findest du im [**Leitfaden zu lokalen Modellen & BYOK**](./waveai-modes.mdx).
+
+## Datenschutz
+
+**Standard-Wave-AI-Dienst:**
+- Nachrichten werden über den Wave-Cloud-AI-Dienst weitergeleitet (betrieben mit den APIs von OpenAI). Details zum Umgang mit deinen Daten findest du in der Datenschutzerklärung von OpenAI.
+- Wave speichert deine Chats und Anhänge nicht und nutzt sie nicht zum Training
+- Nutzungszähler sind in der anonymen Telemetrie enthalten
+- Dateizugriff erfordert eine ausdrückliche Freigabe
+
+**Lokale Modelle & BYOK:**
+- Bei Nutzung lokaler Modelle verlassen deine Chatdaten niemals deinen Rechner
+- Bei Nutzung von BYOK mit Cloud-Anbietern werden Anfragen direkt an den von dir gewählten Anbieter gesendet
+- Details zum Umgang mit deinen Daten findest du in der Datenschutzerklärung deines Anbieters
+
+:::info In aktiver Entwicklung
+Wave AI befindet sich in einer aktiven Beta-Phase mit enthaltenem KI-Guthaben, während wir die Erfahrung weiter verfeinern. Teile dein Feedback in unserem [Discord](https://discord.gg/XfvZ334gwU).
+
+**Demnächst:**
+- **Remote-Dateizugriff**: Dateien auf per SSH verbundenen Systemen lesen
+- **Befehlsausführung**: Terminal-Befehle mit Freigabe ausführen
+- **Webinhalte**: Text aus Webseiten extrahieren (aktuell nur Screenshots)
+:::
+
+</PlatformProvider>

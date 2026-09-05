@@ -1,0 +1,14 @@
+{
+    "item.label.Docs": {
+        "message": "Dokumentation",
+        "description": "Navbar item with label Docs"
+    },
+    "item.label.Storybook": {
+        "message": "Storybook",
+        "description": "Navbar item with label Storybook"
+    },
+    "logo.alt": {
+        "message": "Wave Terminal Logo",
+        "description": "The alt text of navbar logo"
+    }
+}

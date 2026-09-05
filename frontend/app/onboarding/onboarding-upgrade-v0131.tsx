@@ -1,14 +1,14 @@
 // Copyright 2025, Command Line Inc.
 // SPDX-License-Identifier: Apache-2.0
 
+import { useTranslation } from "react-i18next";
+
 const UpgradeOnboardingModal_v0_13_1_Content = () => {
+    const { t } = useTranslation();
     return (
         <div className="flex flex-col items-start gap-6 w-full mb-4 unselectable">
             <div className="text-secondary leading-relaxed">
-                <p className="mb-0">
-                    Wave v0.13.1 focuses on Windows platform improvements, Wave AI visual updates, and enhanced
-                    terminal navigation.
-                </p>
+                <p className="mb-0">{t("onboardingUpgrade.v0131.intro")}</p>
             </div>
 
             <div className="flex w-full items-start gap-4">
@@ -17,23 +17,25 @@ const UpgradeOnboardingModal_v0_13_1_Content = () => {
                 </div>
                 <div className="flex flex-col items-start gap-2 flex-1">
                     <div className="text-foreground text-base font-semibold leading-[18px]">
-                        Windows Platform Enhancements
+                        {t("onboardingUpgrade.v0131.windowsSectionTitle")}
                     </div>
                     <div className="text-secondary leading-5">
                         <ul className="list-disc list-outside space-y-1 pl-5">
                             <li>
-                                <strong>Integrated Window Layout</strong> - Cleaner interface with controls integrated
-                                into the tab-bar header
+                                <strong>{t("onboardingUpgrade.v0131.integratedLayoutLabel")}</strong> -{" "}
+                                {t("onboardingUpgrade.v0131.integratedLayoutBody")}
                             </li>
                             <li>
-                                <strong>Git Bash Auto-Detection</strong> - Automatically detects Git Bash installations
+                                <strong>{t("onboardingUpgrade.v0131.gitBashLabel")}</strong> -{" "}
+                                {t("onboardingUpgrade.v0131.gitBashBody")}
                             </li>
                             <li>
-                                <strong>SSH Agent Fallback</strong> - Improved SSH agent support on Windows
+                                <strong>{t("onboardingUpgrade.v0131.sshAgentLabel")}</strong> -{" "}
+                                {t("onboardingUpgrade.v0131.sshAgentBody")}
                             </li>
                             <li>
-                                <strong>Updated Focus Keybinding</strong> - Wave AI focus key changed to Alt:0 on
-                                Windows
+                                <strong>{t("onboardingUpgrade.v0131.focusKeybindingLabel")}</strong> -{" "}
+                                {t("onboardingUpgrade.v0131.focusKeybindingBody")}
                             </li>
                         </ul>
                     </div>
@@ -45,16 +47,18 @@ const UpgradeOnboardingModal_v0_13_1_Content = () => {
                     <i className="text-[24px] text-accent fa-solid fa-sparkles"></i>
                 </div>
                 <div className="flex flex-col items-start gap-2 flex-1">
-                    <div className="text-foreground text-base font-semibold leading-[18px]">Wave AI Updates</div>
+                    <div className="text-foreground text-base font-semibold leading-[18px]">
+                        {t("onboardingUpgrade.v0131.aiSectionTitle")}
+                    </div>
                     <div className="text-secondary leading-5">
                         <ul className="list-disc list-outside space-y-1 pl-5">
                             <li>
-                                <strong>Refreshed Visual Design</strong> - Complete UI refresh with transparency
-                                support for custom backgrounds
+                                <strong>{t("onboardingUpgrade.v0131.visualDesignLabel")}</strong> -{" "}
+                                {t("onboardingUpgrade.v0131.visualDesignBody")}
                             </li>
                             <li>
-                                <strong>BYOK Without Telemetry</strong> - Wave AI now works with bring-your-own-key and
-                                local models without requiring telemetry
+                                <strong>{t("onboardingUpgrade.v0131.byokLabel")}</strong> -{" "}
+                                {t("onboardingUpgrade.v0131.byokBody")}
                             </li>
                         </ul>
                     </div>
@@ -66,12 +70,14 @@ const UpgradeOnboardingModal_v0_13_1_Content = () => {
                     <i className="text-[24px] text-accent fa-solid fa-terminal"></i>
                 </div>
                 <div className="flex flex-col items-start gap-2 flex-1">
-                    <div className="text-foreground text-base font-semibold leading-[18px]">Terminal Improvements</div>
+                    <div className="text-foreground text-base font-semibold leading-[18px]">
+                        {t("onboardingUpgrade.v0131.terminalSectionTitle")}
+                    </div>
                     <div className="text-secondary leading-5">
                         <ul className="list-disc list-outside space-y-1 pl-5">
                             <li>
-                                <strong>New Scrolling Keybindings</strong> - Added Shift+Home, Shift+End,
-                                Shift+PageUp, and Shift+PageDown for better navigation
+                                <strong>{t("onboardingUpgrade.v0131.scrollingKeybindingsLabel")}</strong> -{" "}
+                                {t("onboardingUpgrade.v0131.scrollingKeybindingsBody")}
                             </li>
                         </ul>
                     </div>

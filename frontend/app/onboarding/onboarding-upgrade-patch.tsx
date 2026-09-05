@@ -16,6 +16,7 @@ import { TabRpcClient } from "@/app/store/wshrpcutil";
 import { useAtomValue } from "jotai";
 import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { debounce } from "throttle-debounce";
 import { UpgradeOnboardingModal_v0_12_1_Content } from "./onboarding-upgrade-v0121";
 import { UpgradeOnboardingModal_v0_12_2_Content } from "./onboarding-upgrade-v0122";
@@ -31,8 +32,6 @@ import { UpgradeOnboardingModal_v0_14_5_Content } from "./onboarding-upgrade-v01
 interface VersionConfig {
     version: string;
     content: () => React.ReactNode;
-    prevText?: string;
-    nextText?: string;
 }
 
 interface UpgradeOnboardingPatchProps {
@@ -58,6 +57,7 @@ export function UpgradeOnboardingFooter({
     onNext,
     onClose,
 }: UpgradeOnboardingFooterProps) {
+    const { t } = useTranslation();
     return (
         <footer className="unselectable flex-shrink-0 mt-4">
             <div className="flex flex-row items-center justify-between w-full">
@@ -75,7 +75,7 @@ export function UpgradeOnboardingFooter({
                 </div>
                 <div className="flex flex-row items-center justify-center [&>button]:!px-5 [&>button]:!py-2 [&>button]:text-sm">
                     <Button className="font-[600]" onClick={onClose}>
-                        Continue
+                        {t("onboarding.continue")}
                     </Button>
                 </div>
                 <div className="flex-1 flex justify-end">
@@ -96,67 +96,20 @@ export function UpgradeOnboardingFooter({
 }
 
 export const UpgradeOnboardingVersions: VersionConfig[] = [
-    {
-        version: "v0.12.1",
-        content: () => <UpgradeOnboardingModal_v0_12_1_Content />,
-        nextText: "Next (v0.12.2)",
-    },
-    {
-        version: "v0.12.2",
-        content: () => <UpgradeOnboardingModal_v0_12_2_Content />,
-        prevText: "Prev (v0.12.1)",
-        nextText: "Next (v0.12.3)",
-    },
-    {
-        version: "v0.12.5",
-        content: () => <UpgradeOnboardingModal_v0_12_3_Content />,
-        prevText: "Prev (v0.12.2)",
-        nextText: "Next (v0.13.0)",
-    },
-    {
-        version: "v0.13.0",
-        content: () => <UpgradeOnboardingModal_v0_13_0_Content />,
-        prevText: "Prev (v0.12.5)",
-        nextText: "Next (v0.13.1)",
-    },
-    {
-        version: "v0.13.1",
-        content: () => <UpgradeOnboardingModal_v0_13_1_Content />,
-        prevText: "Prev (v0.13.0)",
-        nextText: "Next (v0.14.0)",
-    },
-    {
-        version: "v0.14.0",
-        content: () => <UpgradeOnboardingModal_v0_14_0_Content />,
-        prevText: "Prev (v0.13.1)",
-        nextText: "Next (v0.14.1)",
-    },
-    {
-        version: "v0.14.1",
-        content: () => <UpgradeOnboardingModal_v0_14_1_Content />,
-        prevText: "Prev (v0.14.0)",
-        nextText: "Next (v0.14.3)",
-    },
-    {
-        version: "v0.14.3",
-        content: () => <UpgradeOnboardingModal_v0_14_2_Content />,
-        prevText: "Prev (v0.14.1)",
-        nextText: "Next (v0.14.4)",
-    },
-    {
-        version: "v0.14.4",
-        content: () => <UpgradeOnboardingModal_v0_14_4_Content />,
-        prevText: "Prev (v0.14.3)",
-        nextText: "Next (v0.14.5)",
-    },
-    {
-        version: "v0.14.5",
-        content: () => <UpgradeOnboardingModal_v0_14_5_Content />,
-        prevText: "Prev (v0.14.4)",
-    },
+    { version: "v0.12.1", content: () => <UpgradeOnboardingModal_v0_12_1_Content /> },
+    { version: "v0.12.2", content: () => <UpgradeOnboardingModal_v0_12_2_Content /> },
+    { version: "v0.12.5", content: () => <UpgradeOnboardingModal_v0_12_3_Content /> },
+    { version: "v0.13.0", content: () => <UpgradeOnboardingModal_v0_13_0_Content /> },
+    { version: "v0.13.1", content: () => <UpgradeOnboardingModal_v0_13_1_Content /> },
+    { version: "v0.14.0", content: () => <UpgradeOnboardingModal_v0_14_0_Content /> },
+    { version: "v0.14.1", content: () => <UpgradeOnboardingModal_v0_14_1_Content /> },
+    { version: "v0.14.3", content: () => <UpgradeOnboardingModal_v0_14_2_Content /> },
+    { version: "v0.14.4", content: () => <UpgradeOnboardingModal_v0_14_4_Content /> },
+    { version: "v0.14.5", content: () => <UpgradeOnboardingModal_v0_14_5_Content /> },
 ];
 
 const UpgradeOnboardingPatch = ({ isReleaseNotes = false }: UpgradeOnboardingPatchProps) => {
+    const { t } = useTranslation();
     const modalRef = useRef<HTMLDivElement | null>(null);
     const [isCompact, setIsCompact] = useState<boolean>(window.innerHeight < 800);
     const [currentIndex, setCurrentIndex] = useState<number>(UpgradeOnboardingVersions.length - 1);
@@ -264,7 +217,7 @@ const UpgradeOnboardingPatch = ({ isReleaseNotes = false }: UpgradeOnboardingPat
                             <Logo />
                         </div>
                         <div className="text-center text-[25px] font-normal text-foreground">
-                            Wave {currentVersion.version} Update
+                            {t("onboardingUpgrade.patch.updateTitle", { version: currentVersion.version })}
                         </div>
                     </header>
                     <OverlayScrollbarsComponent
@@ -276,8 +229,20 @@ const UpgradeOnboardingPatch = ({ isReleaseNotes = false }: UpgradeOnboardingPat
                     <UpgradeOnboardingFooter
                         hasPrev={hasPrev}
                         hasNext={hasNext}
-                        prevText={currentVersion.prevText}
-                        nextText={currentVersion.nextText}
+                        prevText={
+                            hasPrev
+                                ? t("onboardingUpgrade.patch.prev", {
+                                      version: UpgradeOnboardingVersions[currentIndex - 1].version,
+                                  })
+                                : undefined
+                        }
+                        nextText={
+                            hasNext
+                                ? t("onboardingUpgrade.patch.next", {
+                                      version: UpgradeOnboardingVersions[currentIndex + 1].version,
+                                  })
+                                : undefined
+                        }
                         onPrev={handlePrev}
                         onNext={handleNext}
                         onClose={handleClose}

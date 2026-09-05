@@ -7,6 +7,7 @@ import { ClientModel } from "@/app/store/client-model";
 import * as WOS from "@/app/store/wos";
 import { RpcApi } from "@/app/store/wshclientapi";
 import { TabRpcClient } from "@/app/store/wshrpcutil";
+import { useTranslation } from "react-i18next";
 
 type StarAskPageProps = {
     onClose: () => void;
@@ -14,6 +15,7 @@ type StarAskPageProps = {
 };
 
 export function StarAskPage({ onClose, page = "upgrade" }: StarAskPageProps) {
+    const { t } = useTranslation();
     const handleStarClick = async () => {
         RpcApi.RecordTEventCommand(
             TabRpcClient,
@@ -84,14 +86,11 @@ export function StarAskPage({ onClose, page = "upgrade" }: StarAskPageProps) {
                 <div className="flex justify-center">
                     <Logo />
                 </div>
-                <div className="text-center text-[25px] font-normal text-foreground">Support open-source. Star Wave. ⭐</div>
+                <div className="text-center text-[25px] font-normal text-foreground">{t("onboardingStarAsk.header")}</div>
             </header>
             <div className="flex-1 flex flex-col items-center justify-center gap-5 unselectable">
                 <div className="flex flex-col items-center gap-4 max-w-[460px] text-center">
-                    <div className="text-secondary text-sm leading-relaxed">
-                        Wave is free, open-source, and open-model. Stars help us stay visible against closed
-                        alternatives. One click makes a difference.
-                    </div>
+                    <div className="text-secondary text-sm leading-relaxed">{t("onboardingStarAsk.description")}</div>
                     <div
                         className="group flex items-center justify-center gap-2 text-secondary text-sm mt-1 cursor-pointer transition-colors"
                         onClick={handleRepoLinkClick}
@@ -106,13 +105,13 @@ export function StarAskPage({ onClose, page = "upgrade" }: StarAskPageProps) {
             <footer className="unselectable flex-shrink-0 mt-6">
                 <div className="flex flex-row items-center justify-center gap-2.5 [&>button]:!px-5 [&>button]:!py-2 [&>button]:text-sm [&>button]:!h-[37px]">
                     <Button className="outlined grey font-[600]" onClick={handleAlreadyStarred}>
-                        🙏 Already Starred
+                        🙏 {t("onboardingStarAsk.alreadyStarred")}
                     </Button>
                     <Button className="outlined green font-[600]" onClick={handleStarClick}>
-                        ⭐ Star Now
+                        ⭐ {t("onboardingStarAsk.starNow")}
                     </Button>
                     <Button className="outlined grey font-[600]" onClick={handleMaybeLater}>
-                        Maybe Later
+                        {t("onboardingStarAsk.maybeLater")}
                     </Button>
                 </div>
             </footer>

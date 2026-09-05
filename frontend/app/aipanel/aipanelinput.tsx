@@ -8,6 +8,7 @@ import { Tooltip } from "@/element/tooltip";
 import { cn } from "@/util/util";
 import { useAtom, useAtomValue } from "jotai";
 import { memo, useCallback, useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 
 interface AIPanelInputProps {
     onSubmit: (e: React.FormEvent) => void;
@@ -22,6 +23,7 @@ export interface AIPanelInputRef {
 }
 
 export const AIPanelInput = memo(({ onSubmit, status, model }: AIPanelInputProps) => {
+    const { t } = useTranslation();
     const [input, setInput] = useAtom(model.inputAtom);
     const isFocused = useAtomValue(model.isWaveAIFocusedAtom);
     const isChatEmpty = useAtomValue(model.isChatEmptyAtom);
@@ -31,11 +33,11 @@ export const AIPanelInput = memo(({ onSubmit, status, model }: AIPanelInputProps
 
     let placeholder: string;
     if (!isChatEmpty) {
-        placeholder = "Continue...";
+        placeholder = t("aiPanel.continuePlaceholder");
     } else if (model.inBuilder) {
-        placeholder = "What would you like to build...";
+        placeholder = t("aiPanel.builderPlaceholder");
     } else {
-        placeholder = "Ask Wave AI anything...";
+        placeholder = t("aiPanel.askPlaceholder");
     }
 
     const resizeTextarea = useCallback(() => {
@@ -158,7 +160,7 @@ export const AIPanelInput = memo(({ onSubmit, status, model }: AIPanelInputProps
                         style={{ fontSize: "13px" }}
                         rows={2}
                     />
-                    <Tooltip content="Attach files" placement="top" divClassName="absolute bottom-6.5 right-1">
+                    <Tooltip content={t("aiPanel.attachFiles")} placement="top" divClassName="absolute bottom-6.5 right-1">
                         <button
                             type="button"
                             onClick={handleUploadClick}
@@ -170,7 +172,7 @@ export const AIPanelInput = memo(({ onSubmit, status, model }: AIPanelInputProps
                         </button>
                     </Tooltip>
                     {status === "streaming" ? (
-                        <Tooltip content="Stop Response" placement="top" divClassName="absolute bottom-1.5 right-1">
+                        <Tooltip content={t("aiPanel.stopResponse")} placement="top" divClassName="absolute bottom-1.5 right-1">
                             <button
                                 type="button"
                                 onClick={() => model.stopResponse()}
@@ -183,7 +185,7 @@ export const AIPanelInput = memo(({ onSubmit, status, model }: AIPanelInputProps
                             </button>
                         </Tooltip>
                     ) : (
-                        <Tooltip content="Send message (Enter)" placement="top" divClassName="absolute bottom-1.5 right-1">
+                        <Tooltip content={t("aiPanel.sendMessage")} placement="top" divClassName="absolute bottom-1.5 right-1">
                             <button
                                 type="submit"
                                 disabled={status !== "ready" || !input.trim()}

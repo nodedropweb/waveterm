@@ -15,6 +15,7 @@ import { RpcApi } from "@/app/store/wshclientapi";
 import { TabRpcClient } from "@/app/store/wshrpcutil";
 import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { debounce } from "throttle-debounce";
 
 type UpgradeMinorWelcomePageProps = {
@@ -24,13 +25,16 @@ type UpgradeMinorWelcomePageProps = {
 };
 
 const UpgradeMinorWelcomePage = ({ onStarClick, onAlreadyStarred, onMaybeLater }: UpgradeMinorWelcomePageProps) => {
+    const { t } = useTranslation();
     return (
         <div className="flex flex-col h-full">
             <header className="flex flex-col gap-2 border-b-0 p-0 mt-1 mb-4 w-full unselectable flex-shrink-0">
                 <div className="flex justify-center">
                     <Logo />
                 </div>
-                <div className="text-center text-[25px] font-normal text-foreground">Welcome to Wave v0.14!</div>
+                <div className="text-center text-[25px] font-normal text-foreground">
+                    {t("onboardingUpgrade.minor.welcomeTitle")}
+                </div>
             </header>
             <OverlayScrollbarsComponent
                 className="flex-1 overflow-y-auto min-h-0"
@@ -45,22 +49,24 @@ const UpgradeMinorWelcomePage = ({ onStarClick, onAlreadyStarred, onMaybeLater }
                             </div>
                             <div className="flex h-[52px] px-3 items-center rounded-lg bg-hover text-[18px]">
                                 <i className="fa-sharp fa-solid fa-shield text-sky-500" />
-                                <span className="font-bold ml-2 text-accent">Durable SSH Sessions</span>
+                                <span className="font-bold ml-2 text-accent">
+                                    {t("onboardingUpgrade.minor.durableSshBadge")}
+                                </span>
                             </div>
                         </div>
                         <div className="text-secondary leading-relaxed max-w-[600px] text-left">
+                            <p className="mb-4">{t("onboardingUpgrade.minor.waveAiIntro")}</p>
                             <p className="mb-4">
-                                Wave AI is your terminal assistant with full context. It can read your terminal output,
-                                analyze widgets, read and write files, and help you solve problems&nbsp;faster.
+                                <span className="font-semibold text-foreground">
+                                    {t("onboardingUpgrade.minor.newInV013Label")}
+                                </span>{" "}
+                                {t("onboardingUpgrade.minor.newInV013Body")}
                             </p>
                             <p className="mb-4">
-                                <span className="font-semibold text-foreground">New in v0.13:</span> Wave AI now
-                                supports local models and bring-your-own-key! Use Ollama, LM Studio, vLLM, OpenRouter,
-                                or any OpenAI-compatible provider.
-                            </p>
-                            <p className="mb-4">
-                                <span className="font-semibold text-foreground">New in v0.14:</span> Durable SSH
-                                sessions survive network drops, laptop sleep, and restarts — all without tmux or screen.
+                                <span className="font-semibold text-foreground">
+                                    {t("onboardingUpgrade.minor.newInV014Label")}
+                                </span>{" "}
+                                {t("onboardingUpgrade.minor.newInV014Body")}
                             </p>
                         </div>
                     </div>
@@ -68,10 +74,9 @@ const UpgradeMinorWelcomePage = ({ onStarClick, onAlreadyStarred, onMaybeLater }
                     <div className="w-full max-w-[550px] border-t border-border my-2"></div>
 
                     <div className="flex flex-col items-center gap-3 text-center max-w-[550px]">
-                        <div className="text-foreground text-base">Thanks for being an early Wave adopter! ⭐</div>
+                        <div className="text-foreground text-base">{t("onboardingUpgrade.minor.thanksAdopter")}</div>
                         <div className="text-secondary text-sm text-left">
-                            A GitHub star shows your support for Wave (and open-source) and helps us reach more
-                            developers.
+                            {t("onboardingUpgrade.minor.githubStarHint")}
                         </div>
                     </div>
                 </div>
@@ -79,13 +84,13 @@ const UpgradeMinorWelcomePage = ({ onStarClick, onAlreadyStarred, onMaybeLater }
             <footer className="unselectable flex-shrink-0 mt-4">
                 <div className="flex flex-row items-center justify-center gap-2.5 [&>button]:!px-5 [&>button]:!py-2 [&>button]:text-sm [&>button]:!h-[37px]">
                     <Button className="outlined grey font-[600]" onClick={onAlreadyStarred}>
-                        🙏 Already Starred
+                        {t("onboardingUpgrade.minor.alreadyStarred")}
                     </Button>
                     <Button className="outlined green font-[600]" onClick={onStarClick}>
-                        ⭐ Star Now
+                        {t("onboardingUpgrade.minor.starNow")}
                     </Button>
                     <Button className="outlined grey font-[600]" onClick={onMaybeLater}>
-                        Maybe Later
+                        {t("onboarding.maybeLater")}
                     </Button>
                 </div>
             </footer>

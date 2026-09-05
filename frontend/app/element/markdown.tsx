@@ -15,6 +15,7 @@ import clsx from "clsx";
 import { Atom } from "jotai";
 import { OverlayScrollbarsComponent, OverlayScrollbarsComponentRef } from "overlayscrollbars-react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import ReactMarkdown, { Components } from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
 import rehypeRaw from "rehype-raw";
@@ -69,6 +70,7 @@ const Heading = ({ props, hnum }: { props: React.HTMLAttributes<HTMLHeadingEleme
 };
 
 const Mermaid = ({ chart }: { chart: string }) => {
+    const { t } = useTranslation();
     const ref = useRef<HTMLDivElement>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -97,7 +99,7 @@ const Mermaid = ({ chart }: { chart: string }) => {
                 setIsLoading(false);
             } catch (err) {
                 console.error("Error rendering mermaid diagram:", err);
-                setError(`Failed to render diagram: ${err.message || err}`);
+                setError(`${t("element.failedToRenderDiagram")} ${err.message || err}`);
                 setIsLoading(false);
             }
         };
@@ -109,10 +111,10 @@ const Mermaid = ({ chart }: { chart: string }) => {
         if (!ref.current) return;
 
         if (error) {
-            ref.current.textContent = `Error: ${error}`;
+            ref.current.textContent = `${t("element.errorPrefix")} ${error}`;
             ref.current.className = "mermaid error";
         } else if (isLoading) {
-            ref.current.textContent = "Loading diagram...";
+            ref.current.textContent = t("element.loadingDiagram");
             ref.current.className = "mermaid";
         } else {
             ref.current.className = "mermaid";
@@ -166,7 +168,7 @@ const CodeBlock = ({ children, onClickExecute }: CodeBlockProps) => {
         <pre className="codeblock">
             {children}
             <div className="codeblock-actions">
-                <CopyButton onClick={handleCopy} title="Copy" />
+                <CopyButton onClick={handleCopy} />
                 {onClickExecute && (
                     <IconButton
                         decl={{
@@ -320,6 +322,7 @@ const Markdown = ({
     rehype = true,
     onClickExecute,
 }: MarkdownProps) => {
+    const { t } = useTranslation();
     const textAtomValue = useAtomValueSafe<string>(textAtom);
     const tocRef = useRef<TocItem[]>([]);
     const showToc = useAtomValueSafe(showTocAtom) ?? false;
@@ -498,7 +501,7 @@ const Markdown = ({
             {toc && (
                 <OverlayScrollbarsComponent className="toc mt-1" options={{ scrollbars: { autoHide: "leave" } }}>
                     <div className="toc-inner">
-                        <h4 className="font-bold">Table of Contents</h4>
+                        <h4 className="font-bold">{t("element.tableOfContents")}</h4>
                         {toc}
                     </div>
                 </OverlayScrollbarsComponent>

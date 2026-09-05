@@ -1,0 +1,565 @@
+---
+sidebar_position: 1.6
+id: "waveai-modes"
+title: "Wave AI (lokale Modelle + BYOK)"
+---
+
+import { VersionBadge } from "@site/src/components/versionbadge";
+
+<VersionBadge version="v0.13" noLeftMargin={true}/>
+
+Wave AI unterstützt benutzerdefinierte KI-Modi, mit denen du lokale Modelle, benutzerdefinierte API-Endpunkte und alternative KI-Anbieter nutzen kannst. So hast du vollständige Kontrolle darüber, welche Modelle und Anbieter du mit Waves KI-Funktionen nutzt.
+
+## Konfigurationsüberblick
+
+KI-Modi werden in `~/.config/waveterm/waveai.json` konfiguriert.
+
+**Zum Bearbeiten über die Oberfläche:**
+1. Klicke auf das Einstellungssymbol (Zahnrad) in der Widget-Leiste
+2. Wähle "Settings" aus dem Menü
+3. Wähle "Wave AI Modes" aus der Einstellungs-Seitenleiste
+
+**Oder starte über die Kommandozeile:**
+```bash
+wsh editconfig waveai.json
+```
+
+Jeder Modus definiert eine vollständige KI-Konfiguration einschließlich Modell, API-Endpunkt, Authentifizierung und Anzeigeeigenschaften.
+
+## Anbieterbasierte Konfiguration
+
+Wave AI unterstützt jetzt eine anbieterbasierte Konfiguration, die automatisch sinnvolle Standardwerte für gängige Anbieter setzt. Durch Angabe des Feldes `ai:provider` kannst du deine Konfiguration deutlich vereinfachen, da das System automatisch Endpunkte, API-Typen und Secret-Namen einrichtet.
+
+### Unterstützte Anbieter
+
+- **`openai`** - OpenAI-API (konfiguriert automatisch Endpunkt und Secret-Namen) [[Beispiel ansehen](#openai)]
+- **`openrouter`** - OpenRouter-API (konfiguriert automatisch Endpunkt und Secret-Namen) [[Beispiel ansehen](#openrouter)]
+- **`nanogpt`** - NanoGPT-API (konfiguriert automatisch Endpunkt und Secret-Namen) [[Beispiel ansehen](#nanogpt)]
+- **`groq`** - Groq-API (konfiguriert automatisch Endpunkt und Secret-Namen) [[Beispiel ansehen](#groq)]
+- **`google`** - Google AI (Gemini) [[Beispiel ansehen](#google-ai-gemini)]
+- **`azure`** - Azure OpenAI Service (moderne API) [[Beispiel ansehen](#azure-openai-moderne-api)]
+- **`azure-legacy`** - Azure OpenAI Service (Legacy-Deployment-API) [[Beispiel ansehen](#azure-openai-legacy-deployment-api)]
+- **`custom`** - Benutzerdefinierter API-Endpunkt (vollständig manuelle Konfiguration) [[Beispiele ansehen](#beispiele-für-lokale-modelle)]
+
+### Unterstützte API-Typen
+
+Wave AI unterstützt folgende API-Typen:
+
+- **`openai-chat`**: Nutzt den Endpunkt `/v1/chat/completions` (am häufigsten)
+- **`openai-responses`**: Nutzt den Endpunkt `/v1/responses` (moderne API für GPT-5+-Modelle)
+- **`google-gemini`**: Googles Gemini-API-Format (wird automatisch gesetzt, wenn `ai:provider: "google"` genutzt wird, normalerweise nicht direkt verwendet)
+
+## Globale Wave-AI-Einstellungen
+
+Du kannst das globale Verhalten von Wave AI in deinen Wave-Terminal-Einstellungen konfigurieren (getrennt von den Modus-Konfigurationen in `waveai.json`).
+
+### Einen Standard-KI-Modus festlegen
+
+Nachdem du ein lokales Modell oder einen benutzerdefinierten Modus konfiguriert hast, kannst du ihn zum Standard machen, indem du `waveai:defaultmode` in deinen Wave-Terminal-Einstellungen setzt.
+
+:::important
+Nutze den **Modus-Schlüssel** (den Schlüssel in deiner `waveai.json`-Konfiguration), nicht den Anzeigenamen. Nutze zum Beispiel `"ollama-llama"` (den Schlüssel), nicht `"Ollama - Llama 3.3"` (den Anzeigenamen).
+:::
+
+**Mit dem Einstellungsbefehl:**
+```bash
+wsh setconfig waveai:defaultmode="ollama-llama"
+```
+
+**Oder settings.json direkt bearbeiten:**
+1. Klicke auf das Einstellungssymbol (Zahnrad) in der Widget-Leiste
+2. Wähle "Settings" aus dem Menü
+3. Füge den Schlüssel `waveai:defaultmode` zu deiner settings.json hinzu:
+```json
+  "waveai:defaultmode": "ollama-llama"
+```
+
+Dadurch wird der angegebene Modus zur Standardauswahl beim Öffnen der Wave-AI-Funktionen.
+
+:::note
+Wave AI erfordert normalerweise aktivierte Telemetrie. Wenn du jedoch dein eigenes benutzerdefiniertes Modell konfigurierst (lokal oder BYOK) und `waveai:defaultmode` auf den Schlüssel dieses benutzerdefinierten Modus setzt, erhältst du keine Telemetrie-Pflichtmeldungen. So kannst du Wave-AI-Funktionen vollständig privat mit deinen eigenen Modellen nutzen. <VersionBadge version="v0.13.1"/>
+:::
+
+### Wave-Cloud-Modi ausblenden
+
+Wenn du nur deine lokalen oder benutzerdefinierten Modelle nutzen und Waves Cloud-KI-Modi aus dem Modus-Dropdown ausblenden möchtest, setze `waveai:showcloudmodes` auf `false`:
+
+**Mit dem Einstellungsbefehl:**
+```bash
+wsh setconfig waveai:showcloudmodes=false
+```
+
+**Oder settings.json direkt bearbeiten:**
+1. Klicke auf das Einstellungssymbol (Zahnrad) in der Widget-Leiste
+2. Wähle "Settings" aus dem Menü
+3. Füge den Schlüssel `waveai:showcloudmodes` zu deiner settings.json hinzu:
+```json
+  "waveai:showcloudmodes": false
+```
+
+Dadurch werden Waves integrierte Cloud-KI-Modi ausgeblendet und nur deine benutzerdefiniert konfigurierten Modi angezeigt.
+
+## Beispiele für lokale Modelle
+
+### Ollama
+
+[Ollama](https://ollama.ai) bietet eine OpenAI-kompatible API zum lokalen Ausführen von Modellen:
+
+```json
+{
+  "ollama-llama": {
+    "display:name": "Ollama - Llama 3.3",
+    "display:order": 1,
+    "display:icon": "microchip",
+    "display:description": "Local Llama 3.3 70B model via Ollama",
+    "ai:apitype": "openai-chat",
+    "ai:model": "llama3.3:70b",
+    "ai:thinkinglevel": "medium",
+    "ai:endpoint": "http://localhost:11434/v1/chat/completions",
+    "ai:apitoken": "ollama"
+  }
+}
+```
+
+:::tip
+Das Feld `ai:apitoken` ist erforderlich, wird von Ollama aber ignoriert - du kannst es auf einen beliebigen Wert wie `"ollama"` setzen.
+:::
+
+### LM Studio
+
+[LM Studio](https://lmstudio.ai) bietet einen lokalen Server, der verschiedene Modelle ausführen kann:
+
+```json
+{
+  "lmstudio-qwen": {
+    "display:name": "LM Studio - Qwen",
+    "display:order": 2,
+    "display:icon": "server",
+    "display:description": "Local Qwen model via LM Studio",
+    "ai:apitype": "openai-chat",
+    "ai:model": "qwen/qwen-2.5-coder-32b-instruct",
+    "ai:thinkinglevel": "medium",
+    "ai:endpoint": "http://localhost:1234/v1/chat/completions",
+    "ai:apitoken": "not-needed"
+  }
+}
+```
+
+### vLLM
+
+[vLLM](https://docs.vllm.ai) ist ein leistungsstarker Inferenzserver mit OpenAI-API-Kompatibilität:
+
+```json
+{
+  "vllm-local": {
+    "display:name": "vLLM",
+    "display:order": 3,
+    "display:icon": "server",
+    "display:description": "Local model via vLLM",
+    "ai:apitype": "openai-chat",
+    "ai:model": "your-model-name",
+    "ai:thinkinglevel": "medium",
+    "ai:endpoint": "http://localhost:8000/v1/chat/completions",
+    "ai:apitoken": "not-needed"
+  }
+}
+```
+
+## Beispiele für Cloud-Anbieter
+
+### OpenAI
+
+Die Nutzung des `openai`-Anbieters konfiguriert Endpunkt und Secret-Namen automatisch:
+
+```json
+{
+  "openai-gpt4o": {
+    "display:name": "GPT-4o",
+    "ai:provider": "openai",
+    "ai:model": "gpt-4o"
+  }
+}
+```
+
+Der Anbieter setzt automatisch:
+- `ai:endpoint` auf `https://api.openai.com/v1/chat/completions`
+- `ai:apitype` auf `openai-chat` (oder `openai-responses` für GPT-5+-Modelle)
+- `ai:apitokensecretname` auf `OPENAI_KEY` (speichere deinen OpenAI-API-Schlüssel unter diesem Namen)
+- `ai:capabilities` auf `["tools", "images", "pdfs"]` (automatisch basierend auf dem Modell bestimmt)
+
+Für neuere Modelle wie GPT-4.1 oder GPT-5 wird der API-Typ automatisch bestimmt:
+
+```json
+{
+  "openai-gpt41": {
+    "display:name": "GPT-4.1",
+    "ai:provider": "openai",
+    "ai:model": "gpt-4.1"
+  }
+}
+```
+
+### OpenAI-kompatibel
+
+Um einen OpenAI-kompatiblen API-Anbieter zu nutzen, musst du die Parameter ai:endpoint, ai:apitokensecretname, ai:model angeben
+und "openai-chat" als ai:apitype nutzen.
+
+:::note
+Der ai:endpoint ist *NICHT* eine baseurl. Der Endpunkt sollte den vollständigen Endpunkt enthalten, nicht nur die baseurl.
+Zum Beispiel: https://api.x.ai/v1/chat/completions
+
+Wenn du nur die baseurl angibst, erhältst du wahrscheinlich eine 404-Meldung.
+:::
+
+```json
+{
+  "xai-grokfast": {
+    "display:name": "xAI Grok Fast",
+    "display:order": 2,
+    "display:icon": "server",
+    "ai:apitype": "openai-chat",
+    "ai:model": "grok-4-1-fast-reasoning",
+    "ai:endpoint": "https://api.x.ai/v1/chat/completions",
+    "ai:apitokensecretname": "XAI_KEY",
+    "ai:capabilities": ["tools", "images", "pdfs"]
+  }
+}
+```
+
+`ai:apitokensecretname` sollte der Name einer Umgebungsvariable sein, die deinen API-Schlüssel enthält. Setze diese Umgebungsvariable, bevor du Wave Terminal ausführst.
+
+
+### OpenRouter
+
+[OpenRouter](https://openrouter.ai) bietet Zugriff auf mehrere KI-Modelle. Die Nutzung des `openrouter`-Anbieters vereinfacht die Konfiguration:
+
+```json
+{
+  "openrouter-qwen": {
+    "display:name": "OpenRouter - Qwen",
+    "ai:provider": "openrouter",
+    "ai:model": "qwen/qwen-2.5-coder-32b-instruct"
+  }
+}
+```
+
+Der Anbieter setzt automatisch:
+- `ai:endpoint` auf `https://openrouter.ai/api/v1/chat/completions`
+- `ai:apitype` auf `openai-chat`
+- `ai:apitokensecretname` auf `OPENROUTER_KEY` (speichere deinen OpenRouter-API-Schlüssel unter diesem Namen)
+
+:::note
+Für OpenRouter musst du `ai:capabilities` manuell basierend auf den Funktionen deines Modells angeben. Beispiel:
+```json
+{
+  "openrouter-qwen": {
+    "display:name": "OpenRouter - Qwen",
+    "ai:provider": "openrouter",
+    "ai:model": "qwen/qwen-2.5-coder-32b-instruct",
+    "ai:capabilities": ["tools"]
+  }
+}
+```
+:::
+
+### NanoGPT
+
+[NanoGPT](https://nano-gpt.com) bietet Zugriff auf mehrere KI-Modelle zu wettbewerbsfähigen Preisen. Die Nutzung des `nanogpt`-Anbieters vereinfacht die Konfiguration:
+
+```json
+{
+  "nanogpt-glm47": {
+    "display:name": "NanoGPT - GLM 4.7",
+    "ai:provider": "nanogpt",
+    "ai:model": "zai-org/glm-4.7"
+  }
+}
+```
+
+Der Anbieter setzt automatisch:
+- `ai:endpoint` auf `https://nano-gpt.com/api/v1/chat/completions`
+- `ai:apitype` auf `openai-chat`
+- `ai:apitokensecretname` auf `NANOGPT_KEY` (speichere deinen NanoGPT-API-Schlüssel unter diesem Namen)
+
+:::note
+NanoGPT ist ein Proxy-Dienst, der Zugriff auf mehrere KI-Modelle bietet. Du musst `ai:capabilities` manuell basierend auf den Funktionen des Modells angeben. NanoGPT unterstützt OpenAI-kompatiblen Tool-Aufruf für Modelle mit dieser Fähigkeit. Prüfe das Feld `capabilities.vision` des Modells über die [NanoGPT-Modelle-API](https://nano-gpt.com/api/v1/models?detailed=true), um die Bildunterstützung zu bestimmen. Beispiel für ein reines Textmodell mit Tool-Unterstützung:
+```json
+{
+  "nanogpt-glm47": {
+    "display:name": "NanoGPT - GLM 4.7",
+    "ai:provider": "nanogpt",
+    "ai:model": "zai-org/glm-4.7",
+    "ai:capabilities": ["tools"]
+  }
+}
+```
+Für Vision-fähige Modelle wie `openai/gpt-5` füge `"images"` zu den capabilities hinzu.
+:::
+
+### Groq
+
+[Groq](https://groq.com) bietet schnelle Inferenz für offene Modelle über eine OpenAI-kompatible API. Die Nutzung des `groq`-Anbieters vereinfacht die Konfiguration:
+
+```json
+{
+  "groq-kimi-k2": {
+    "display:name": "Groq - Kimi K2",
+    "ai:provider": "groq",
+    "ai:model": "moonshotai/kimi-k2-instruct"
+  }
+}
+```
+
+Der Anbieter setzt automatisch:
+- `ai:endpoint` auf `https://api.groq.com/openai/v1/chat/completions`
+- `ai:apitype` auf `openai-chat`
+- `ai:apitokensecretname` auf `GROQ_KEY` (speichere deinen Groq-API-Schlüssel unter diesem Namen)
+
+:::note
+Für Groq musst du `ai:capabilities` manuell basierend auf den Funktionen deines Modells angeben.
+:::
+
+### Google AI (Gemini)
+
+[Google AI](https://ai.google.dev) bietet die Gemini-Modellfamilie. Die Nutzung des `google`-Anbieters vereinfacht die Konfiguration:
+
+```json
+{
+  "google-gemini": {
+    "display:name": "Gemini 3.5 Flash",
+    "ai:provider": "google",
+    "ai:model": "gemini-3.5-flash"
+  }
+}
+```
+
+Der Anbieter setzt automatisch:
+- `ai:endpoint` auf `https://generativelanguage.googleapis.com/v1beta/models/{model}:streamGenerateContent`
+- `ai:apitype` auf `google-gemini`
+- `ai:apitokensecretname` auf `GOOGLE_AI_KEY` (speichere deinen Google-AI-API-Schlüssel unter diesem Namen)
+- `ai:capabilities` auf `["tools", "images", "pdfs"]` (automatisch konfiguriert)
+
+### Azure OpenAI (moderne API)
+
+Für die moderne Azure-OpenAI-API nutze den `azure`-Anbieter:
+
+```json
+{
+  "azure-gpt4": {
+    "display:name": "Azure GPT-4",
+    "ai:provider": "azure",
+    "ai:model": "gpt-4",
+    "ai:azureresourcename": "your-resource-name"
+  }
+}
+```
+
+Der Anbieter setzt automatisch:
+- `ai:endpoint` auf `https://your-resource-name.openai.azure.com/openai/v1/chat/completions` (oder `/responses` für neuere Modelle)
+- `ai:apitype` basierend auf dem Modell
+- `ai:apitokensecretname` auf `AZURE_OPENAI_KEY` (speichere deinen Azure-OpenAI-Schlüssel unter diesem Namen)
+
+:::note
+Für Azure-Anbieter musst du `ai:capabilities` manuell basierend auf den Funktionen deines Modells angeben. Beispiel:
+```json
+{
+  "azure-gpt4": {
+    "display:name": "Azure GPT-4",
+    "ai:provider": "azure",
+    "ai:model": "gpt-4",
+    "ai:azureresourcename": "your-resource-name",
+    "ai:capabilities": ["tools", "images"]
+  }
+}
+```
+:::
+
+### Azure OpenAI (Legacy-Deployment-API)
+
+Für Legacy-Azure-Deployments nutze den `azure-legacy`-Anbieter:
+
+```json
+{
+  "azure-legacy-gpt4": {
+    "display:name": "Azure GPT-4 (Legacy)",
+    "ai:provider": "azure-legacy",
+    "ai:azureresourcename": "your-resource-name",
+    "ai:azuredeployment": "your-deployment-name"
+  }
+}
+```
+
+Der Anbieter erstellt automatisch die vollständige Endpunkt-URL und setzt die API-Version (Standard ist `2025-04-01-preview`). Du kannst die API-Version bei Bedarf mit `ai:azureapiversion` überschreiben.
+
+:::note
+Für den Azure-Legacy-Anbieter musst du `ai:capabilities` manuell basierend auf den Funktionen deines Modells angeben.
+:::
+
+## Secrets für API-Schlüssel nutzen
+
+Statt API-Schlüssel direkt in der Konfiguration zu speichern, solltest du Waves Secret-Speicher nutzen, um deine Zugangsdaten sicher aufzubewahren. Secrets werden verschlüsselt im nativen Schlüsselbund deines Systems gespeichert.
+
+### Einen API-Schlüssel speichern
+
+**Über die Secrets-Oberfläche (empfohlen):**
+1. Klicke auf das Einstellungssymbol (Zahnrad) in der Widget-Leiste
+2. Wähle "Secrets" aus dem Menü
+3. Klicke auf "Add New Secret"
+4. Gib den Secret-Namen (z. B. `OPENAI_API_KEY`) und deinen API-Schlüssel ein
+5. Klicke auf "Save"
+
+**Oder über die Kommandozeile:**
+```bash
+wsh secret set OPENAI_KEY=sk-xxxxxxxxxxxxxxxx
+wsh secret set OPENROUTER_KEY=sk-xxxxxxxxxxxxxxxx
+```
+
+### Auf das Secret verweisen
+
+Bei Nutzung von Anbietern wie `openai` oder `openrouter` wird der Secret-Name automatisch gesetzt. Stelle nur sicher, dass das Secret mit dem richtigen Namen existiert:
+
+```json
+{
+  "my-openai-mode": {
+    "display:name": "OpenAI GPT-4o",
+    "ai:provider": "openai",
+    "ai:model": "gpt-4o"
+  }
+}
+```
+
+Der `openai`-Anbieter sucht automatisch nach dem Secret `OPENAI_KEY`. Weitere Informationen zur sicheren Verwaltung von Secrets in Wave findest du in der [Secrets-Dokumentation](./secrets.mdx).
+
+## Beispiel mit mehreren Modi
+
+Du kannst mehrere KI-Modi definieren und einfach zwischen ihnen wechseln:
+
+```json
+{
+  "ollama-llama": {
+    "display:name": "Ollama - Llama 3.3",
+    "display:order": 1,
+    "ai:model": "llama3.3:70b",
+    "ai:endpoint": "http://localhost:11434/v1/chat/completions",
+    "ai:apitoken": "ollama"
+  },
+  "ollama-codellama": {
+    "display:name": "Ollama - CodeLlama",
+    "display:order": 2,
+    "ai:model": "codellama:34b",
+    "ai:endpoint": "http://localhost:11434/v1/chat/completions",
+    "ai:apitoken": "ollama"
+  },
+  "openai-gpt4o": {
+    "display:name": "GPT-4o",
+    "display:order": 10,
+    "ai:provider": "openai",
+    "ai:model": "gpt-4o"
+  }
+}
+```
+
+## Fehlerbehebung
+
+### Verbindungsprobleme
+
+Wenn Wave sich nicht mit deinem Modellserver verbinden kann:
+
+1. **Für Cloud-Anbieter mit gesetztem `ai:provider`**: Stelle sicher, dass das korrekte Secret gespeichert ist (z. B. `OPENAI_KEY`, `OPENROUTER_KEY`)
+2. **Für lokale/benutzerdefinierte Endpunkte**: Prüfe, ob der Server läuft (`curl http://localhost:11434/v1/models` für Ollama)
+3. Prüfe, ob `ai:endpoint` die vollständige Endpunkt-URL einschließlich Pfad ist (z. B. `http://localhost:11434/v1/chat/completions`)
+4. Prüfe, ob `ai:apitype` zur API deines Servers passt (die Standardwerte sind bei Nutzung von Anbietern meist korrekt)
+5. Prüfe die Firewall-Einstellungen, wenn du eine Nicht-localhost-Adresse nutzt
+
+### Modell nicht gefunden
+
+Wenn du Fehler wie "model not found" erhältst:
+
+1. Prüfe, ob der Modellname genau dem entspricht, was dein Server erwartet
+2. Nutze bei Ollama `ollama list`, um verfügbare Modelle zu sehen
+3. Manche Server benötigen Präfixe oder bestimmte Namensformate
+
+### Auswahl des API-Typs
+
+- Der API-Typ ist standardmäßig `openai-chat`, wenn nicht angegeben, was für die meisten Anbieter funktioniert
+- Nutze `openai-chat` für Ollama, LM Studio, benutzerdefinierte Endpunkte und die meisten Cloud-Anbieter
+- Nutze `openai-responses` für neuere OpenAI-Modelle (GPT-5+) oder wenn dein Anbieter dies ausdrücklich erfordert
+- Anbieter-Voreinstellungen setzen bei Bedarf automatisch den richtigen API-Typ
+
+## Konfigurationsreferenz
+
+### Minimale Konfiguration (mit Anbieter)
+
+```json
+{
+  "mode-key": {
+    "display:name": "Qwen (OpenRouter)",
+    "ai:provider": "openrouter",
+    "ai:model": "qwen/qwen-2.5-coder-32b-instruct"
+  }
+}
+```
+
+### Vollständige Konfiguration (alle Felder)
+
+```json
+{
+  "mode-key": {
+    "display:name": "Display Name",
+    "display:order": 1,
+    "display:icon": "icon-name",
+    "display:description": "Full description",
+    "ai:provider": "custom",
+    "ai:apitype": "openai-chat",
+    "ai:model": "model-name",
+    "ai:thinkinglevel": "medium",
+    "ai:endpoint": "http://localhost:11434/v1/chat/completions",
+    "ai:azureapiversion": "v1",
+    "ai:apitoken": "your-token",
+    "ai:apitokensecretname": "PROVIDER_KEY",
+    "ai:azureresourcename": "your-resource",
+    "ai:azuredeployment": "your-deployment",
+    "ai:capabilities": ["tools", "images", "pdfs"]
+  }
+}
+```
+
+### Feldreferenz
+
+| Feld | Erforderlich | Beschreibung |
+|-------|----------|-------------|
+| `display:name` | Ja | Im KI-Modus-Auswahlmenü angezeigter Name |
+| `display:order` | Nein | Sortierreihenfolge in der Auswahl (niedrigere Zahlen zuerst) |
+| `display:icon` | Nein | Icon-Bezeichner für den Modus (kann jedes [FontAwesome-Icon](https://fontawesome.com/search) nutzen, ohne das Präfix "fa-"). Standard ist "sparkles" |
+| `display:description` | Nein | Vollständige Beschreibung des Modus |
+| `ai:provider` | Nein | Anbieter-Voreinstellung: `openai`, `openrouter`, `nanogpt`, `groq`, `google`, `azure`, `azure-legacy`, `custom` |
+| `ai:apitype` | Nein | API-Typ: `openai-chat`, `openai-responses` oder `google-gemini` (Standard `openai-chat`, wenn nicht angegeben) |
+| `ai:model` | Nein | Modellbezeichner (für die meisten Anbieter erforderlich) |
+| `ai:thinkinglevel` | Nein | Denk-Level: `low`, `medium` oder `high` |
+| `ai:endpoint` | Nein | *Vollständige* API-Endpunkt-URL (automatisch vom Anbieter gesetzt, falls verfügbar) |
+| `ai:azureapiversion` | Nein | Azure-API-Version (für den `azure-legacy`-Anbieter, Standard `2025-04-01-preview`) |
+| `ai:apitoken` | Nein | API-Schlüssel/-Token (nicht empfohlen - nutze stattdessen Secrets) |
+| `ai:apitokensecretname` | Nein | Name des Secrets, das das API-Token enthält (automatisch vom Anbieter gesetzt) |
+| `ai:azureresourcename` | Nein | Azure-Ressourcenname (für Azure-Anbieter) |
+| `ai:azuredeployment` | Nein | Azure-Deployment-Name (für den `azure-legacy`-Anbieter) |
+| `ai:capabilities` | Nein | Array unterstützter Fähigkeiten: `"tools"`, `"images"`, `"pdfs"` |
+| `waveai:cloud` | Nein | Intern - nur für die Konfiguration von Wave Cloud AI |
+| `waveai:premium` | Nein | Intern - nur für die Konfiguration von Wave Cloud AI |
+
+### KI-Fähigkeiten
+
+Das Feld `ai:capabilities` gibt an, welche Funktionen der KI-Modus unterstützt:
+
+- **`tools`** - Aktiviert KI-Tool-Nutzung zum Lesen/Schreiben von Dateien, Shell-Integration und Widget-Interaktion
+- **`images`** - Erlaubt Bildanhänge im Chat (das Modell kann hochgeladene Bilder ansehen)
+- **`pdfs`** - Erlaubt PDF-Dateianhänge im Chat (das Modell kann PDF-Inhalte lesen)
+
+**Anbieterspezifisches Verhalten:**
+- **OpenAI- und Google-Anbieter**: Fähigkeiten werden automatisch basierend auf dem Modell konfiguriert. Du musst sie nicht angeben.
+- **OpenRouter-, NanoGPT-, Groq-, Azure-, Azure-Legacy- und Custom-Anbieter**: Du musst die Fähigkeiten manuell basierend auf den Funktionen deines Modells angeben.
+
+:::warning
+Wenn du `"tools"` nicht in das Array `ai:capabilities` aufnimmst, kann das KI-Modell nicht mit deinen Wave-Terminal-Widgets interagieren, Dateien lesen/schreiben oder Befehle ausführen. Die meisten KI-Modi sollten `"tools"` enthalten, um die beste Wave-Erfahrung zu bieten.
+:::
+
+Die meisten Modelle unterstützen `tools` und profitieren davon. Vision-fähige Modelle sollten `images` enthalten. Nicht alle Modelle unterstützen PDFs, füge `pdfs` daher nur hinzu, wenn dein Modell sie verarbeiten kann.

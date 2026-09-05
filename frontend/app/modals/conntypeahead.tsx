@@ -20,6 +20,8 @@ import * as keyutil from "@/util/keyutil";
 import * as util from "@/util/util";
 import * as jotai from "jotai";
 import * as React from "react";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 
 // newConnList -> connList => filteredList -> remoteItems -> sortedRemoteItems => remoteSuggestion
 // filteredList -> createNew
@@ -114,6 +116,7 @@ function createFilteredLocalSuggestionItem(
 }
 
 function getReconnectItem(
+    t: TFunction,
     connStatus: ConnStatus,
     connSelected: string,
     blockId: string,
@@ -126,7 +129,7 @@ function getReconnectItem(
         status: "connected",
         icon: "arrow-right-arrow-left",
         iconColor: "var(--grey-text-color)",
-        label: `Reconnect to ${connStatus.connection}`,
+        label: t("connTypeahead.reconnectTo", { connection: connStatus.connection }),
         value: "",
         onSelect: async (_: string) => {
             globalStore.set(changeConnModalAtom, false);
@@ -142,6 +145,7 @@ function getReconnectItem(
 }
 
 function getLocalSuggestions(
+    t: TFunction,
     localName: string,
     connList: Array<string>,
     connection: string,
@@ -173,13 +177,14 @@ function getLocalSuggestions(
         return null;
     }
     const localSuggestions: SuggestionConnectionScope = {
-        headerText: "Local",
+        headerText: t("connTypeahead.local"),
         items: sortedSuggestionItems,
     };
     return localSuggestions;
 }
 
 function getRemoteSuggestions(
+    t: TFunction,
     connList: Array<string>,
     connection: string,
     connSelected: string,
@@ -194,13 +199,14 @@ function getRemoteSuggestions(
         return null;
     }
     const remoteSuggestions: SuggestionConnectionScope = {
-        headerText: "Remote",
+        headerText: t("connTypeahead.remote"),
         items: sortedSuggestionItems,
     };
     return remoteSuggestions;
 }
 
 function getDisconnectItem(
+    t: TFunction,
     connection: string,
     connStatusMap: Map<string, ConnStatus>,
     changeConnModalAtom: jotai.PrimitiveAtom<boolean>
@@ -216,7 +222,7 @@ function getDisconnectItem(
         status: "connected",
         icon: "xmark",
         iconColor: "var(--grey-text-color)",
-        label: `Disconnect ${connStatus.connection}`,
+        label: t("connTypeahead.disconnect", { connection: connStatus.connection }),
         value: "",
         onSelect: async (_: string) => {
             globalStore.set(changeConnModalAtom, false);
@@ -228,6 +234,7 @@ function getDisconnectItem(
 }
 
 function getConnectionsEditItem(
+    t: TFunction,
     changeConnModalAtom: jotai.PrimitiveAtom<boolean>,
     connSelected: string
 ): SuggestionConnectionItem | null {
@@ -239,7 +246,7 @@ function getConnectionsEditItem(
         icon: "gear",
         iconColor: "var(--grey-text-color)",
         value: "Edit Connections",
-        label: "Edit Connections",
+        label: t("connTypeahead.editConnections"),
         onSelect: () => {
             util.fireAndForget(async () => {
                 globalStore.set(changeConnModalAtom, false);
@@ -257,6 +264,7 @@ function getConnectionsEditItem(
 }
 
 function getNewConnectionSuggestionItem(
+    t: TFunction,
     connSelected: string,
     localName: string,
     remoteConns: Array<string>,
@@ -274,7 +282,7 @@ function getNewConnectionSuggestionItem(
         status: "connected",
         icon: "plus",
         iconColor: "var(--grey-text-color)",
-        label: `${connSelected} (New Connection)`,
+        label: t("connTypeahead.newConnection", { connection: connSelected }),
         value: "",
         onSelect: (_: string) => {
             changeConnection(connSelected);
@@ -300,6 +308,7 @@ const ChangeConnectionBlockModal = React.memo(
         changeConnModalAtom: jotai.PrimitiveAtom<boolean>;
         nodeModel: NodeModel;
     }) => {
+        const { t } = useTranslation();
         const [connSelected, setConnSelected] = React.useState("");
         const changeConnModalOpen = jotai.useAtomValue(changeConnModalAtom);
         const [blockData] = WOS.useWaveObjectValue<Block>(WOS.makeORef("block", blockId));
@@ -375,8 +384,9 @@ const ChangeConnectionBlockModal = React.memo(
             [blockId, blockData]
         );
 
-        const reconnectSuggestionItem = getReconnectItem(connStatus, connSelected, blockId, changeConnModalAtom);
+        const reconnectSuggestionItem = getReconnectItem(t, connStatus, connSelected, blockId, changeConnModalAtom);
         const localSuggestions = getLocalSuggestions(
+            t,
             localName,
             wslList,
             connection,
@@ -387,6 +397,7 @@ const ChangeConnectionBlockModal = React.memo(
             hasGitBash
         );
         const remoteSuggestions = getRemoteSuggestions(
+            t,
             connList,
             connection,
             connSelected,
@@ -394,9 +405,10 @@ const ChangeConnectionBlockModal = React.memo(
             fullConfig,
             filterOutNowsh
         );
-        const connectionsEditItem = getConnectionsEditItem(changeConnModalAtom, connSelected);
-        const disconnectItem = getDisconnectItem(connection, connStatusMap, changeConnModalAtom);
+        const connectionsEditItem = getConnectionsEditItem(t, changeConnModalAtom, connSelected);
+        const disconnectItem = getDisconnectItem(t, connection, connStatusMap, changeConnModalAtom);
         const newConnectionSuggestionItem = getNewConnectionSuggestionItem(
+            t,
             connSelected,
             localName,
             connList,
@@ -486,7 +498,7 @@ const ChangeConnectionBlockModal = React.memo(
                 onKeyDown={(e) => keyutil.keydownWrapper(handleTypeAheadKeyDown)(e)}
                 onChange={(current: string) => setConnSelected(current)}
                 value={connSelected}
-                label="Connect to (username@host)..."
+                label={t("connTypeahead.connectPlaceholder")}
                 onClickBackdrop={() => globalStore.set(changeConnModalAtom, false)}
             />
         );

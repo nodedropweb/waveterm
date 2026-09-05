@@ -4,6 +4,7 @@
 import { WaveStreamdown } from "@/app/element/streamdown";
 import { cn } from "@/util/util";
 import { memo, useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { getFileIcon } from "./ai-utils";
 import { AIFeedbackButtons } from "./aifeedbackbuttons";
 import { AIToolUseGroup } from "./aitooluse";
@@ -12,7 +13,7 @@ import { WaveAIModel } from "./waveai-model";
 
 const AIThinking = memo(
     ({
-        message = "AI is thinking...",
+        message,
         reasoningText,
         isWaitingApproval = false,
     }: {
@@ -20,6 +21,8 @@ const AIThinking = memo(
         reasoningText?: string;
         isWaitingApproval?: boolean;
     }) => {
+        const { t } = useTranslation();
+        const displayMessage = message ?? t("aiPanel.aiThinking");
         const scrollRef = useRef<HTMLDivElement>(null);
 
         useEffect(() => {
@@ -47,7 +50,7 @@ const AIThinking = memo(
                             <i className="fa fa-circle text-[10px]"></i>
                         </div>
                     )}
-                    {message && <span className="text-sm text-gray-400">{message}</span>}
+                    {displayMessage && <span className="text-sm text-gray-400">{displayMessage}</span>}
                 </div>
                 <div ref={scrollRef} className="text-sm text-gray-500 overflow-y-auto h-[3lh] max-w-[600px] pl-9">
                     {displayText}
@@ -64,6 +67,7 @@ interface UserMessageFilesProps {
 }
 
 const UserMessageFiles = memo(({ fileParts }: UserMessageFilesProps) => {
+    const { t } = useTranslation();
     if (fileParts.length === 0) return null;
 
     return (
@@ -76,7 +80,7 @@ const UserMessageFiles = memo(({ fileParts }: UserMessageFilesProps) => {
                                 {file.data?.previewurl ? (
                                     <img
                                         src={file.data.previewurl}
-                                        alt={file.data?.filename || "File"}
+                                        alt={file.data?.filename || t("aiPanel.file")}
                                         className="w-full h-full object-cover"
                                     />
                                 ) : (
@@ -90,9 +94,9 @@ const UserMessageFiles = memo(({ fileParts }: UserMessageFilesProps) => {
                             </div>
                             <div
                                 className="text-[10px] text-gray-200 truncate w-full max-w-16"
-                                title={file.data?.filename || "File"}
+                                title={file.data?.filename || t("aiPanel.file")}
                             >
-                                {file.data?.filename || "File"}
+                                {file.data?.filename || t("aiPanel.file")}
                             </div>
                         </div>
                     </div>
@@ -179,7 +183,8 @@ const groupMessageParts = (parts: WaveUIMessagePart[]): MessagePart[] => {
 const getThinkingMessage = (
     parts: WaveUIMessagePart[],
     isStreaming: boolean,
-    role: string
+    role: string,
+    t: (key: string) => string
 ): { message: string; reasoningText?: string; isWaitingApproval?: boolean } | null => {
     if (!isStreaming || role !== "assistant") {
         return null;
@@ -190,14 +195,14 @@ const getThinkingMessage = (
     );
 
     if (hasPendingApprovals) {
-        return { message: "Waiting for Tool Approvals...", isWaitingApproval: true };
+        return { message: t("aiPanel.waitingForToolApprovals"), isWaitingApproval: true };
     }
 
     const lastPart = parts[parts.length - 1];
 
     if (lastPart?.type === "reasoning") {
         const reasoningContent = lastPart.text || "";
-        return { message: "AI is thinking...", reasoningText: reasoningContent };
+        return { message: t("aiPanel.aiThinking"), reasoningText: reasoningContent };
     }
 
     if (lastPart?.type === "text" && lastPart.text) {
@@ -208,13 +213,14 @@ const getThinkingMessage = (
 };
 
 export const AIMessage = memo(({ message, isStreaming }: AIMessageProps) => {
+    const { t } = useTranslation();
     const parts = message.parts || [];
     const displayParts = parts.filter(isDisplayPart);
     const fileParts = parts.filter(
         (part): part is WaveUIMessagePart & { type: "data-userfile" } => part.type === "data-userfile"
     );
 
-    const thinkingData = getThinkingMessage(parts, isStreaming, message.role);
+    const thinkingData = getThinkingMessage(parts, isStreaming, message.role, t);
     const groupedParts = groupMessageParts(displayParts);
 
     return (
@@ -228,7 +234,7 @@ export const AIMessage = memo(({ message, isStreaming }: AIMessageProps) => {
                 )}
             >
                 {displayParts.length === 0 && !isStreaming && !thinkingData ? (
-                    <div className="whitespace-pre-wrap break-words">(no text content)</div>
+                    <div className="whitespace-pre-wrap break-words">{t("aiPanel.noTextContent")}</div>
                 ) : (
                     <>
                         {groupedParts.map((group, index: number) =>

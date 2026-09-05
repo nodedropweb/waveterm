@@ -1,0 +1,284 @@
+---
+sidebar_position: 3.1
+id: "connections"
+title: "Verbindungen"
+---
+
+import { VersionBadge } from "@site/src/components/versionbadge";
+
+# Verbindungen
+
+Wave erlaubt es Nutzern, sich mit verschiedenen Rechnern zu verbinden und sie so zusammenzuführen, dass das jeweils eigene Verhalten erhalten bleibt. Aktuell umfasst dies SSH-Remote-Verbindungen und lokale WSL-Verbindungen.
+
+## Auf eine Verbindung in einem Block zugreifen
+
+Der einfachste Weg, auf Verbindungen zuzugreifen, ist ein Klick auf das <i className="fa-sharp fa-laptop"/>-Icon. Von dort aus kannst du je nach gewünschter Verbindung Folgendes eingeben:
+
+Für SSH-Verbindungen:
+
+- `[user]@[host]`
+- `[host]`
+- `[user]@[host]:[port]`
+
+Für WSL-Verbindungen:
+
+- `wsl://<Distributionsname>`
+
+Alternativ kannst du, wenn die Verbindung bereits in der Dropdown-Liste vorhanden ist, entweder darauf klicken oder mit den Pfeiltasten dorthin navigieren und Enter drücken, um dich zu verbinden.
+
+![a dropdown showing a list of connections that already exist](./img/connection-dropdown.png)
+
+## Verschiedene Arten von Verbindungen
+
+Da es mehrere verschiedene Verbindungsarten gibt, haben nicht alle Zugriff auf dieselben Funktionen. SSH- und WSL-Verbindungen funktionieren immer in Terminal-Widgets, und wenn die `wsh`-Shell-Erweiterungen installiert sind, funktionieren sie auch in Vorschau-Widgets und im sysinfo-Widget.
+
+## Was sind wsh-Shell-Erweiterungen?
+
+`wsh` ist ein kleines Programm, das bei der Verwaltung von waveterm hilft, unabhängig davon, mit welchem Rechner du gerade verbunden bist. Es ist immer auf deinem Host-Rechner enthalten, du hast aber auch die Möglichkeit, es bei SSH- und WSL-Verbindungen zu installieren. Wenn es auf der Verbindung installiert ist, befindet es sich unter `~/.waveterm/bin/wsh`. Wenn Wave sich dann mit deiner Verbindung verbindet (und nur dann), passiert Folgendes:
+
+- `~/.waveterm/bin` wird für diese einzelne Sitzung zu deinem `PATH` hinzugefügt. So kann der Nutzer den Befehl `wsh` nutzen, ohne den vollständigen Pfad angeben zu müssen.
+- Mehrere Umgebungsvariablen werden in die Sitzung eingefügt, um bestimmte Aufgaben mit `wsh` zu erleichtern. Diese sind [unten aufgeführt](#zusätzliche-umgebungsvariablen).
+- Die benutzerdefinierten Umgebungsvariablen im Eintrag `cmd:env` von `connections.json` werden in die Sitzung eingefügt.
+- Die in `connections.json` festgelegten benutzerdefinierten Initialisierungsskripte werden ausgeführt. Weitere Informationen zu diesen Skripten findest du im Abschnitt unten.
+
+Falls dies aus irgendeinem Grund fehlschlägt, versucht Wave, ohne `wsh` zu arbeiten. Das erkennst du an einem kleinen **<code><i className="fa-link-slash fa-solid fa-sharp"/></code>**-Icon in der Block-Kopfzeile. Weitere Informationen dazu, was `wsh` kann, findest du unter [wsh-Befehl](/wsh). Und wenn du den Quellcode von `wsh` einsehen möchtest, findest du ihn [hier](https://github.com/wavetermdev/waveterm/tree/main/cmd/wsh).
+
+Mit installiertem `wsh` kannst du bestimmte Widgets vom entfernten Rechner so ansehen, als wäre er dein Host, zum Beispiel die `files`- und `sysinfo`-Widgets. Zusätzlich kann `wsh` genutzt werden, um Widgets über verschiedene Rechner hinweg zu beeinflussen. Als einfaches Beispiel kannst du ein Widget auf dem Host-Rechner schließen, indem du den `wsh`-Befehl in einem Terminal-Fenster auf einem entfernten Rechner nutzt. Weitere Informationen dazu, was du mit `wsh` erreichen kannst, findest du [hier](/wsh).
+
+### Zusätzliche Umgebungsvariablen
+
+Wie oben erwähnt, fügt `wsh` zur Vereinfachung einige Umgebungsvariablen in Remote-Sitzungen ein. Diese sind unten aufgeführt:
+
+| Variablenname        | Beschreibung                                                                   |
+| -------------------- | ----------------------------------------------------------------------------- |
+| TERM_PROGRAM         | Wird in Wave auf `waveterm` gesetzt.                                                    |
+| WAVETERM             | Wird in Wave auf 1 gesetzt.                                                     |
+| WAVETERM_BLOCKID     | Die ID des Blocks, der dein aktuelles Terminal-Widget enthält.                  |
+| WAVETERM_CLIENTID    | Die ID des RPC-Clients, der von deinem aktuellen Terminal-Widget genutzt wird.          |
+| WAVETERM_CONN        | Der Name der von deinem aktuellen Terminal-Widget genutzten Remote-Verbindung. |
+| WAVETERM_TABID       | Die ID des Tabs, der dein aktuelles Terminal-Widget enthält.                    |
+| WAVETERM_VERSION     | Die aktuelle Semver-Version von Wave.                                           |
+| WAVETERM_WORKSPACEID | Die ID des Workspace, der dein aktuelles Terminal-Widget enthält.              |
+
+# Initialisierungsskripte
+
+Wave bietet dir Optionen, um beim Verbinden mit deinen entfernten Rechnern Initialisierungsskripte auszuführen. Diese werden in `connections.json` definiert und können entweder der Pfad zu einem Skript oder ein kurzes, direkt in der Datei geschriebenes Skript sein. Sind mehrere Skripte definiert, wird das spezifischste für die aktuelle Shell relevante Skript angewendet. Die Schlüsselwörter für die Skripte sind:
+
+| Skript-Schlüsselwort      | Shells, in denen es angewendet wird |
+| ------------------- | -------------------- |
+| cmd:initscript      | alle Shells           |
+| cmd:initscript.sh   | bash und zsh         |
+| cmd:initscript.bash | bash                 |
+| cmd:initscript.zsh  | zsh                  |
+| cmd:initscript.pwsh | pwsh                 |
+| cmd:initscript.fish | fish                 |
+
+## Eine neue Verbindung zum Dropdown hinzufügen
+
+Die standardmäßig in das Dropdown geladenen SSH-Werte werden durch Auswertung der internen Datei `config/connections.json` sowie deiner Dateien `~/.ssh/config` und `/etc/ssh/ssh_config` ermittelt. Eine neue Verbindung kann auf verschiedene Arten hinzugefügt werden:
+
+- Hinzufügen eines neuen `Host`-Eintrags in einer deiner ssh-Konfigurationsdateien, typischerweise `~/.ssh/config`
+- Hinzufügen eines neuen Eintrags in der internen Datei `config/connections.json`
+- Manuelles Eintippen deiner Verbindung im Verbindungsfeld (bei erfolgreicher Verbindung wird sie zur internen Datei `config/connections.json` hinzugefügt)
+- Nutzung von `wsh ssh [user]@[host]` in deinem Terminal (bei erfolgreicher Verbindung wird sie zur internen Datei `config/connections.json` hinzugefügt)
+
+WSL-Verbindungen werden durch Durchsuchen der installierten WSL-Distributionen hinzugefügt, wie sie in der Windows-Registry erscheinen. Sie befinden sich, ähnlich wie SSH-Verbindungen, ebenfalls in der Datei `config/connections.json`.
+
+## SSH-Konfigurationsanalyse
+
+Aktuell können wir jede SSH-Konfigurationsdatei auswerten, die das Schlüsselwort `Match` nicht enthält. Dieses Schlüsselwort ist mit einer von uns genutzten Bibliothek nicht kompatibel, aber wir hoffen, das bald zu beheben. Während alle anderen gültigen Schlüsselwörter ausgewertet werden, unterstützen wir aktuell nur die Funktionalität einer kleinen Teilmenge davon:
+| Schlüsselwort | Beschreibung |
+|---------|-------------|
+| Host | Das Muster, das beim Verbindungsversuch über `[user]@[host]` abgeglichen wird. Wir listen Hosts auf, die keine Platzhalterzeichen (`*`, `?` oder `!`) enthalten. Auch wenn ein Host-Muster Platzhalter enthält, wird es bei der Ermittlung der zugehörigen Werte wie gewohnt ausgewertet.|
+| User | Der Benutzer der SSH-Remote-Verbindung. Wird standardmäßig auf den aktuellen Benutzer auf dem lokalen Rechner gesetzt, wenn nicht angegeben.|
+|HostName| Der tatsächliche Hostname des Rechners, mit dem man sich verbindet. Auf Wunsch kann auch eine IP-Adresse verwendet werden. Wird standardmäßig auf den Host gesetzt, wenn nicht angegeben.
+| Port | Der Port, über den die Verbindung zum entfernten Rechner hergestellt wird. Standard ist `22`, wenn nicht angegeben.|
+| IdentityFile | Kann pro Host mehrfach angegeben werden. Gibt den Pfad zu einer privaten Identitätsdatei (id_rsa, id_ed25519, id_ecdsa usw.) an, die zur Authentifizierung der Verbindung genutzt wird. Jede wird der Reihe nach ausprobiert, und sie können bei Bedarf mit einer Passphrase verschlüsselt sein. Ist kein Wert gesetzt, wird standardmäßig der Reihe nach Folgendes versucht: ~/.ssh/id_rsa, ~/.ssh/id_ecdsa, ~/.ssh/id_ecdsa_sk, ~/.ssh/id_ed25519_sk, ~/.ssh/id_dsa.|
+|BatchMode| Wenn auf true gesetzt, wird die Benutzerinteraktion über Passwort-, Challenge/Response- und Public-Key-Passphrase-Authentifizierung deaktiviert. Standardmäßig false.|
+|PubkeyAuthentication| (teilweise) Gibt an, ob Public-Key-Authentifizierung versucht werden soll. Teilweise implementiert, da die Werte `unbound` und `host-bound` sich einfach wie `yes` verhalten. Standard ist `yes`.|
+|PasswordAuthentication| Gibt an, ob Passwort-Authentifizierung versucht werden soll. Standard ist `yes`.|
+|KbdInteractiveAuthentication| Gibt an, ob tastaturinteraktive Authentifizierung versucht werden soll. Standard ist `yes`.|
+|PreferredAuthentications| (teilweise) Gibt die Reihenfolge an, in der der Client Authentifizierungen versuchen soll. Teilweise implementiert, da `gssapi-with-mic` oder `hostbased`-Authentifizierung nicht unterstützt werden. Standard ist `publickey,keyboard-interactive,password`|
+|AddKeysToAgent| (teilweise) Diese Option fügt Schlüssel und ihre zugehörige Passphrase automatisch zu deinem laufenden ssh-Agenten hinzu, sofern aktiviert. Teilweise unterstützt, da nur `yes` und `no` als gültige Eingaben akzeptiert werden. Andere Eingaben wie `confirm` oder ein Zeitintervall verhalten sich wie `no`. Standardwert ist `no`.|
+|IdentityAgent| Gibt den Unix-Domain-Socket an, der zur Kommunikation mit dem SSH-Agenten genutzt wird. Damit kann der Identity-Agent `SSH_AUTH_SOCK` überschrieben werden.|
+|IdentitiesOnly| Gibt an, dass nur die angegebenen Authentifizierungs-Identitätsdateien genutzt werden sollen. Das sind entweder die Standarddateien oder die mit dem Schlüsselwort IdentityFile angegebenen. Akzeptiert `yes` oder `no`. Standardwert ist `no`.|
+|ProxyJump| Gibt einen oder mehrere Jump-Proxys als kommagetrennte Liste an. Jeder wird nacheinander per TCP-Weiterleitung angesteuert, bevor die gewünschte Verbindung (ebenfalls per TCP-Weiterleitung) hergestellt wird. Kann auf `none` gesetzt werden, um die Funktion zu deaktivieren.|
+|UserKnownHostsFile| Gibt den Speicherort einer oder mehrerer Host-Key-Datenbankdateien des Benutzers zur Aufzeichnung vertrauenswürdiger Remote-Verbindungen an. Die Dateinamen werden im selben String, durch Leerzeichen getrennt, angegeben. Standardwert ist `"~/.ssh/known_hosts ~/.ssh/known_hosts2"`.|
+|GlobalKnownHostsFile| Gibt den Speicherort einer oder mehrerer globaler Host-Key-Datenbankdateien zur Aufzeichnung vertrauenswürdiger Remote-Verbindungen an. Die Dateinamen werden im selben String, durch Leerzeichen getrennt, angegeben. Standardwert ist `"/etc/ssh/ssh_known_hosts /etc/ssh/ssh_known_hosts2"`.|
+
+### Beispiel für einen SSH-Konfigurationshost
+
+Als kurzes Beispiel könnte ein Host in deiner Konfigurationsdatei so aussehen:
+
+```
+Host myhost
+   User username
+   HostName 203.0.113.254
+   IdentityFile ~/.ssh/id_rsa
+   AddKeysToAgent yes
+```
+
+Du könntest dann mit `myhost` oder `username@myhost` auf diese Verbindung zugreifen. Und wenn du manuell einen Port angeben möchtest, z. B. Port 2222, kannst du das entweder tun, indem du `Port 2222` zur Konfigurationsdatei hinzufügst, oder indem du dich mit `username@myhost:2222` verbindest.
+
+## Interne SSH-Konfiguration
+
+Zusätzlich zur regulären ssh-Konfigurationsdatei hat Wave auch eine eigene Konfigurationsdatei zur Verwaltung separater Variablen. Dazu gehören
+| Schlüsselwort | Beschreibung |
+|---------|-------------|
+| conn:wshenabled | Dieser Boolean erlaubt die Nutzung von `wsh` für deine Verbindung. Ist er auf `false` gesetzt, wird `wsh` für diese Verbindung nie genutzt. Standard ist `true`.|
+| conn:askbeforewshinstall | Dieser Boolean wird genutzt, um den Benutzer vor der Installation von wsh zu fragen. Ist er auf false gesetzt, wird `wsh` stattdessen automatisch ohne Nachfrage installiert. Standard ist `true`.|
+| conn:wshpath | Ein String, der den Pfad zur ausführbaren `wsh`-Datei auf der Verbindung angibt. Standard ist `"~/.waveterm/bin/wsh"`.|
+| conn:shellpath | Ein String, der den Pfad zur ausführbaren Shell-Datei auf der Verbindung angibt. Wenn nicht gesetzt, wird die Ausgabe von `$SHELL` auf der Verbindung genutzt.|
+| conn:ignoresshconfig | Dieser Boolean erlaubt es Wave, die Datei `~/.ssh/config` bei der Auflösung von Schlüsselwörtern für diese Verbindung zu ignorieren. Die regulären Standardwerte werden genutzt, aber alle Änderungen daran müssen stattdessen in der Datei `connections.json` angegeben werden. Standard ist false.|
+| display:hidden | Dieser Boolean blendet die Verbindung aus der Dropdown-Liste aus. Standard ist `false` |
+| display:order | Dieser Float bestimmt die Reihenfolge der Verbindungen im Verbindungs-Dropdown. Standard ist `0`.|
+| term:fontsize | Dieser Int kann genutzt werden, um die Terminal-Schriftgröße für Blöcke zu überschreiben, die diese Verbindung nutzen. Die Block-Metadaten haben Vorrang vor dieser Einstellung. Standard ist null, was bedeutet, dass stattdessen die globale Einstellung genutzt wird. |
+| term:fontfamily | Dieser String kann genutzt werden, um eine Terminal-Schriftart für Blöcke anzugeben, die diese Verbindung nutzen. Die Block-Metadaten haben Vorrang vor dieser Einstellung. Standard ist null, was bedeutet, dass stattdessen die globale Einstellung genutzt wird. |
+| term:theme | Dieser String kann genutzt werden, um ein Terminal-Theme für Blöcke anzugeben, die diese Verbindung nutzen. Die Block-Metadaten haben Vorrang vor dieser Einstellung. Standard ist null, was bedeutet, dass stattdessen die globale Einstellung genutzt wird. |
+| cmd:env | Ein JSON-Objekt mit Schlüssel-Wert-Paaren von Umgebungsvariablen und dem Wert, auf den sie für diesen Remote-Rechner gesetzt werden sollen. Funktioniert nur, wenn `wsh` aktiviert ist.
+| cmd:initscript | Ein Skript oder ein Pfad zu einem Skript, das beim Initialisieren dieser Verbindung mit einer beliebigen Shell ausgeführt wird. Funktioniert nur, wenn `wsh` aktiviert ist. |
+| cmd:initscript.sh | Ein Skript oder ein Pfad zu einem Skript, das beim Initialisieren dieser Verbindung mit POSIX-Shells wie `bash` oder `zsh` ausgeführt wird. Funktioniert nur, wenn `wsh` aktiviert ist.
+| cmd:initscript.bash | Ein Skript oder ein Pfad zu einem Skript, das beim Initialisieren dieser Verbindung mit der `bash`-Shell ausgeführt wird. Funktioniert nur, wenn `wsh` aktiviert ist. |
+| cmd:initscript.zsh | Ein Skript oder ein Pfad zu einem Skript, das beim Initialisieren dieser Verbindung mit der `zsh`-Shell ausgeführt wird. Funktioniert nur, wenn `wsh` aktiviert ist. |
+| cmd:initscript.pwsh | Ein Skript oder ein Pfad zu einem Skript, das beim Initialisieren dieser Verbindung mit der `pwsh`-Shell ausgeführt wird. Funktioniert nur, wenn `wsh` aktiviert ist. |
+| cmd:initscript.fish | Ein Skript oder ein Pfad zu einem Skript, das beim Initialisieren dieser Verbindung mit der `fish`-Shell ausgeführt wird. Funktioniert nur, wenn `wsh` aktiviert ist. |
+| ssh:user | Ein String, der den Benutzernamen der Verbindung angibt. Kann genutzt werden, um den Wert in `~/.ssh/config` zu überschreiben oder ihn zu setzen, wenn die ssh-Konfiguration ignoriert wird.|
+| ssh:hostname | Ein String, der den internen Hostnamen der Verbindung angibt. Kann genutzt werden, um den Wert in `~/.ssh/config` zu überschreiben oder ihn zu setzen, wenn die ssh-Konfiguration ignoriert wird.|
+| ssh:port | Ein String, der den numerischen Port für die Verbindung angibt. Kann genutzt werden, um den Wert in `~/.ssh/config` zu überschreiben oder ihn zu setzen, wenn die ssh-Konfiguration ignoriert wird.|
+| ssh:identityfile | Eine Liste von Strings mit den Pfaden zu genutzten Identitätsdateien. Ist ein `wsh ssh`-Befehl mit dem Flag `-i` erfolgreich, wird die Identitätsdatei automatisch hier hinzugefügt. Diese werden vor den Werten aus `~/.ssh/config` genutzt.|
+| ssh:identitiesonly | Ein Boolean, der angibt, ob nur die angegebenen Identitätsdateien genutzt werden sollen. Das bedeutet nur die mit dem Flag `ssh:identityfile` gesetzten Dateien oder die Standardwerte. Kann genutzt werden, um den Wert in `~/.ssh/config` zu überschreiben oder ihn zu setzen, wenn die ssh-Konfiguration ignoriert wird.|
+| ssh:batchmode | Ein Boolean, der angibt, ob Passwort- und Passphrase-Abfragen übersprungen werden sollen. Kann genutzt werden, um den Wert in `~/.ssh/config` zu überschreiben oder ihn zu setzen, wenn die ssh-Konfiguration ignoriert wird.|
+| ssh:pubkeyauthentication | Ein Boolean, der angibt, ob Public-Key-Authentifizierung aktiviert ist. Kann genutzt werden, um den Wert in `~/.ssh/config` zu überschreiben oder ihn zu setzen, wenn die ssh-Konfiguration ignoriert wird.|
+| ssh:passwordauthentication | Ein Boolean, der angibt, ob Passwort-Authentifizierung aktiviert ist. Kann genutzt werden, um den Wert in `~/.ssh/config` zu überschreiben oder ihn zu setzen, wenn die ssh-Konfiguration ignoriert wird. |
+| ssh:passwordsecretname | Ein String, der den Namen eines im [Secret-Speicher](/secrets) gespeicherten Secrets angibt, das als SSH-Passwort genutzt werden soll. Ist dieser gesetzt, wird dieses Passwort automatisch für die Passwort-Authentifizierung genutzt, anstatt den Benutzer zu fragen. <VersionBadge version="v0.13" /> |
+| ssh:kbdinteractiveauthentication | Ein Boolean, der angibt, ob tastaturinteraktive Authentifizierung aktiviert ist. Kann genutzt werden, um den Wert in `~/.ssh/config` zu überschreiben oder ihn zu setzen, wenn die ssh-Konfiguration ignoriert wird. |
+| ssh:preferredauthentications | Eine Liste von Strings, die eine Reihenfolge verschiedener Authentifizierungsarten angibt. Jede Authentifizierungsart wird der Reihe nach versucht. Unterstützt werden `"publickey"`, `"keyboard-interactive"` und `"password"` als gültige Typen. Andere Authentifizierungsarten werden nicht behandelt und übersprungen. Kann genutzt werden, um den Wert in `~/.ssh/config` zu überschreiben oder ihn zu setzen, wenn die ssh-Konfiguration ignoriert wird.|
+| ssh:addkeystoagent | Ein Boolean, der angibt, ob die für eine Verbindung genutzten Schlüssel zum ssh-Agenten hinzugefügt werden sollen. Kann genutzt werden, um den Wert in `~/.ssh/config` zu überschreiben oder ihn zu setzen, wenn die ssh-Konfiguration ignoriert wird.|
+| ssh:identityagent | Ein String, der den Pfad zum Unix-Domain-Socket des Identity-Agenten angibt. Kann genutzt werden, um den Wert in `~/.ssh/config` zu überschreiben oder ihn zu setzen, wenn die ssh-Konfiguration ignoriert wird.|
+| ssh:proxyjump | Eine Liste von Strings, die die Namen von Hosts angibt, die nacheinander per TCP-Weiterleitung angesteuert werden müssen, um eine Verbindung herzustellen. Kann genutzt werden, um den Wert in `~/.ssh/config` zu überschreiben oder ihn zu setzen, wenn die ssh-Konfiguration ignoriert wird.|
+| ssh:userknownhostsfile | Eine Liste mit den Pfaden aller Host-Key-Datenbankdateien des Benutzers, die zur Nachverfolgung autorisierter Verbindungen genutzt werden. Kann genutzt werden, um den Wert in `~/.ssh/config` zu überschreiben oder ihn zu setzen, wenn die ssh-Konfiguration ignoriert wird.|
+| ssh:globalknownhostsfile | Eine Liste mit den Pfaden aller globalen Host-Key-Datenbankdateien, die zur Nachverfolgung autorisierter Verbindungen genutzt werden. Kann genutzt werden, um den Wert in `~/.ssh/config` zu überschreiben oder ihn zu setzen, wenn die ssh-Konfiguration ignoriert wird.|
+
+### SSH-Agent-Erkennung
+
+Wave löst den Pfad des Identity-Agenten in dieser Reihenfolge auf:
+
+- Ist `ssh:identityagent` (oder `IdentityAgent` in der SSH-Konfiguration) für die Verbindung gesetzt, wird dieser Socket oder diese Pipe genutzt.
+- Ist unter Windows nichts gesetzt, greift Wave auf die integrierte OpenSSH-Agenten-Pipe `\\.\pipe\openssh-ssh-agent` zurück. Stelle sicher, dass der Dienst **OpenSSH Authentication Agent** läuft.
+- Ist unter macOS/Linux nichts gesetzt, fragt Wave deine Shell-Umgebung nach `SSH_AUTH_SOCK`, um den Agentenpfad automatisch zu erkennen.
+
+### Beispiele für interne Konfigurationen
+
+Hier sind ein paar Beispiele für Dinge, die du mit der internen Konfigurationsdatei `connections.json` tun kannst:
+
+#### Eine Verbindung ausblenden
+
+Angenommen, du hast in deiner `~/.ssh/config`-Datei eine Verbindung namens `github.com`, die im Verbindungs-Dropdown als `git@github.com` erscheint. Obwohl sie aus Authentifizierungsgründen in die Konfigurationsdatei gehört, ergibt es keinen Sinn, dass sie im Dropdown erscheint, da keine Verbindung zu einer entfernten Umgebung damit hergestellt wird. In diesem Fall kannst du sie wie im folgenden Beispiel ausblenden:
+
+```json
+{
+    <... weitere Verbindungen hier ...>,
+    "git@github.com" : {
+        "display:hidden": true
+    },
+    <... weitere Verbindungen hier ...>
+}
+```
+
+#### Eine Verbindung verschieben
+
+Angenommen, du hast eine Verbindung namens `rarelyused`, die im Verbindungs-Dropdown als `myusername@rarelyused:9999` erscheint. Da sie so selten genutzt wird, möchtest du sie weiter hinten in der Liste haben. In diesem Fall kannst du sie wie im folgenden Beispiel verschieben:
+
+```json
+{
+    <... weitere Verbindungen hier ...>,
+    "myusername@rarelyused:9999" : {
+        "display:order": 100
+    },
+    <... weitere Verbindungen hier ...>
+}
+```
+
+#### Eine Verbindung mit einem Theme versehen
+
+Angenommen, du hast eine Verbindung namens `myhost`, die im Verbindungs-Dropdown als `myusername@myhost` erscheint. Du nutzt diese Verbindung häufig, verwechselst sie aber immer wieder mit deinen lokalen Verbindungen. In diesem Fall kannst du die interne Konfigurationsdatei nutzen, um sie anders zu gestalten. Zum Beispiel:
+
+```json
+{
+    <... weitere Verbindungen hier ...>,
+    "myusername@myhost" : {
+        "term:theme": "warmyellow",
+        "term:fontsize": 16,
+        "term:fontfamily": "menlo"
+    },
+    <... weitere Verbindungen hier ...>
+}
+```
+
+Dieses Theme, diese Schriftgröße und diese Schriftart gelten dann nur für Widgets, die diese Verbindung nutzen.
+
+### Vollständig intern definiert
+
+Angenommen, du möchtest eine Verbindung einrichten, hast aber keine Lust, die Syntax von `~/.ssh/config` zu lernen. In diesem Fall kannst du die Verbindung vollständig in deiner `connections.json`-Datei definieren. Zum Beispiel:
+
+```json
+{
+    <... weitere Verbindungen hier ...>,
+    "myusername@myhost" : {
+        "ssh:hostname": "190.0.2.0",
+        "ssh:identityfile": ["~/.ssh/myidentityfile"],
+        "ssh:identitiesonly": true,
+        "ssh:addkeystoagent": true
+    },
+    <... weitere Verbindungen hier ...>
+}
+```
+
+Dadurch wird eine Verbindung erstellt, ohne dass sie in der Datei `~/.ssh/config` vorhanden sein muss. Zusätzlich sind ein paar weitere Optionen als Beispiel gesetzt, wie das gemacht werden kann.
+
+### wsh für eine Verbindung deaktivieren
+
+Wave bietet zwar eine Option, `wsh` beim erstmaligen Verbinden mit einem entfernten Rechner zu deaktivieren, es gibt jedoch Fälle, in denen du es nachträglich deaktivieren möchtest. Der einfachste Weg dafür ist, die Datei `connections.json` zu bearbeiten. Angenommen, die Verbindung erscheint im Dropdown als `root@wshless`. Dann kannst du sie manuell mit folgender Zeile deaktivieren:
+
+```json
+{
+    <... weitere Verbindungen hier ...>,
+    "root@wshless" : {
+        "conn:enablewsh": false,
+    },
+    <... weitere Verbindungen hier ...>
+}
+```
+
+Beachte, dass dieselbe Zeile automatisch zu deiner `connections.json`-Datei hinzugefügt wird, wenn du `wsh` beim erstmaligen Verbinden in der GUI deaktivierst.
+
+## Verbindungen mit der CLI verwalten
+
+Der Befehl `wsh` bietet einige speziell für die Interaktion mit Verbindungen gedachte Befehle. Du findest sie [hier](/wsh-reference#conn).
+
+## Fehlerbehebung bei Verbindungen
+
+### Log-Dateien
+
+Gibt es Probleme mit Verbindungen, ist der einfachste erste Schritt, das Debugging in einem Terminal-Widget zu aktivieren, das versucht, sich zu verbinden. Klicke dazu auf den **<code><i className="fa-gear fa-solid fa-sharp"/></code>**-Button und fahre mit der Maus über den Eintrag **`Debug Connection`**. Von dort aus kannst du zwei Log-Level auswählen, `Info` und `Verbose`. Danach werden während der Verbindung Debug-Informationen im Terminal ausgegeben.
+
+Reicht das nicht aus, kannst du auch die vollständige Log-Datei einsehen. Führe dazu den Befehl `wsh wavepath log` aus, um den Speicherort einer Log-Datei zu erhalten.
+
+### Bekannte Einschränkungen
+
+Tritt beim Einrichten von `wsh` ein Fehler auf, startet deine Verbindung trotzdem ohne `wsh`. Abhängig von den Debug-Informationen kann dies jedoch verschiedene Ursachen haben.
+
+#### Shell-Typ
+
+Wave kann `wsh` in folgende Shells einfügen:
+
+- bash
+- zsh
+- pwsh (powershell)
+- fish
+
+Ist die Shell eine andere, funktioniert der `wsh`-Befehl unter Umständen standardmäßig nicht. Der einfachste Weg, das aktuell zu beheben, ist der Wechsel des Shell-Typs. Das geht, indem du den Wert `conn:shellpath` mit einem Pfad zu einer der oben genannten Shells in der Datei `connections.json` für die genutzte Verbindung setzt. Alternativ kannst du den Befehl `chsh` nutzen, um die Shell in dieser Verbindung zu ändern, was sich aber auch außerhalb von Wave auswirkt. Starte Wave anschließend neu, damit die Änderungen wirksam werden.
+
+#### AllowTcpForwarding in sshd
+
+Manche Systeme haben sshd standardmäßig so konfiguriert, dass TCP-Weiterleitung deaktiviert ist. Das findest du auf der Verbindung in der Datei `/etc/ssh/sshd_config`. Suche dort nach der Zeile mit `AllowTcpForwarding`. Ist diese auf `no` gesetzt, ist dies wahrscheinlich der Grund, warum `wsh` auf deiner Verbindung nicht funktioniert. Um `wsh` zum Laufen zu bringen, setze den Wert für `AllowTcpForwarding` auf `yes` oder `local` (beide bieten unterschiedliche Berechtigungsstufen, funktionieren aber in diesem Fall beide). Starte anschließend den `sshd`-Dienst mit der von deinem entfernten Rechner bereitgestellten Methode neu. Starte danach Wave neu, damit es sich mit dieser Änderung neu verbinden kann.

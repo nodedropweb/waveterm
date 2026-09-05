@@ -11,6 +11,7 @@ import { arrayToBase64 } from "@/util/util";
 import { atoms } from "@/store/global";
 import { useAtomValue } from "jotai";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const MaxFileSize = 5 * 1024 * 1024; // 5MB
 const ReadOnlyFileNames = ["static/tw.css"];
@@ -24,6 +25,7 @@ type FileEntry = {
 
 const RenameFileModal = memo(
     ({ appId, fileName, onSuccess }: { appId: string; fileName: string; onSuccess: () => void }) => {
+        const { t } = useTranslation();
         const displayName = fileName.replace("static/", "");
         const [newName, setNewName] = useState(displayName);
         const [error, setError] = useState("");
@@ -32,11 +34,11 @@ const RenameFileModal = memo(
         const handleRename = async () => {
             const trimmedName = newName.trim();
             if (!trimmedName) {
-                setError("File name cannot be empty");
+                setError(t("builderFiles.nameEmpty"));
                 return;
             }
             if (trimmedName.includes("/") || trimmedName.includes("\\")) {
-                setError("File name cannot contain / or \\");
+                setError(t("builderFiles.nameInvalidChars"));
                 return;
             }
             if (trimmedName === displayName) {
@@ -71,15 +73,15 @@ const RenameFileModal = memo(
                 onOk={handleRename}
                 onCancel={handleClose}
                 onClose={handleClose}
-                okLabel="Rename"
-                cancelLabel="Cancel"
+                okLabel={t("builderFiles.rename")}
+                cancelLabel={t("modal.cancel")}
                 okDisabled={isRenaming || !newName.trim()}
             >
                 <div className="flex flex-col gap-4 mb-4">
-                    <h2 className="text-xl font-semibold">Rename File</h2>
+                    <h2 className="text-xl font-semibold">{t("builderFiles.renameFileTitle")}</h2>
                     <div className="flex flex-col gap-2">
                         <div className="text-sm text-secondary mb-1">
-                            Current name: <span className="font-medium text-primary">{displayName}</span>
+                            {t("builderFiles.currentName")} <span className="font-medium text-primary">{displayName}</span>
                         </div>
                         <input
                             type="text"
@@ -110,6 +112,7 @@ RenameFileModal.displayName = "RenameFileModal";
 
 const DeleteFileModal = memo(
     ({ appId, fileName, onSuccess }: { appId: string; fileName: string; onSuccess: () => void }) => {
+        const { t } = useTranslation();
         const [isDeleting, setIsDeleting] = useState(false);
         const [error, setError] = useState("");
 
@@ -156,16 +159,16 @@ const DeleteFileModal = memo(
                 onOk={handleDelete}
                 onCancel={handleClose}
                 onClose={handleClose}
-                okLabel="Delete"
-                cancelLabel="Cancel"
+                okLabel={t("builderFiles.delete")}
+                cancelLabel={t("modal.cancel")}
                 okDisabled={isDeleting}
             >
                 <div className="flex flex-col gap-4 mb-4">
-                    <h2 className="text-xl font-semibold">Delete File</h2>
+                    <h2 className="text-xl font-semibold">{t("builderFiles.deleteFileTitle")}</h2>
                     <p>
-                        Are you sure you want to delete <strong>{fileName.replace("static/", "")}</strong>?
+                        {t("builderFiles.deleteConfirm")} <strong>{fileName.replace("static/", "")}</strong>?
                     </p>
-                    <p className="text-sm text-secondary">This action cannot be undone.</p>
+                    <p className="text-sm text-secondary">{t("builderFiles.deleteIrreversible")}</p>
                     {error && <div className="text-sm text-error">{error}</div>}
                 </div>
             </Modal>
@@ -176,6 +179,7 @@ const DeleteFileModal = memo(
 DeleteFileModal.displayName = "DeleteFileModal";
 
 const BuilderFilesTab = memo(() => {
+    const { t } = useTranslation();
     const builderAppId = useAtomValue(atoms.builderAppId);
     const [files, setFiles] = useState<FileEntry[]>([]);
     const [loading, setLoading] = useState(false);
@@ -232,7 +236,7 @@ const BuilderFilesTab = memo(() => {
 
         const file = fileList[0];
         if (file.size > MaxFileSize) {
-            setError(`File size exceeds maximum allowed size of ${formatFileSize(MaxFileSize)}`);
+            setError(t("builderFiles.fileTooLarge", { maxSize: formatFileSize(MaxFileSize) }));
             return;
         }
 
@@ -284,7 +288,7 @@ const BuilderFilesTab = memo(() => {
     const handleContextMenu = (e: React.MouseEvent, fileName: string) => {
         const menu: ContextMenuItem[] = [
             {
-                label: "Rename File",
+                label: t("builderFiles.renameFile"),
                 click: () => {
                     modalsModel.pushModal("RenameFileModal", { appId: builderAppId, fileName, onSuccess: loadFiles });
                 },
@@ -293,7 +297,7 @@ const BuilderFilesTab = memo(() => {
                 type: "separator",
             },
             {
-                label: "Delete File",
+                label: t("builderFiles.deleteFile"),
                 click: () => {
                     modalsModel.pushModal("DeleteFileModal", { appId: builderAppId, fileName, onSuccess: loadFiles });
                 },
@@ -313,13 +317,13 @@ const BuilderFilesTab = memo(() => {
             onDragLeave={handleDragLeave}
         >
             <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold">Static Files</h2>
+                <h2 className="text-lg font-semibold">{t("builderFiles.staticFiles")}</h2>
                 <div className="flex gap-2">
                     <button
                         className="px-3 py-1 text-sm font-medium rounded bg-panel border border-border hover:bg-hover transition-colors cursor-pointer"
                         onClick={handleRefresh}
                         disabled={loading}
-                        title="Refresh file list"
+                        title={t("builderFiles.refreshFileList")}
                     >
                         <i className="fa fa-refresh" />
                     </button>
@@ -329,7 +333,7 @@ const BuilderFilesTab = memo(() => {
                         disabled={loading}
                     >
                         <i className="fa fa-plus mr-2" />
-                        Add File
+                        {t("builderFiles.addFile")}
                     </button>
                 </div>
                 <input ref={fileInputRef} type="file" onChange={handleFileInputChange} className="hidden" />
@@ -343,16 +347,19 @@ const BuilderFilesTab = memo(() => {
             )}
 
             <div className="mb-3 p-2 bg-blue-500/10 border border-blue-500/30 rounded text-sm text-secondary">
-                Drag and drop files here or click "Add File". Maximum file size: {formatFileSize(MaxFileSize)}
+                {t("builderFiles.dragDropHint", {
+                    addFile: t("builderFiles.addFile"),
+                    maxSize: formatFileSize(MaxFileSize),
+                })}
             </div>
 
             <div className="flex-1 overflow-auto">
                 {loading && files.length === 0 ? (
-                    <div className="text-center text-secondary py-8">Loading files...</div>
+                    <div className="text-center text-secondary py-8">{t("builderFiles.loadingFiles")}</div>
                 ) : files.length === 0 ? (
                     <div className="text-center text-secondary py-12">
                         <i className="fa fa-file text-4xl mb-3 opacity-50" />
-                        <p>No files yet. Drag and drop files here or click "Add File" to get started.</p>
+                        <p>{t("builderFiles.noFilesYet", { addFile: t("builderFiles.addFile") })}</p>
                     </div>
                 ) : (
                     <div className="space-y-1">
@@ -370,7 +377,7 @@ const BuilderFilesTab = memo(() => {
                                         {file.isReadOnly && (
                                             <span className="ml-2 text-warning">
                                                 <i className="fa fa-lock mr-1" />
-                                                Generated by framework (read-only)
+                                                {t("builderFiles.generatedReadOnly")}
                                             </span>
                                         )}
                                     </div>
@@ -380,7 +387,7 @@ const BuilderFilesTab = memo(() => {
                                     <button
                                         className="px-2 py-1 hover:bg-hover rounded transition-colors cursor-pointer"
                                         onClick={(e) => handleContextMenu(e, file.name)}
-                                        title="File options"
+                                        title={t("builderFiles.fileOptions")}
                                     >
                                         <i className="fa fa-ellipsis-vertical" />
                                     </button>

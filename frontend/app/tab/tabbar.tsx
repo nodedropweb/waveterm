@@ -11,6 +11,7 @@ import { fireAndForget } from "@/util/util";
 import { useAtomValue } from "jotai";
 import { OverlayScrollbars } from "overlayscrollbars";
 import { createRef, memo, useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { debounce } from "throttle-debounce";
 import { Tab } from "./tab";
 import "./tabbar.scss";
@@ -46,6 +47,7 @@ interface TabBarProps {
 }
 
 const WaveAIButton = memo(({ divRef }: { divRef?: React.RefObject<HTMLDivElement> }) => {
+    const { t } = useTranslation();
     const env = useWaveEnv<TabBarEnv>();
     const aiPanelOpen = useAtomValue(WorkspaceLayoutModel.getInstance().panelVisibleAtom);
     const hideAiButton = useAtomValue(env.getSettingsKeyAtom("app:hideaibutton"));
@@ -61,7 +63,7 @@ const WaveAIButton = memo(({ divRef }: { divRef?: React.RefObject<HTMLDivElement
 
     return (
         <Tooltip
-            content="Toggle Wave AI Panel"
+            content={t("tabBar.toggleWaveAiPanel")}
             placement="bottom"
             hideOnClick
             divClassName={`flex h-[22px] px-3.5 justify-end mb-1 items-center rounded-md mr-1 box-border cursor-pointer bg-hover hover:bg-hoverbg transition-colors text-[12px] ${aiPanelOpen ? "text-accent" : "text-secondary"}`}
@@ -95,6 +97,7 @@ function strArrayIsEqual(a: string[], b: string[]) {
 }
 
 const TabBar = memo(({ workspace, noTabs }: TabBarProps) => {
+    const { t } = useTranslation();
     const env = useWaveEnv<TabBarEnv>();
     const [tabIds, setTabIds] = useState<string[]>([]);
     const [dragStartPositions, setDragStartPositions] = useState<number[]>([]);
@@ -615,7 +618,7 @@ const TabBar = memo(({ workspace, noTabs }: TabBarProps) => {
             )}
             <WaveAIButton divRef={waveAIButtonRef} />
             <Tooltip
-                content="Workspace Switcher"
+                content={t("tabBar.workspaceSwitcher")}
                 placement="bottom"
                 hideOnClick
                 divRef={workspaceSwitcherRef}
@@ -657,7 +660,7 @@ const TabBar = memo(({ workspace, noTabs }: TabBarProps) => {
             </div>
             <button
                 ref={addBtnRef}
-                title="Add Tab"
+                title={t("tabBar.addTab")}
                 className={`flex h-[22px] px-2 mb-1 mx-1 items-center rounded-md box-border cursor-pointer hover:bg-hoverbg transition-colors text-[12px] text-secondary hover:text-primary${noTabs ? " invisible" : ""}`}
                 style={{ WebkitAppRegion: "no-drag" } as React.CSSProperties}
                 onClick={handleAddTab}

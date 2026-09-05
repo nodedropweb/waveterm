@@ -1,0 +1,164 @@
+---
+sidebar_position: 1
+id: "gettingstarted"
+title: "Erste Schritte"
+---
+
+import { PlatformProvider, PlatformSelectorButton, PlatformItem } from "@site/src/components/platformcontext";
+import { Kbd } from "@site/src/components/kbd";
+
+Wave Terminal ist ein modernes Terminal, das neben klassischen Terminal-Funktionen grafische Fähigkeiten wie Web-Browsing, Dateivorschau und KI-Unterstützung bietet. Diese Anleitung hilft dir beim Einstieg.
+
+## Installation
+
+<PlatformProvider>
+  <PlatformSelectorButton />
+
+### Plattformanforderungen
+
+<PlatformItem platforms={["mac"]}>
+
+- Unterstützte Architekturen: Apple Silicon, x64
+- Unterstützte Betriebssystemversion: macOS 11 Big Sur oder neuer
+
+</PlatformItem>
+
+<PlatformItem platforms={["windows"]}>
+
+- Unterstützte Architekturen: x64
+- Unterstützte Betriebssystemversion: Windows 10 1809 oder neuer, Windows 11
+
+:::note
+
+ARM64 ist geplant, wird aber derzeit durch vorgelagerte Abhängigkeiten blockiert (siehe [Windows-ARM-Unterstützung](https://github.com/wavetermdev/waveterm/issues/928)).
+
+:::
+
+</PlatformItem>
+
+<PlatformItem platforms={["linux"]}>
+
+- Unterstützte Architekturen: x64, ARM64
+- Unterstützte Betriebssystemversion: benötigt glibc-2.28 oder neuer (Debian >=10, RHEL >=8, Ubuntu >=20.04 usw.)
+
+</PlatformItem>
+
+### Paketmanager
+
+<PlatformItem platforms={["mac"]}>
+
+#### Homebrew
+
+```bash
+brew install --cask wave
+```
+
+</PlatformItem>
+
+<PlatformItem platforms={["windows"]}>
+
+#### Windows Package Manager
+
+```powershell
+winget install CommandLine.Wave
+```
+
+#### Chocolatey
+
+```powershell
+choco install wave
+```
+
+</PlatformItem>
+
+<PlatformItem platforms={["linux"]}>
+
+#### Snap
+
+```bash
+sudo snap install --classic waveterm
+```
+
+Weitere Optionen verfügbar: [AUR-Paket](https://aur.archlinux.org/packages/waveterm) (community-gepflegt), [Nix-Paket](https://search.nixos.org/packages?channel=unstable&show=waveterm) (community-gepflegt)
+
+</PlatformItem>
+
+Du kannst Installationsprogramme auch direkt von unserer [Download-Seite](https://www.waveterm.dev/download) herunterladen.
+
+## Grundkonzepte
+
+### Tabs und Blöcke
+
+- **Tabs**: Wie Browser-Tabs helfen sie, deine Arbeit zu organisieren. Erstelle neue Tabs mit <Kbd k="Cmd:t"/>.
+- **Blöcke**: Die Bausteine von Wave. Jeder Block kann ein Terminal, ein Webbrowser, eine Dateivorschau oder ein anderes Widget sein.
+- **Layout**: Blöcke können gezogen, abgelegt und in der Größe angepasst werden, um dein ideales Layout zu erstellen.
+
+### Hauptfunktionen
+
+1. **Terminal-Funktionen**
+
+   - Funktioniert mit gängigen Shells (bash, zsh, fish)
+   - Unterstützt Standard-Terminal-Funktionen (readline, Steuersequenzen usw.)
+   - Enthält den Befehl `wsh` zur Interaktion mit Waves GUI-Funktionen
+   - GPU-beschleunigt (auf den meisten Plattformen)
+
+2. **Grafische Widgets**
+
+   - Dateivorschau (Bilder, Video, Markdown, Code mit Syntax-Highlighting)
+   - Webseiten durchsuchen
+   - Fragen stellen und KI-Hilfe direkt aus dem Terminal erhalten (mehrere KI-Modelle einrichten)
+   - Einfache Systemüberwachungs-Diagramme
+
+3. **Remote-Verbindungen**
+   - Einfache SSH-Verbindungen über den Verbindungs-Button <i className="fa-sharp fa-laptop"/>
+   - WSL-Integration unter Windows
+   - Einheitliche Erfahrung bei lokalen und entfernten Sitzungen
+
+## Schnellstart-Anleitung
+
+1. **Öffne deinen ersten neuen Tab**
+
+   - Neue Wave-Tabs starten mit einem einzelnen Terminal-Block
+   - Nutze ihn wie dein gewohntes Terminal
+   - Erstelle weitere Terminal-Blöcke mit <Kbd k="Cmd:n"/>
+
+2. **Probiere ein paar grundlegende Befehle aus**
+
+   ```bash
+   # Eine Datei oder ein Verzeichnis anzeigen
+   wsh view ~/Documents
+
+   # Eine Webseite öffnen
+   wsh web open github.com
+
+   # KI-Unterstützung erhalten
+   wsh ai -m "how do I find large files in my current directory?" -s
+   ```
+
+3. **Passe dein Layout an**
+
+   - Ziehe Block-Kopfzeilen, um sie neu anzuordnen
+   - Fahre zwischen Blöcken mit der Maus, um sie in der Größe anzupassen
+   - Rechtsklick auf Tab-Kopfzeilen für Hintergrundoptionen
+   - Rechtsklick auf Block-Kopfzeilen für blockspezifische Optionen
+
+4. **Mit entfernten Rechnern verbinden**
+   - Klicke auf den <i className="fa-sharp fa-laptop"/>-Button
+   - Gib `username@hostname` für SSH-Verbindungen ein
+   - Oder wähle unter Windows eine WSL-Distribution aus
+
+## Nächste Schritte
+
+- Entdecke [Tastenkombinationen](./keybindings), um effizienter zu arbeiten
+- Erfahre mehr über [Tab-Layouts](./layout), um deinen Workspace zu organisieren
+- Richte [benutzerdefinierte Widgets](./customwidgets) für schnellen Zugriff auf deine Tools ein
+- Konfiguriere [Wave AI](./waveai), um deine bevorzugten KI-Modelle zu nutzen
+- Schau dir [Konfiguration](./config) für ausführliche Anpassungsoptionen an
+
+## Hilfe erhalten
+
+- Tritt unserer [Discord-Community](https://discord.gg/XfvZ334gwU) für Hilfe und Diskussionen bei
+- Melde Probleme auf [GitHub](https://github.com/wavetermdev/waveterm/issues)
+- Schau in unsere [FAQ](./faq) für häufige Fragen
+
+</PlatformProvider>

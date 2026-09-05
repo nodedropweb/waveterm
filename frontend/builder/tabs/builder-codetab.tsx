@@ -9,8 +9,10 @@ import { cn } from "@/util/util";
 import { useAtomValue } from "jotai";
 import type * as MonacoTypes from "monaco-editor";
 import { memo, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 const BuilderCodeTab = memo(() => {
+    const { t } = useTranslation();
     const model = BuilderAppPanelModel.getInstance();
     const builderAppId = useAtomValue(atoms.builderAppId);
     const codeContent = useAtomValue(model.codeContentAtom);
@@ -55,7 +57,7 @@ const BuilderCodeTab = memo(() => {
     if (!builderAppId) {
         return (
             <div className="w-full h-full flex items-center justify-center">
-                <div className="text-secondary">No builder app selected</div>
+                <div className="text-secondary">{t("builderCode.noAppSelected")}</div>
             </div>
         );
     }
@@ -63,7 +65,7 @@ const BuilderCodeTab = memo(() => {
     if (isLoading) {
         return (
             <div className="w-full h-full flex items-center justify-center">
-                <div className="text-secondary">Loading app.go...</div>
+                <div className="text-secondary">{t("builderCode.loadingAppGo")}</div>
             </div>
         );
     }
@@ -87,7 +89,7 @@ const BuilderCodeTab = memo(() => {
                 )}
                 onClick={saveNeeded ? handleSave : undefined}
             >
-                Save
+                {t("builderCode.save")}
             </button>
             <CodeEditor
                 blockId={builderAppId}

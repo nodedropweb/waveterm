@@ -14,6 +14,7 @@ import * as util from "@/util/util";
 import clsx from "clsx";
 import * as jotai from "jotai";
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 
 export type TabBackgroundEnv = WaveEnvSubset<{
     getTabMetaKeyAtom: MetaKeyAtomFnType<"bg:activebordercolor" | "bg:bordercolor" | "tab:background">;
@@ -48,30 +49,30 @@ export function blockViewToIcon(view: string): string {
     return "square";
 }
 
-export function blockViewToName(view: string): string {
+export function blockViewToName(view: string, t: (key: string) => string): string {
     if (util.isBlank(view)) {
-        return "(No View)";
+        return t("blockUtil.noView");
     }
     if (view == "term") {
-        return "Terminal";
+        return t("blockUtil.terminal");
     }
     if (view == "preview") {
-        return "Preview";
+        return t("blockUtil.preview");
     }
     if (view == "web") {
-        return "Web";
+        return t("blockUtil.web");
     }
     if (view == "waveai") {
         return "WaveAI";
     }
     if (view == "help") {
-        return "Help";
+        return t("blockUtil.help");
     }
     if (view == "tips") {
-        return "Tips";
+        return t("blockUtil.tips");
     }
     if (view == "processviewer") {
-        return "Processes";
+        return t("blockUtil.processes");
     }
     return view;
 }
@@ -212,10 +213,11 @@ export const Input = React.memo(
 
 export const OptMagnifyButton = React.memo(
     ({ magnified, toggleMagnify, disabled }: { magnified: boolean; toggleMagnify: () => void; disabled: boolean }) => {
+        const { t } = useTranslation();
         const magnifyDecl: IconButtonDecl = {
             elemtype: "iconbutton",
             icon: <MagnifyIcon enabled={magnified} />,
-            title: magnified ? "Minimize" : "Magnify",
+            title: magnified ? t("blockUtil.minimize") : t("blockUtil.magnify"),
             click: toggleMagnify,
             disabled,
         };
