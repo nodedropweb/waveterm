@@ -10,5 +10,45 @@
         "openSource": "Open Source",
         "sponsor": "Sponsor",
         "copyright": "© {{year}} Command Line Inc."
+    },
+    "aimode": {
+        "modes": {
+            "quick": {
+                "name": "Schnell",
+                "description": "Schnellste Antworten (gpt-5-mini)"
+            },
+            "balanced": {
+                "name": "Ausgewogen",
+                "description": "Guter Mix aus Geschwindigkeit und Genauigkeit\n(gpt-5.1 mit minimalem Denkaufwand)"
+            },
+            "deep": {
+                "name": "Tiefgehend",
+                "description": "Langsamer, aber leistungsfähiger\n(gpt-5.1 mit vollem Reasoning)"
+            },
+            "builderDefault": {
+                "name": "Builder Standard",
+                "description": "Guter Mix aus Geschwindigkeit und Genauigkeit\n(gpt-5.4 mit minimalem Denkaufwand)"
+            },
+            "builderDeep": {
+                "name": "Builder Tiefgehend",
+                "description": "Langsamer, aber leistungsfähiger\n(gpt-5.4 mit vollem Reasoning)"
+            }
+        },
+        "sections": {
+            "current": "Aktuell",
+            "compatibleModes": "Kompatible Modi",
+            "incompatibleModes": "Inkompatible Modi",
+            "waveAICloud": "Wave AI Cloud",
+            "custom": "Benutzerdefiniert"
+        },
+        "startNewChatToSwitch": "(Neuen Chat starten zum Wechseln)",
+        "enableTelemetryToUnlock": "(Telemetrie aktivieren, um Wave AI Cloud freizuschalten)",
+        "premiumSuffix": " (Premium)",
+        "noToolsSupport": "Keine Tool-Unterstützung",
+        "noToolsWarning": "Achtung: Dieser benutzerdefinierte Modus wurde ohne die Fähigkeit \"tools\" im Array \"ai:capabilities\" konfiguriert. Ohne Tool-Unterstützung kann Wave AI nicht mit Widgets oder Dateien interagieren.",
+        "newChat": "Neuer Chat",
+        "configureModes": "Modi konfigurieren",
+        "aiModeTitle": "KI-Modus: {{name}}",
+        "invalidMode": "Ungültig ({{mode}})"
     }
 }

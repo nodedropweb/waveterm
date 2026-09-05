@@ -8,7 +8,8 @@ import { TabRpcClient } from "@/app/store/wshrpcutil";
 import { cn, fireAndForget, makeIconClass } from "@/util/util";
 import { useAtomValue } from "jotai";
 import { memo, useRef, useState } from "react";
-import { getFilteredAIModeConfigs, getModeDisplayName } from "./ai-utils";
+import { useTranslation } from "react-i18next";
+import { getBuiltInModeI18nKey, getFilteredAIModeConfigs, getModeDisplayName } from "./ai-utils";
 import { WaveAIModel } from "./waveai-model";
 
 interface AIModeMenuItemProps {
@@ -22,6 +23,10 @@ interface AIModeMenuItemProps {
 }
 
 const AIModeMenuItem = memo(({ config, isSelected, isDisabled, isPremiumDisabled, onClick, isFirst, isLast }: AIModeMenuItemProps) => {
+    const { t } = useTranslation();
+    const builtInKey = getBuiltInModeI18nKey(config.mode);
+    const displayName = builtInKey ? t(`${builtInKey}.name`) : getModeDisplayName(config);
+    const displayDescription = builtInKey ? t(`${builtInKey}.description`) : config["display:description"];
     return (
         <button
             key={config.mode}
@@ -36,17 +41,17 @@ const AIModeMenuItem = memo(({ config, isSelected, isDisabled, isPremiumDisabled
             <div className="flex items-center gap-2 w-full">
                 <i className={makeIconClass(config["display:icon"] || "sparkles", false)}></i>
                 <span className={cn("text-sm", isSelected && "font-bold")}>
-                    {getModeDisplayName(config)}
-                    {isPremiumDisabled && " (premium)"}
+                    {displayName}
+                    {isPremiumDisabled && t("aimode.premiumSuffix")}
                 </span>
                 {isSelected && <i className="fa fa-check ml-auto"></i>}
             </div>
-            {config["display:description"] && (
+            {displayDescription && (
                 <div
                     className={cn("text-xs pl-5", isDisabled ? "text-gray-500" : "text-muted")}
                     style={{ whiteSpace: "pre-line" }}
                 >
-                    {config["display:description"]}
+                    {displayDescription}
                 </div>
             )}
         </button>
@@ -72,7 +77,7 @@ function computeCompatibleSections(
     const allConfigs = [...waveProviderConfigs, ...otherProviderConfigs];
 
     if (!currentConfig) {
-        return [{ sectionName: "Incompatible Modes", configs: allConfigs, isIncompatible: true }];
+        return [{ sectionName: "incompatibleModes", configs: allConfigs, isIncompatible: true }];
     }
 
     const currentSwitchCompat = currentConfig["ai:switchcompat"] || [];
@@ -101,11 +106,11 @@ function computeCompatibleSections(
     }
 
     const sections: ConfigSection[] = [];
-    const compatibleSectionName = compatibleConfigs.length === 1 ? "Current" : "Compatible Modes";
+    const compatibleSectionName = compatibleConfigs.length === 1 ? "current" : "compatibleModes";
     sections.push({ sectionName: compatibleSectionName, configs: compatibleConfigs });
 
     if (incompatibleConfigs.length > 0) {
-        sections.push({ sectionName: "Incompatible Modes", configs: incompatibleConfigs, isIncompatible: true });
+        sections.push({ sectionName: "incompatibleModes", configs: incompatibleConfigs, isIncompatible: true });
     }
 
     return sections;
@@ -120,13 +125,13 @@ function computeWaveCloudSections(
 
     if (waveProviderConfigs.length > 0) {
         sections.push({
-            sectionName: "Wave AI Cloud",
+            sectionName: "waveAICloud",
             configs: waveProviderConfigs,
             noTelemetry: !telemetryEnabled,
         });
     }
     if (otherProviderConfigs.length > 0) {
-        sections.push({ sectionName: "Custom", configs: otherProviderConfigs });
+        sections.push({ sectionName: "custom", configs: otherProviderConfigs });
     }
 
     return sections;
@@ -137,6 +142,7 @@ interface AIModeDropdownProps {
 }
 
 export const AIModeDropdown = memo(({ compatibilityMode = false }: AIModeDropdownProps) => {
+    const { t } = useTranslation();
     const model = WaveAIModel.getInstance();
     const currentMode = useAtomValue(model.currentAIMode);
     const aiModeConfigs = useAtomValue(model.aiModeConfigs);
@@ -173,7 +179,12 @@ export const AIModeDropdown = memo(({ compatibilityMode = false }: AIModeDropdow
     };
 
     const displayConfig = aiModeConfigs[currentMode];
-    const displayName = displayConfig ? getModeDisplayName(displayConfig) : `Invalid (${currentMode})`;
+    const currentBuiltInKey = displayConfig ? getBuiltInModeI18nKey(currentMode) : undefined;
+    const displayName = displayConfig
+        ? currentBuiltInKey
+            ? t(`${currentBuiltInKey}.name`)
+            : getModeDisplayName(displayConfig)
+        : t("aimode.invalidMode", { mode: currentMode });
     const displayIcon = displayConfig ? displayConfig["display:icon"] || "sparkles" : "question";
     const resolvedConfig = waveaiModeConfigs[currentMode];
     const hasToolsSupport = resolvedConfig && resolvedConfig["ai:capabilities"]?.includes("tools");
@@ -218,7 +229,7 @@ export const AIModeDropdown = memo(({ compatibilityMode = false }: AIModeDropdow
                     "group flex items-center gap-1.5 px-2 py-1 text-xs text-gray-300 hover:text-white rounded transition-colors cursor-pointer border border-gray-600/50",
                     isOpen ? "bg-zinc-700" : "bg-zinc-800/50 hover:bg-zinc-700"
                 )}
-                title={`AI Mode: ${displayName}`}
+                title={t("aimode.aiModeTitle", { name: displayName })}
             >
                 <i className={cn(makeIconClass(displayIcon, false), "text-[10px]")}></i>
                 <span className={`text-[11px]`}>{displayName}</span>
@@ -227,18 +238,12 @@ export const AIModeDropdown = memo(({ compatibilityMode = false }: AIModeDropdow
 
             {showNoToolsWarning && (
                 <Tooltip
-                    content={
-                        <div className="max-w-xs">
-                            Warning: This custom mode was configured without the "tools" capability in the
-                            "ai:capabilities" array. Without tool support, Wave AI will not be able to interact with
-                            widgets or files.
-                        </div>
-                    }
+                    content={<div className="max-w-xs">{t("aimode.noToolsWarning")}</div>}
                     placement="bottom"
                 >
                     <div className="flex items-center gap-1 text-[10px] text-yellow-600 mt-1 ml-1 cursor-default">
                         <i className="fa fa-triangle-exclamation"></i>
-                        <span>No Tools Support</span>
+                        <span>{t("aimode.noToolsSupport")}</span>
                     </div>
                 </Tooltip>
             )}
@@ -262,11 +267,11 @@ export const AIModeDropdown = memo(({ compatibilityMode = false }: AIModeDropdow
                                                     isFirstSection ? "pt-2" : "pt-0"
                                                 )}
                                             >
-                                                {section.sectionName}
+                                                {t(`aimode.sections.${section.sectionName}`)}
                                             </div>
                                             {section.isIncompatible && (
                                                 <div className="text-center text-[11px] text-red-300 pb-1">
-                                                    (Start a New Chat to Switch)
+                                                    {t("aimode.startNewChatToSwitch")}
                                                 </div>
                                             )}
                                             {section.noTelemetry && (
@@ -274,7 +279,7 @@ export const AIModeDropdown = memo(({ compatibilityMode = false }: AIModeDropdow
                                                     onClick={handleEnableTelemetry}
                                                     className="text-center text-[11px] text-green-300 hover:text-green-200 pb-1 cursor-pointer transition-colors w-full"
                                                 >
-                                                    (enable telemetry to unlock Wave AI Cloud)
+                                                    {t("aimode.enableTelemetryToUnlock")}
                                                 </button>
                                             )}
                                         </>
@@ -310,14 +315,14 @@ export const AIModeDropdown = memo(({ compatibilityMode = false }: AIModeDropdow
                             className="w-full flex items-center gap-2 px-3 pt-1 pb-1 text-gray-300 hover:bg-zinc-700 cursor-pointer transition-colors text-left"
                         >
                             <i className={makeIconClass("plus", false)}></i>
-                            <span className="text-sm">New Chat</span>
+                            <span className="text-sm">{t("aimode.newChat")}</span>
                         </button>
                         <button
                             onClick={handleConfigureClick}
                             className="w-full flex items-center gap-2 px-3 pt-1 pb-2 text-gray-300 hover:bg-zinc-700 cursor-pointer transition-colors text-left"
                         >
                             <i className={makeIconClass("gear", false)}></i>
-                            <span className="text-sm">Configure Modes</span>
+                            <span className="text-sm">{t("aimode.configureModes")}</span>
                         </button>
                     </div>
                 </>

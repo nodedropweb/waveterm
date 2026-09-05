@@ -10,5 +10,45 @@
         "openSource": "Open Source",
         "sponsor": "Sponsor",
         "copyright": "© {{year}} Command Line Inc."
+    },
+    "aimode": {
+        "modes": {
+            "quick": {
+                "name": "Quick",
+                "description": "Fastest responses (gpt-5-mini)"
+            },
+            "balanced": {
+                "name": "Balanced",
+                "description": "Good mix of speed and accuracy\n(gpt-5.1 with minimal thinking)"
+            },
+            "deep": {
+                "name": "Deep",
+                "description": "Slower but most capable\n(gpt-5.1 with full reasoning)"
+            },
+            "builderDefault": {
+                "name": "Builder Default",
+                "description": "Good mix of speed and accuracy\n(gpt-5.4 with minimal thinking)"
+            },
+            "builderDeep": {
+                "name": "Builder Deep",
+                "description": "Slower but most capable\n(gpt-5.4 with full reasoning)"
+            }
+        },
+        "sections": {
+            "current": "Current",
+            "compatibleModes": "Compatible Modes",
+            "incompatibleModes": "Incompatible Modes",
+            "waveAICloud": "Wave AI Cloud",
+            "custom": "Custom"
+        },
+        "startNewChatToSwitch": "(Start a New Chat to Switch)",
+        "enableTelemetryToUnlock": "(enable telemetry to unlock Wave AI Cloud)",
+        "premiumSuffix": " (premium)",
+        "noToolsSupport": "No Tools Support",
+        "noToolsWarning": "Warning: This custom mode was configured without the \"tools\" capability in the \"ai:capabilities\" array. Without tool support, Wave AI will not be able to interact with widgets or files.",
+        "newChat": "New Chat",
+        "configureModes": "Configure Modes",
+        "aiModeTitle": "AI Mode: {{name}}",
+        "invalidMode": "Invalid ({{mode}})"
     }
 }
