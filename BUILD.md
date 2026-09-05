@@ -6,7 +6,7 @@ These instructions are for setting up dependencies and building Wave Terminal fr
 
 ### OS-specific dependencies
 
-See [Minimum requirements](README.md#minimum-requirements) to learn whether your OS is supported.
+See [Minimum requirements](README.en.md#minimum-requirements) to learn whether your OS is supported.
 
 #### macOS
 
