@@ -768,6 +768,24 @@ function registerGlobalKeys() {
         return true;
     });
     globalChordMap.set("Ctrl:Shift:s", splitBlockKeys);
+
+    function zoomFocusedBlock(action: "in" | "out" | "reset"): boolean {
+        const bcm = getBlockComponentModel(getFocusedBlockInStaticTab());
+        const viewModel = bcm?.viewModel;
+        if (action == "in") {
+            viewModel?.zoomIn?.();
+        } else if (action == "out") {
+            viewModel?.zoomOut?.();
+        } else {
+            viewModel?.zoomReset?.();
+        }
+        return true;
+    }
+    const zoomBlockKeys = new Map<string, KeyHandler>();
+    zoomBlockKeys.set("=", () => zoomFocusedBlock("in"));
+    zoomBlockKeys.set("-", () => zoomFocusedBlock("out"));
+    zoomBlockKeys.set("0", () => zoomFocusedBlock("reset"));
+    globalChordMap.set("Ctrl:Shift:z", zoomBlockKeys);
 }
 
 function registerBuilderGlobalKeys() {

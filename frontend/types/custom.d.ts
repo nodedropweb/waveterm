@@ -361,6 +361,15 @@ declare global {
         // Handles keydown events within the block.
         keyDownHandler?: (e: WaveKeyboardEvent) => boolean;
 
+        // Increases the content size (e.g. font size) of just this block.
+        zoomIn?: () => void;
+
+        // Decreases the content size (e.g. font size) of just this block.
+        zoomOut?: () => void;
+
+        // Resets this block's content size back to its default.
+        zoomReset?: () => void;
+
         // Cleans up resources when the block is disposed.
         dispose?: () => void;
     }

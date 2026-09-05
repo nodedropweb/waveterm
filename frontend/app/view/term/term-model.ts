@@ -598,6 +598,30 @@ export class TermViewModel implements ViewModel {
         this.termCursorBlinkUnsubFn?.();
     }
 
+    setFontSize(fontSize: number) {
+        RpcApi.SetMetaCommand(TabRpcClient, {
+            oref: WOS.makeORef("block", this.blockId),
+            meta: { "term:fontsize": fontSize },
+        });
+    }
+
+    zoomIn() {
+        const curFontSize = globalStore.get(this.fontSizeAtom);
+        this.setFontSize(boundNumber(curFontSize + 1, 4, 64));
+    }
+
+    zoomOut() {
+        const curFontSize = globalStore.get(this.fontSizeAtom);
+        this.setFontSize(boundNumber(curFontSize - 1, 4, 64));
+    }
+
+    zoomReset() {
+        RpcApi.SetMetaCommand(TabRpcClient, {
+            oref: WOS.makeORef("block", this.blockId),
+            meta: { "term:fontsize": null },
+        });
+    }
+
     giveFocus(): boolean {
         if (this.searchAtoms && globalStore.get(this.searchAtoms.isOpen)) {
             console.log("search is open, not giving focus");
